@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
+//@Repository
 public class ExpBarMemoryRepository implements ExpBarRepository {
 
     private final Map<Long, ExpBar> store = new HashMap<>();
