@@ -20,4 +20,11 @@ public class UserResponse {
         LocalDate joinDate;
         int level;
     }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class UpdateInformation{
+        Long userId;
+    }
 }

@@ -56,4 +56,9 @@ public class User {
     private Role role;
 
     private String profileImageUrl;
+
+    public void update(String changedPW, String profileImageUrl) {
+        this.changedPW = changedPW;
+        this.profileImageUrl = profileImageUrl;
+    }
 }
