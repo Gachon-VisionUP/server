@@ -16,7 +16,7 @@ public class UserController {
     private final UserQueryService userQueryService;
 
     @GetMapping("/{userId}/information")
-    public ApiResponse<UserResponse.Information> getUserInformation(@PathVariable Long userId, @RequestParam(value = "image") String imageUrl) {
-        return ApiResponse.onSuccess(userQueryService.getUserInformation(userId, imageUrl));
+    public ApiResponse<UserResponse.Information> getUserInformation(@PathVariable Long userId) {
+        return ApiResponse.onSuccess(userQueryService.getUserInformation(userId));
     }
 }
