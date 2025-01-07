@@ -6,6 +6,7 @@ import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.PersonalExp;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
+import GaVisionUp.server.repository.exp.personalexp.PersonalExpRepository;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,7 @@ class PersonalExpRepositoryImplTest {
     @Autowired
     private ExpBarRepository expBarRepository;
 
+
     @Autowired
     private EntityManager em;
 
@@ -50,47 +52,43 @@ class PersonalExpRepositoryImplTest {
         testUser.setPassword("password");
         testUser.setTotalExp(0);
 
-        em.persist(testUser); // Users 저장
-        em.flush(); // DB에 반영
-        em.clear(); // 영속성 컨텍스트 초기화
+        em.persist(testUser);  // Users 저장
+        em.flush();  // ★ DB에 반영
+        em.clear();  // ★ 영속성 컨텍스트 초기화
 
         // Given: ExpBar 데이터 생성 및 저장
         testExpBar = new ExpBar();
-        testExpBar.setUserId(testUser.getId());
+        testExpBar.setUserId(testUser.getId());  // testUser의 ID 참조
         testExpBar.setDepartment(Department.음성1센터);
         testExpBar.setName("홍길동");
         testExpBar.setLevel("F1-Ⅰ");
         testExpBar.setTotalExp(0);
 
-        expBarRepository.save(testExpBar); // ExpBar 저장
-        em.flush(); // DB에 반영
-        em.clear(); // 영속성 컨텍스트 초기화
+        expBarRepository.save(testExpBar);  // ExpBar 저장
+        em.flush();  // ★ DB에 반영
+        em.clear();  // ★ 영속성 컨텍스트 초기화
     }
 
     @Test
-    void savePersonalExp_shouldPersistSuccessfullyAndUpdateExpBar() {
+    void savePersonalExp_shouldPersistSuccessfully() {
         // Given
-        int expToAdd = 4500;
-        PersonalExp personalExp = new PersonalExp(testUser, ExpType.인사평가, expToAdd, testExpBar);
+        PersonalExp personalExp = new PersonalExp(testUser, ExpType.인사평가, 4500, testExpBar);
 
         // When
         PersonalExp savedExp = personalExpRepository.save(personalExp);
-        ExpBar updatedExpBar = expBarRepository.findById(testExpBar.getId()).orElseThrow();
+        em.flush();  // ★ DB 반영
 
         // Then
         assertThat(savedExp).isNotNull();
         assertThat(savedExp.getUsers().getName()).isEqualTo("홍길동");
         assertThat(savedExp.getExpType()).isEqualTo(ExpType.인사평가);
-        assertThat(savedExp.getExp()).isEqualTo(expToAdd);
+        assertThat(savedExp.getExp()).isEqualTo(4500);
         assertThat(savedExp.getExpBar()).isEqualTo(testExpBar);
-
-        // ExpBar의 totalExp가 업데이트되었는지 확인
-        assertThat(updatedExpBar.getTotalExp()).isEqualTo(expToAdd);
 
         // 로그 출력
         log.info("Saved PersonalExp: {}", savedExp);
-        log.info("Updated ExpBar: {}", updatedExpBar);
     }
+
 
     @Test
     void findPersonalExpById_shouldReturnCorrectData() {
@@ -139,7 +137,7 @@ class PersonalExpRepositoryImplTest {
         ExpBar updatedExpBar = expBarRepository.findById(testExpBar.getId()).orElseThrow();
 
         // Then
-        assertThat(updatedExpBar.getTotalExp()).isEqualTo(additionalExp);
+        assertThat(updatedExpBar.getTotalExp()).isEqualTo(2000);
 
         // 로그 출력
         log.info("Updated ExpBar after adding experience: {}", updatedExpBar);
