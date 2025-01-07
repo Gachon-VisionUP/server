@@ -1,6 +1,5 @@
 package GaVisionUp.server.entity;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -8,8 +7,7 @@ import javax.management.relation.Role;
 import java.time.LocalDate;
 
 @Data
-@Table(name = "Users") // 테이블 이름 변경
-public class User {
+public class Users {
     private String id; // 사번
     private String name;
     private LocalDate joinDate; // 입사일 (YYYY-MM-DD 형식)
