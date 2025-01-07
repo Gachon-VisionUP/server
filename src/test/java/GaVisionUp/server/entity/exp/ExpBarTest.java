@@ -12,7 +12,7 @@ public class ExpBarTest {
         ExpBar expBar = new ExpBar();
         expBar.setId(1L);
         expBar.setUserId(1001);
-        expBar.setDepartment(Department.음성1센터);
+        expBar.setDepartment(Department.EUMSEONG1);
         expBar.setName("홍길동");
         expBar.setLevel("F1-Ⅰ");
         expBar.setTotalExp(500);
@@ -22,7 +22,7 @@ public class ExpBarTest {
 
         // 값이 정상적으로 세팅되었는지 검증
         assertEquals(1001, expBar.getUserId());
-        assertEquals(Department.음성1센터, expBar.getDepartment());
+        assertEquals(Department.EUMSEONG1, expBar.getDepartment());
         assertEquals("홍길동", expBar.getName());
         assertEquals("F1-Ⅰ", expBar.getLevel());
         assertEquals(500, expBar.getTotalExp());

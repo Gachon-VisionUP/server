@@ -22,6 +22,10 @@ public enum GlobalErrorStatus implements ApiErrorCodeInterface {
 
     // For test
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "예외처리 테스트입니다."),
+
+    // User Error Status
+    _INVALID_DEPARTMENT(HttpStatus.BAD_REQUEST, "USER4001", "잘못된 소속입니다."),
+    _INVALID_ROLE(HttpStatus.BAD_REQUEST, "USER4002", "잘못된 권한입니다.")
     ;
 
     private final HttpStatus httpStatus;

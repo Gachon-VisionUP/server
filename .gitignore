@@ -41,3 +41,6 @@ application.yml
 src/main/resources/application.yml
 
 src/test/resources/application.properties
+
+# Q클래스 생성 디렉토리
+/src/main/generated/**

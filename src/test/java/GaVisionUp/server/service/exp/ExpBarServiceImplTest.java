@@ -34,7 +34,7 @@ class ExpBarServiceImplTest {
     @BeforeEach
     void setUp() {
         // Given: 테스트용 ExpBar 데이터 생성 및 저장
-        testExpBar = new ExpBar(1, Department.음성1센터, "홍길동", "F1-Ⅰ", 500);
+        testExpBar = new ExpBar(1, Department.EUMSEONG1, "홍길동", "F1-Ⅰ", 500);
         expBarRepository.save(testExpBar);
 
         // 영속성 컨텍스트 반영
@@ -45,7 +45,7 @@ class ExpBarServiceImplTest {
     @Test
     void createExpBar_shouldSaveExpBar() {
         // Given
-        ExpBar newExpBar = new ExpBar(2, Department.사업기획팀, "이몽룡", "F2-Ⅰ", 1000);
+        ExpBar newExpBar = new ExpBar(2, Department.BUSINESS, "이몽룡", "F2-Ⅰ", 1000);
 
         // When
         ExpBar savedExpBar = expBarService.createExpBar(newExpBar);
