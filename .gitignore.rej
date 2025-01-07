@@ -1,0 +1,9 @@
+diff a/.gitignore b/.gitignore	(rejected hunks)
+@@ -41,6 +41,7 @@
+  src/main/resources/application.yml
+ +<<<<<<< HEAD
+ +/src/test/resources/application.properties
+++=======
+  
+  src/test/resources/application.properties
+ +>>>>>>> feature/#2-exp-bar
