@@ -2,6 +2,8 @@ package GaVisionUp.server.config;
 
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepositoryImpl;
+import GaVisionUp.server.repository.exp.personalexp.PersonalExpRepository;
+import GaVisionUp.server.repository.exp.personalexp.PersonalExpRepositoryImpl;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
 
@@ -22,8 +24,7 @@ public class LogicConfig {
     }
 
     /**
-     *     인 메모리 테스트용 리포지토리
-    //@Bean
+//          인 메모리 테스트용 리포지토리
     public ExpBarRepository expBarRepository() {
         return new ExpBarMemoryRepository();
     }
@@ -32,5 +33,10 @@ public class LogicConfig {
     @Bean
     public ExpBarService expBarService() {
         return new ExpBarServiceImpl(expBarRepository());
+    }
+
+    @Bean
+    public PersonalExpRepository personalExpRepository() {
+        return new PersonalExpRepositoryImpl(em);
     }
 }
