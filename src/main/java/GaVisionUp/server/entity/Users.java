@@ -1,5 +1,8 @@
 package GaVisionUp.server.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -7,7 +10,10 @@ import javax.management.relation.Role;
 import java.time.LocalDate;
 
 @Data
+@Entity
 public class Users {
+    @Id
+    @GeneratedValue
     private String id; // 사번
     private String name;
     private LocalDate joinDate; // 입사일 (YYYY-MM-DD 형식)
