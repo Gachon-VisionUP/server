@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.exp;
+package GaVisionUp.server.service.exp.expbar;
 
 import GaVisionUp.server.entity.exp.ExpBar;
 

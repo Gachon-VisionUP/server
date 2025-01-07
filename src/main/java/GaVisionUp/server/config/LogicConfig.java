@@ -1,12 +1,10 @@
 package GaVisionUp.server.config;
 
-import GaVisionUp.server.repository.exp.ExpBarMemoryRepository;
-import GaVisionUp.server.repository.exp.ExpBarRepository;
-import GaVisionUp.server.repository.exp.ExpBarRepositoryImpl;
-import GaVisionUp.server.service.exp.ExpBarService;
-import GaVisionUp.server.service.exp.ExpBarServiceImpl;
+import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
+import GaVisionUp.server.repository.exp.expbar.ExpBarRepositoryImpl;
+import GaVisionUp.server.service.exp.expbar.ExpBarService;
+import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

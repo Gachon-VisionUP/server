@@ -2,6 +2,7 @@ package GaVisionUp.server.repository.exp;
 
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.exp.ExpBar;
+import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;

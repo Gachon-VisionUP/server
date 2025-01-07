@@ -2,7 +2,8 @@ package GaVisionUp.server.service.exp;
 
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.exp.ExpBar;
-import GaVisionUp.server.repository.exp.ExpBarRepository;
+import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
+import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import jakarta.persistence.EntityManager;
 
 import lombok.extern.slf4j.Slf4j;

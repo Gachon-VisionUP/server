@@ -1,7 +1,7 @@
 package GaVisionUp.server.web.controller.exp;
 
 import GaVisionUp.server.entity.exp.ExpBar;
-import GaVisionUp.server.service.exp.ExpBarService;
+import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

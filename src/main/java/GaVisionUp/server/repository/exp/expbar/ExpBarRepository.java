@@ -1,7 +1,6 @@
-package GaVisionUp.server.repository.exp;
+package GaVisionUp.server.repository.exp.expbar;
 
 import GaVisionUp.server.entity.exp.ExpBar;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 

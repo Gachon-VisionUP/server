@@ -1,8 +1,8 @@
-package GaVisionUp.server.service.exp;
+package GaVisionUp.server.service.exp.expbar;
 
 
 import GaVisionUp.server.entity.exp.ExpBar;
-import GaVisionUp.server.repository.exp.ExpBarRepository;
+import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
