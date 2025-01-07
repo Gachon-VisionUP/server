@@ -32,7 +32,7 @@ class ExpBarRepositoryImplTest {
     @BeforeEach
     void setUp() {
         // Given: 테스트용 ExpBar 데이터 생성 및 저장 (필수 필드 포함)
-        testExpBar = new ExpBar(1, Department.음성1센터, "홍길동", "F1-Ⅰ", 500);
+        testExpBar = new ExpBar(1L, Department.음성1센터, "홍길동", "F1-Ⅰ", 500);
         expBarRepository.save(testExpBar);
 
         // 영속성 컨텍스트 반영
@@ -43,7 +43,7 @@ class ExpBarRepositoryImplTest {
     @Test
     void save_shouldPersistExpBar() {
         // Given
-        ExpBar newExpBar = new ExpBar(2, Department.사업기획팀, "이몽룡", "F2-Ⅰ", 1000);
+        ExpBar newExpBar = new ExpBar(2L, Department.사업기획팀, "이몽룡", "F2-Ⅰ", 1000);
 
         // When
         ExpBar savedExpBar = expBarRepository.save(newExpBar);
@@ -81,7 +81,7 @@ class ExpBarRepositoryImplTest {
     @Test
     void findByUserId_shouldReturnCorrectExpBar() {
         // When
-        Optional<ExpBar> foundExpBar = expBarRepository.findByUserId(1);
+        Optional<ExpBar> foundExpBar = expBarRepository.findByUserId(1L);
 
         // Then
         assertTrue(foundExpBar.isPresent());
@@ -100,8 +100,8 @@ class ExpBarRepositoryImplTest {
         int additionalExp = 200;
 
         // When
-        expBarRepository.updateTotalExp(1, additionalExp);
-        Optional<ExpBar> updatedExpBar = expBarRepository.findByUserId(1);
+        expBarRepository.updateTotalExp(1L, additionalExp);
+        Optional<ExpBar> updatedExpBar = expBarRepository.findByUserId(1L);
 
         // Then
         assertThat(updatedExpBar).isPresent();

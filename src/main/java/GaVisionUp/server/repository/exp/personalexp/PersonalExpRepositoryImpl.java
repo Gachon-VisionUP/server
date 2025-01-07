@@ -1,6 +1,5 @@
 package GaVisionUp.server.repository.exp.personalexp;
 
-
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.PersonalExp;
 import GaVisionUp.server.entity.exp.QExpBar;
@@ -26,13 +25,25 @@ public class PersonalExpRepositoryImpl implements PersonalExpRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-
     @Override
     public PersonalExp save(PersonalExp personalExp) {
+        // ExpBar에서 해당 사용자의 총 경험치를 증가시킴
+        ExpBar expBar = queryFactory
+                .selectFrom(qExpBar)
+                .where(qExpBar.userId.eq(personalExp.getUsers().getId()))
+                .fetchOne();
+
+        if (expBar != null) {
+            // ExpBar의 totalExp에 추가 경험치를 누적
+            expBar.setTotalExp(expBar.getTotalExp() + personalExp.getExp());
+            em.merge(expBar); // 변경 내용을 DB에 반영
+        }
+
+        // PersonalExp 저장
         if (personalExp.getId() == null) {
-            em.persist(personalExp);
+            em.persist(personalExp); // 새 객체 저장
         } else {
-            em.merge(personalExp);
+            em.merge(personalExp); // 기존 객체 업데이트
         }
         return personalExp;
     }

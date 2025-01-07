@@ -19,7 +19,7 @@ public class PersonalExpTest {
 
         ExpBar expBar = new ExpBar();
         expBar.setId(1L);
-        expBar.setUserId(1001);
+        expBar.setUserId(1001L);
         expBar.setName("홍길동");
         expBar.setLevel("F1-Ⅰ");
         expBar.setTotalExp(500);

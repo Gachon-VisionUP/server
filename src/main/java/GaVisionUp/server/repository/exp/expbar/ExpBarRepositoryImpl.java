@@ -23,7 +23,7 @@ public class ExpBarRepositoryImpl implements ExpBarRepository {
 
     @Override
     public ExpBar save(ExpBar expBar) {
-        if (expBar.getId() == 0) {
+        if (expBar.getId() == null) {
             em.persist(expBar); // 새 객체 저장
         } else {
             em.merge(expBar); // 기존 객체 업데이트

@@ -11,7 +11,7 @@ public class ExpBarTest {
         // 가상의 데이터 생성
         ExpBar expBar = new ExpBar();
         expBar.setId(1L);
-        expBar.setUserId(1001);
+        expBar.setUserId(1001L);
         expBar.setDepartment(Department.음성1센터);
         expBar.setName("홍길동");
         expBar.setLevel("F1-Ⅰ");
