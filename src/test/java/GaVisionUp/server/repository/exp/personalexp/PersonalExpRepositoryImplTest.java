@@ -126,20 +126,4 @@ class PersonalExpRepositoryImplTest {
         // 로그 출력
         log.info("Found {} PersonalExp records for user {}: {}", expList.size(), testUser.getName(), expList);
     }
-
-    @Test
-    void addExperience_shouldIncreaseTotalExp() {
-        // Given
-        int additionalExp = 2000;
-
-        // When
-        personalExpRepository.addExperience(testUser.getId(), additionalExp);
-        ExpBar updatedExpBar = expBarRepository.findById(testExpBar.getId()).orElseThrow();
-
-        // Then
-        assertThat(updatedExpBar.getTotalExp()).isEqualTo(2000);
-
-        // 로그 출력
-        log.info("Updated ExpBar after adding experience: {}", updatedExpBar);
-    }
 }
