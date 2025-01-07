@@ -20,7 +20,7 @@ public class ExpBarServiceImpl implements ExpBarService {
 
     // 특정 사원의 경험치 바 조회
     @Override
-    public ExpBar getExpBarByUserId(int userId) {
+    public ExpBar getExpBarByUserId(Long userId) {
         return expBarRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사원의 경험치 바가 존재하지 않습니다."));
     }
@@ -28,7 +28,7 @@ public class ExpBarServiceImpl implements ExpBarService {
     // 경험치 추가
     @Override
     @Transactional
-    public ExpBar addExperience(int userId, int experience) {
+    public ExpBar addExperience(Long userId, int experience) {
         expBarRepository.updateTotalExp(userId, experience);
         return getExpBarByUserId(userId);
     }

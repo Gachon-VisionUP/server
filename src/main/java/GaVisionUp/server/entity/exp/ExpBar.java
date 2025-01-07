@@ -13,7 +13,7 @@ public class ExpBar {
     private Long id;
 
     @Column(nullable = false)
-    private int userId; // 사번
+    private Long userId; // 사번
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -32,7 +32,7 @@ public class ExpBar {
     public ExpBar() {}
 
     // 필수 필드를 포함하는 생성자
-    public ExpBar(int userId, Department department, String name, String level, int totalExp) {
+    public ExpBar(Long userId, Department department, String name, String level, int totalExp) {
         this.userId = userId;
         this.department = department;
         this.name = name;

@@ -30,14 +30,14 @@ public class ExpBarMemoryRepository implements ExpBarRepository {
     }
 
     @Override
-    public Optional<ExpBar> findByUserId(int userId) {
+    public Optional<ExpBar> findByUserId(Long userId) {
         return store.values().stream()
                 .filter(expBar -> expBar.getUserId() == userId)
                 .findFirst();
     }
 
     @Override
-    public void updateTotalExp(int userId, int exp) {
+    public void updateTotalExp(Long userId, int exp) {
         Optional<ExpBar> optionalExpBar = findByUserId(userId);
         optionalExpBar.ifPresent(expBar -> {
             expBar.setTotalExp(expBar.getTotalExp() + exp);

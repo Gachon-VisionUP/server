@@ -4,6 +4,6 @@ import GaVisionUp.server.entity.exp.ExpBar;
 
 public interface ExpBarService {
     ExpBar createExpBar(ExpBar expBar);
-    ExpBar getExpBarByUserId(int userId);
-    ExpBar addExperience(int userId, int experience);
+    ExpBar getExpBarByUserId(Long userId);
+    ExpBar addExperience(Long userId, int experience);
 }

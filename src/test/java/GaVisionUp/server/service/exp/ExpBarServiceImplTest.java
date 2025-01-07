@@ -35,7 +35,7 @@ class ExpBarServiceImplTest {
     @BeforeEach
     void setUp() {
         // Given: 테스트용 ExpBar 데이터 생성 및 저장
-        testExpBar = new ExpBar(1, Department.음성1센터, "홍길동", "F1-Ⅰ", 500);
+        testExpBar = new ExpBar(1L, Department.음성1센터, "홍길동", "F1-Ⅰ", 500);
         expBarRepository.save(testExpBar);
 
         // 영속성 컨텍스트 반영
@@ -46,7 +46,7 @@ class ExpBarServiceImplTest {
     @Test
     void createExpBar_shouldSaveExpBar() {
         // Given
-        ExpBar newExpBar = new ExpBar(2, Department.사업기획팀, "이몽룡", "F2-Ⅰ", 1000);
+        ExpBar newExpBar = new ExpBar(2L, Department.사업기획팀, "이몽룡", "F2-Ⅰ", 1000);
 
         // When
         ExpBar savedExpBar = expBarService.createExpBar(newExpBar);
@@ -63,7 +63,7 @@ class ExpBarServiceImplTest {
     @Test
     void getExpBarByUserId_shouldReturnExpBar() {
         // When
-        ExpBar foundExpBar = expBarService.getExpBarByUserId(1);
+        ExpBar foundExpBar = expBarService.getExpBarByUserId(1L);
 
         // Then
         assertThat(foundExpBar).isNotNull();
@@ -78,7 +78,7 @@ class ExpBarServiceImplTest {
     void getExpBarByUserId_shouldThrowExceptionIfNotFound() {
         // When & Then
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                expBarService.getExpBarByUserId(99)); // 존재하지 않는 ID
+                expBarService.getExpBarByUserId(99L)); // 존재하지 않는 ID
 
         assertThat(exception.getMessage()).isEqualTo("해당 사원의 경험치 바가 존재하지 않습니다.");
 
@@ -92,7 +92,7 @@ class ExpBarServiceImplTest {
         int additionalExp = 200;
 
         // When
-        ExpBar updatedExpBar = expBarService.addExperience(1, additionalExp);
+        ExpBar updatedExpBar = expBarService.addExperience(1L, additionalExp);
 
         // Then
         assertThat(updatedExpBar).isNotNull();

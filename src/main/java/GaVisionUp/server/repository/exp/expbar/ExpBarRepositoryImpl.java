@@ -37,7 +37,7 @@ public class ExpBarRepositoryImpl implements ExpBarRepository {
     }
 
     @Override
-    public Optional<ExpBar> findByUserId(int userId) {
+    public Optional<ExpBar> findByUserId(Long userId) {
         return Optional.ofNullable(
                 queryFactory
                         .selectFrom(expBar)
@@ -47,7 +47,7 @@ public class ExpBarRepositoryImpl implements ExpBarRepository {
     }
 
     @Override
-    public void updateTotalExp(int userId, int exp) {
+    public void updateTotalExp(Long userId, int exp) {
         ExpBar foundExpBar = queryFactory
                 .selectFrom(expBar)
                 .where(expBar.userId.eq(userId))
