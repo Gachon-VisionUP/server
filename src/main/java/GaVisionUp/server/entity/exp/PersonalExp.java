@@ -3,6 +3,7 @@ package GaVisionUp.server.entity.exp;
 import GaVisionUp.server.entity.Users;
 import GaVisionUp.server.entity.enums.ExpType;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+@Data
 @Entity
 public class PersonalExp {
 

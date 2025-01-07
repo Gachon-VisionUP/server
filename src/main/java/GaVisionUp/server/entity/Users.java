@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class Users {
     @Id
     @GeneratedValue
-    private String id; // 사번
+    private Long id; // 사번
     private String name;
     private LocalDate joinDate; // 입사일 (YYYY-MM-DD 형식)
     private int joinNumber; // 입사번호 (2자리 숫자)

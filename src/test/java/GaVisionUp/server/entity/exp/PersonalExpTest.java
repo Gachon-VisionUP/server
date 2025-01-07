@@ -14,7 +14,7 @@ public class PersonalExpTest {
     void createPersonalExpTest() {
         // Given: 가상의 Users 및 ExpBar 객체 생성
         Users user = new Users();
-        user.setId("1001");
+        user.setId(1001L);
         user.setName("홍길동");
 
         ExpBar expBar = new ExpBar();
