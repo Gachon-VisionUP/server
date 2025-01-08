@@ -22,7 +22,7 @@ public class ExpBarTest {
                 .employeeId("EMP0012") // 사번 추가
                 .name("홍길동")
                 .joinDate(LocalDate.of(2020, 5, 15))
-                .department(Department.음성1센터) // 소속 추가
+                .department(Department.EUMSEONG1) // 소속 추가
                 .part(1) // 직무 그룹
                 .level(3) // 레벨
                 .loginId("hong123")
@@ -42,16 +42,16 @@ public class ExpBarTest {
         expBar.setDepartment(testUser.getDepartment()); // User의 department 사용
         expBar.setName(testUser.getName());
         expBar.setLevel("F1-Ⅰ");
-        expBar.setTotalExp(500);
+        testUser.addExperience(500);
 
         // 데이터 출력
         System.out.println(expBar);
 
         // 값이 정상적으로 세팅되었는지 검증
         assertEquals(1001L, expBar.getUser().getId());
-        assertEquals(Department.음성1센터, expBar.getDepartment());
+        assertEquals(Department.EUMSEONG1, expBar.getDepartment());
         assertEquals("홍길동", expBar.getName());
         assertEquals("F1-Ⅰ", expBar.getLevel());
-        assertEquals(500, expBar.getTotalExp());
+        assertEquals(500, expBar.getUser().getTotalExp());
     }
 }

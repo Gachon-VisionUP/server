@@ -8,9 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PersonalExpTest {
+public class ExperienceTest {
 
     @Test
     void createPersonalExpTest() {
@@ -20,7 +21,7 @@ public class PersonalExpTest {
                 .employeeId("EMP0012") // 사번 추가
                 .name("홍길동")
                 .joinDate(LocalDate.of(2020, 5, 15))
-                .department(Department.음성1센터) // 소속 추가
+                .department(Department.EUMSEONG1) // 소속 추가
                 .part(1) // 직무 그룹
                 .level(3) // 레벨
                 .loginId("hong123")
@@ -37,19 +38,18 @@ public class PersonalExpTest {
         expBar.setDepartment(user.getDepartment()); // User의 department 사용
         expBar.setName(user.getName());
         expBar.setLevel("F1-Ⅰ");
-        expBar.setTotalExp(500);
+        user.addExperience(500);
 
         // Given: PersonalExp 객체 생성
-        PersonalExp personalExp = new PersonalExp(user, ExpType.인사평가, 4500, expBar);
+        Experience experience = new Experience(user, ExpType.인사평가, 4500);
 
         // When & Then: 값 검증
-        assertEquals(user, personalExp.getUser());
-        assertEquals(ExpType.인사평가, personalExp.getExpType());
-        assertEquals(4500, personalExp.getExp());
-        assertEquals(LocalDate.now(), personalExp.getObtainedDate());
-        assertEquals(expBar, personalExp.getExpBar());
-
+        assertEquals(user, experience.getUser());
+        assertEquals(ExpType.인사평가, experience.getExpType());
+        assertEquals(4500, experience.getExp());
+        assertEquals(LocalDate.now(), experience.getObtainedDate());
+        assertThat(expBar.getUser().getTotalExp()).isEqualTo(5000);
         // 객체 정보 출력
-        System.out.println(personalExp);
+        System.out.println(experience);
     }
 }

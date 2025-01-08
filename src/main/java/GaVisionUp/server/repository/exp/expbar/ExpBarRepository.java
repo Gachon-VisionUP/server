@@ -6,7 +6,6 @@ import java.util.Optional;
 
 public interface ExpBarRepository {
     ExpBar save(ExpBar expBar); // 저장 (INSERT/UPDATE)
-    Optional<ExpBar> findById(Long id); // ID로 조회
+    Optional<ExpBar> findById(Long id);  // 아이디로 조회
     Optional<ExpBar> findByUserId(Long userId); // 사번으로 조회
-    void updateTotalExp(Long userId, int exp); // 경험치 업데이트
 }

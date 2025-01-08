@@ -4,16 +4,13 @@ import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
-
 @Data
 @Entity
-@Table(name = "personal_exp")
-public class PersonalExp {
+@Table(name = "experience")
+public class Experience {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +19,6 @@ public class PersonalExp {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -34,17 +30,12 @@ public class PersonalExp {
     @Column(nullable = false)
     private LocalDate obtainedDate; // 경험치 획득 날짜
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exp_bar_id", nullable = false)
-    private ExpBar expBar;  // ExpBar에 총 경험치 축적
-
-    public PersonalExp(User user, ExpType expType, int exp, ExpBar expBar) {
+    // ✅ ExpBar 제거: User의 totalExp를 직접 업데이트하는 방식으로 변경
+    public Experience(User user, ExpType expType, int exp) {
         this.user = user;
         this.expType = expType;
         this.exp = exp;
         this.obtainedDate = LocalDate.now();
-        this.expBar = expBar;
     }
-
-    public PersonalExp() {}
+    public Experience() {}
 }

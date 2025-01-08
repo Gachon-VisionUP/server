@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Import(LogicConfig.class)
 @SpringBootApplication
-//@EnableJpaRepositories(basePackages = "GaVision.server.repository")
 public class ServerApplication {
 
 	public static void main(String[] args) {

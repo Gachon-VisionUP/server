@@ -1,30 +1,38 @@
-package GaVisionUp.server.repository.exp;
+package GaVisionUp.server.repository.exp.expbar;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
+import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.enums.Role;
 import GaVisionUp.server.entity.exp.ExpBar;
-import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
+import GaVisionUp.server.entity.exp.Experience;
+import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@SpringBootTest
+@DataJpaTest // ✅ JPA 관련 Bean만 로드
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // ✅ 실제 DB 사용 (H2가 아니라면 필요)
 @Transactional
 class ExpBarRepositoryImplTest {
 
     @Autowired
     private ExpBarRepository expBarRepository;
+
+    @Autowired
+    private ExperienceRepository experienceRepository;
 
     @Autowired
     private EntityManager em;
@@ -34,12 +42,12 @@ class ExpBarRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        // ✅ User 객체 생성 (Builder 사용)
+        // ✅ User 객체 생성
         testUser = User.builder()
                 .employeeId("EMP0012") // 사번 추가
                 .name("홍길동")
-                .joinDate(java.time.LocalDate.of(2020, 5, 15))
-                .department(Department.음성1센터) // 소속 추가
+                .joinDate(LocalDate.of(2020, 5, 15))
+                .department(Department.EUMSEONG1) // 소속 추가
                 .part(1) // 직무 그룹
                 .level(3) // 레벨
                 .loginId("hong")
@@ -58,7 +66,6 @@ class ExpBarRepositoryImplTest {
         testExpBar.setDepartment(testUser.getDepartment()); // User의 department 사용
         testExpBar.setName(testUser.getName());
         testExpBar.setLevel("F1-Ⅰ");
-        testExpBar.setTotalExp(500);
 
         expBarRepository.save(testExpBar);
         em.flush();
@@ -71,8 +78,8 @@ class ExpBarRepositoryImplTest {
         User newUser = User.builder()
                 .employeeId("EMP0020")
                 .name("이몽룡")
-                .joinDate(java.time.LocalDate.of(2021, 7, 10))
-                .department(Department.사업기획팀)
+                .joinDate(LocalDate.of(2021, 7, 10))
+                .department(Department.BUSINESS)
                 .part(2)
                 .level(2)
                 .loginId("mongryong")
@@ -91,7 +98,6 @@ class ExpBarRepositoryImplTest {
         newExpBar.setDepartment(newUser.getDepartment());
         newExpBar.setName(newUser.getName());
         newExpBar.setLevel("F2-Ⅰ");
-        newExpBar.setTotalExp(1000);
 
         ExpBar savedExpBar = expBarRepository.save(newExpBar);
 
@@ -99,8 +105,7 @@ class ExpBarRepositoryImplTest {
         Optional<ExpBar> foundExpBar = expBarRepository.findById(savedExpBar.getId());
         assertThat(foundExpBar).isPresent();
         assertThat(foundExpBar.get().getUser().getId()).isEqualTo(newUser.getId());
-        assertThat(foundExpBar.get().getTotalExp()).isEqualTo(1000);
-        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.사업기획팀);
+        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.BUSINESS);
         assertThat(foundExpBar.get().getName()).isEqualTo("이몽룡");
         assertThat(foundExpBar.get().getLevel()).isEqualTo("F2-Ⅰ");
 
@@ -114,8 +119,7 @@ class ExpBarRepositoryImplTest {
 
         assertTrue(foundExpBar.isPresent());
         assertThat(foundExpBar.get().getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(foundExpBar.get().getTotalExp()).isEqualTo(500);
-        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.음성1센터);
+        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.EUMSEONG1);
         assertThat(foundExpBar.get().getName()).isEqualTo("홍길동");
         assertThat(foundExpBar.get().getLevel()).isEqualTo("F1-Ⅰ");
 
@@ -128,8 +132,7 @@ class ExpBarRepositoryImplTest {
         Optional<ExpBar> foundExpBar = expBarRepository.findByUserId(testUser.getId());
 
         assertTrue(foundExpBar.isPresent());
-        assertThat(foundExpBar.get().getTotalExp()).isEqualTo(500);
-        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.음성1센터);
+        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.EUMSEONG1);
         assertThat(foundExpBar.get().getName()).isEqualTo("홍길동");
         assertThat(foundExpBar.get().getLevel()).isEqualTo("F1-Ⅰ");
 
@@ -137,17 +140,18 @@ class ExpBarRepositoryImplTest {
     }
 
     @Test
-    void updateTotalExp_shouldIncreaseExp() {
-        // ✅ ExpBar 경험치 증가
-        int additionalExp = 200;
-        expBarRepository.updateTotalExp(testUser.getId(), additionalExp);
+    void experienceAddition_shouldUpdateExpBarTotalExp() {
+        // ✅ 경험치 추가
+        int expToAdd = 3000;
+        Experience experience = new Experience(testUser, ExpType.인사평가, expToAdd);
+        experienceRepository.save(experience);
+        em.flush();
 
-        // ✅ ExpBar 조회
+        // ✅ ExpBar 조회 및 검증
         Optional<ExpBar> updatedExpBar = expBarRepository.findByUserId(testUser.getId());
+        assertTrue(updatedExpBar.isPresent());
+        assertThat(updatedExpBar.get().getUser().getTotalExp()).isEqualTo(expToAdd);
 
-        assertThat(updatedExpBar).isPresent();
-        assertThat(updatedExpBar.get().getTotalExp()).isEqualTo(700); // 기존 500 + 200
-
-        log.info("✅ Updated ExpBar (TotalExp Increased): {}", updatedExpBar.get());
+        log.info("✅ ExpBar totalExp updated after Experience addition: {}", updatedExpBar.get().getUser().getTotalExp());
     }
 }

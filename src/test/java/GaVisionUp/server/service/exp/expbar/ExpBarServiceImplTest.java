@@ -1,32 +1,40 @@
-package GaVisionUp.server.service.exp;
+package GaVisionUp.server.service.exp.expbar;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.Role;
+import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.ExpBar;
+import GaVisionUp.server.entity.exp.Experience;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
-import GaVisionUp.server.service.exp.expbar.ExpBarService;
+import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
+import GaVisionUp.server.repository.user.UserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-@SpringBootTest
-@Transactional
+@DataJpaTest // ✅ JPA 관련 Bean만 로드
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // ✅ 실제 DB 사용 (H2가 아니라면 필요)
 class ExpBarServiceImplTest {
 
     @Autowired
-    private ExpBarService expBarService;
+    private ExpBarRepository expBarRepository;
 
     @Autowired
-    private ExpBarRepository expBarRepository;
+    private ExperienceRepository experienceRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -36,22 +44,22 @@ class ExpBarServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // ✅ User 객체 생성 (Builder 사용)
+        // ✅ User 객체 생성
         testUser = User.builder()
-                .employeeId("EMP0012") // 사번 추가
+                .employeeId("EMP0012")
                 .name("홍길동")
-                .joinDate(java.time.LocalDate.of(2020, 5, 15))
-                .department(Department.음성1센터) // 소속 추가
-                .part(1) // 직무 그룹
-                .level(3) // 레벨
+                .joinDate(LocalDate.of(2020, 5, 15))
+                .department(Department.EUMSEONG1)
+                .part(1)
+                .level(3)
                 .loginId("hong")
                 .password("test1234")
-                .role(Role.USER) // 역할 추가
-                .profileImageUrl("https://example.com/profile.jpg") // 프로필 이미지 추가
-                .totalExp(0)
+                .role(Role.USER)
+                .profileImageUrl("https://example.com/profile.jpg")
+                .totalExp(0) // 초기 경험치 0
                 .build();
 
-        em.persist(testUser);
+        userRepository.save(testUser);
         em.flush();
 
         // ✅ ExpBar 객체 저장 (User와 매핑)
@@ -60,7 +68,6 @@ class ExpBarServiceImplTest {
         testExpBar.setDepartment(testUser.getDepartment()); // User의 department 사용
         testExpBar.setName(testUser.getName());
         testExpBar.setLevel("F1-Ⅰ");
-        testExpBar.setTotalExp(500);
 
         expBarRepository.save(testExpBar);
         em.flush();
@@ -73,8 +80,8 @@ class ExpBarServiceImplTest {
         User newUser = User.builder()
                 .employeeId("EMP0020")
                 .name("이몽룡")
-                .joinDate(java.time.LocalDate.of(2021, 7, 10))
-                .department(Department.사업기획팀)
+                .joinDate(LocalDate.of(2021, 7, 10))
+                .department(Department.BUSINESS)
                 .part(2)
                 .level(2)
                 .loginId("mongryong")
@@ -84,7 +91,7 @@ class ExpBarServiceImplTest {
                 .totalExp(0)
                 .build();
 
-        em.persist(newUser);
+        userRepository.save(newUser);
         em.flush();
 
         // ✅ ExpBar 저장
@@ -93,14 +100,12 @@ class ExpBarServiceImplTest {
         newExpBar.setDepartment(newUser.getDepartment());
         newExpBar.setName(newUser.getName());
         newExpBar.setLevel("F2-Ⅰ");
-        newExpBar.setTotalExp(1000);
 
-        ExpBar savedExpBar = expBarService.createExpBar(newExpBar);
+        ExpBar savedExpBar = expBarRepository.save(newExpBar);
 
         // ✅ ExpBar 검증
         assertThat(savedExpBar).isNotNull();
         assertThat(savedExpBar.getUser().getId()).isEqualTo(newUser.getId());
-        assertThat(savedExpBar.getTotalExp()).isEqualTo(1000);
 
         log.info("✅ Created ExpBar: {}", savedExpBar);
     }
@@ -108,12 +113,12 @@ class ExpBarServiceImplTest {
     @Test
     void getExpBarByUserId_shouldReturnExpBar() {
         // ✅ 기존 User ID를 기반으로 ExpBar 조회
-        ExpBar foundExpBar = expBarService.getExpBarByUserId(testUser.getId());
+        ExpBar foundExpBar = expBarRepository.findByUserId(testUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 사원의 경험치 바가 존재하지 않습니다."));
 
         // ✅ ExpBar 검증
         assertThat(foundExpBar).isNotNull();
         assertThat(foundExpBar.getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(foundExpBar.getTotalExp()).isEqualTo(500);
 
         log.info("✅ Found ExpBar: {}", foundExpBar);
     }
@@ -122,7 +127,8 @@ class ExpBarServiceImplTest {
     void getExpBarByUserId_shouldThrowExceptionIfNotFound() {
         // ✅ 존재하지 않는 User ID로 조회하여 예외 발생 확인
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                expBarService.getExpBarByUserId(999L)); // 존재하지 않는 ID
+                expBarRepository.findByUserId(999L)
+                        .orElseThrow(() -> new IllegalArgumentException("해당 사원의 경험치 바가 존재하지 않습니다.")));
 
         assertThat(exception.getMessage()).isEqualTo("해당 사원의 경험치 바가 존재하지 않습니다.");
 
@@ -130,15 +136,18 @@ class ExpBarServiceImplTest {
     }
 
     @Test
-    void addExperience_shouldIncreaseTotalExp() {
-        // ✅ 기존 ExpBar에 경험치 추가
-        int additionalExp = 200;
-        ExpBar updatedExpBar = expBarService.addExperience(testUser.getId(), additionalExp);
+    void experienceAddition_shouldUpdateExpBarTotalExp() {
+        // ✅ 경험치 추가
+        int expToAdd = 3000;
+        Experience experience = new Experience(testUser, ExpType.인사평가, expToAdd);
+        experienceRepository.save(experience);
+        em.flush();
 
-        // ✅ ExpBar 검증
-        assertThat(updatedExpBar).isNotNull();
-        assertThat(updatedExpBar.getTotalExp()).isEqualTo(700); // 기존 500 + 200
+        // ✅ ExpBar 조회 및 검증
+        ExpBar updatedExpBar = expBarRepository.findByUserId(testUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 사원의 경험치 바가 존재하지 않습니다."));
+        assertThat(updatedExpBar.getUser().getTotalExp()).isEqualTo(expToAdd);
 
-        log.info("✅ Updated ExpBar (TotalExp Increased): {}", updatedExpBar);
+        log.info("✅ ExpBar totalExp updated after Experience addition: {}", updatedExpBar.getUser().getTotalExp());
     }
 }

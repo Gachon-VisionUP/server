@@ -61,4 +61,9 @@ public class User {
         this.changedPW = changedPW;
         this.profileImageUrl = profileImageUrl;
     }
+
+    // ✅ 경험치 추가 메서드
+    public void addExperience(int exp) {
+        this.totalExp += exp;
+    }
 }

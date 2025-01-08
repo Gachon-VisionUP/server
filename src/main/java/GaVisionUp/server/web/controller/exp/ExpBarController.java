@@ -25,11 +25,4 @@ public class ExpBarController {
         ExpBar expBar = expBarService.getExpBarByUserId(userId);
         return ResponseEntity.ok(new ExpBarResponse(expBar));  // ✅ DTO 변환
     }
-
-    // 경험치 추가
-    @PostMapping("/{userId}/add-exp")
-    public ResponseEntity<ExpBarResponse> addExperience(@PathVariable Long userId, @RequestParam int exp) {
-        ExpBar updatedExpBar = expBarService.addExperience(userId, exp);
-        return ResponseEntity.ok(new ExpBarResponse(updatedExpBar));  // ✅ DTO 변환
-    }
 }
