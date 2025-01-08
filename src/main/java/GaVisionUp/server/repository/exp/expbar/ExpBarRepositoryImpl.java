@@ -4,6 +4,7 @@ import GaVisionUp.server.entity.exp.ExpBar;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import static GaVisionUp.server.entity.exp.QExpBar.expBar;
 
 @Repository
+@Transactional
 public class ExpBarRepositoryImpl implements ExpBarRepository {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;

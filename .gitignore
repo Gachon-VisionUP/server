@@ -42,3 +42,4 @@ src/main/resources/application.yml
 
 src/test/resources/application.properties
 src/test/resources/schema.sql
+/src/main/resources/application.properties

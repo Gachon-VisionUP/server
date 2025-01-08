@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ExpBarServiceImpl implements ExpBarService {
     private final ExpBarRepository expBarRepository;
 
