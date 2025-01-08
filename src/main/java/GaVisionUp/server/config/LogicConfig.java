@@ -1,12 +1,15 @@
 package GaVisionUp.server.config;
 
-import GaVisionUp.server.repository.exp.ExpBarMemoryRepository;
-import GaVisionUp.server.repository.exp.ExpBarRepository;
-import GaVisionUp.server.repository.exp.ExpBarRepositoryImpl;
-import GaVisionUp.server.service.exp.ExpBarService;
-import GaVisionUp.server.service.exp.ExpBarServiceImpl;
+import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
+import GaVisionUp.server.repository.exp.expbar.ExpBarRepositoryImpl;
+import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
+import GaVisionUp.server.repository.exp.experience.ExperienceRepositoryImpl;
+import GaVisionUp.server.repository.user.UserRepository;
+import GaVisionUp.server.service.exp.expbar.ExpBarService;
+import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import GaVisionUp.server.service.exp.experience.ExperienceService;
+import GaVisionUp.server.service.exp.experience.ExperienceServiceImpl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,23 +19,27 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class LogicConfig {
     private final EntityManager em;
+    private final UserRepository userRepository;
 
-    // 실제 사용할 리포지토리
+    // 경험치 바
     @Bean
     public ExpBarRepository expBarRepository() {
         return new ExpBarRepositoryImpl(em);
     }
-
-    /**
-     *     인 메모리 테스트용 리포지토리
-    //@Bean
-    public ExpBarRepository expBarRepository() {
-        return new ExpBarMemoryRepository();
+    @Bean
+    public ExpBarService expBarService(UserRepository userRepository) {
+        return new ExpBarServiceImpl(expBarRepository(), userRepository);
     }
-     */
+
+
+    // 경험치 목록
+    @Bean
+    public ExperienceRepository experienceRepository() {
+        return new ExperienceRepositoryImpl(em);
+    }
 
     @Bean
-    public ExpBarService expBarService() {
-        return new ExpBarServiceImpl(expBarRepository());
+    public ExperienceService experienceService() {
+        return new ExperienceServiceImpl(experienceRepository(), userRepository);
     }
 }

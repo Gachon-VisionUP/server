@@ -1,0 +1,14 @@
+package GaVisionUp.server.service.exp.experience;
+
+import GaVisionUp.server.entity.User;
+import GaVisionUp.server.entity.enums.ExpType;
+import GaVisionUp.server.entity.exp.Experience;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ExperienceService {
+    Experience addExperience(Long userId, ExpType expType, int exp);
+    Optional<Experience> getExperienceById(Long id);
+    List<Experience> getExperiencesByUserId(Long userId);
+}
