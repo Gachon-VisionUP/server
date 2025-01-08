@@ -1,7 +1,9 @@
 package GaVisionUp.server.entity.exp;
 
 import GaVisionUp.server.entity.User;
+import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.ExpType;
+import GaVisionUp.server.entity.enums.Role;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -12,15 +14,28 @@ public class PersonalExpTest {
 
     @Test
     void createPersonalExpTest() {
-        // Given: 가상의 Users 및 ExpBar 객체 생성
-        User user = new User();
-        user.setId(1001L);
-        user.setName("홍길동");
+        // Given: User 객체 생성
+        User user = User.builder()
+                .id(1001L)
+                .employeeId("EMP0012") // 사번 추가
+                .name("홍길동")
+                .joinDate(LocalDate.of(2020, 5, 15))
+                .department(Department.음성1센터) // 소속 추가
+                .part(1) // 직무 그룹
+                .level(3) // 레벨
+                .loginId("hong123")
+                .password("password")
+                .role(Role.USER) // 역할 추가
+                .profileImageUrl("https://example.com/profile.jpg") // 프로필 이미지 추가
+                .totalExp(0)
+                .build();
 
+        // Given: ExpBar 객체 생성
         ExpBar expBar = new ExpBar();
         expBar.setId(1L);
         expBar.setUser(user);
-        expBar.setName("홍길동");
+        expBar.setDepartment(user.getDepartment()); // User의 department 사용
+        expBar.setName(user.getName());
         expBar.setLevel("F1-Ⅰ");
         expBar.setTotalExp(500);
 
@@ -35,6 +50,6 @@ public class PersonalExpTest {
         assertEquals(expBar, personalExp.getExpBar());
 
         // 객체 정보 출력
-        System.out.println(personalExp.getClass());
+        System.out.println(personalExp);
     }
 }

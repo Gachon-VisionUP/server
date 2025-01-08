@@ -2,6 +2,7 @@ package GaVisionUp.server.service.exp;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
+import GaVisionUp.server.entity.enums.Role;
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
@@ -35,38 +36,65 @@ class ExpBarServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // ✅ 기존 User ID를 고정하여 생성
-        testUser = new User();
-        testUser.setName("홍길동");
-        testUser.setLoginId("hong");
-        testUser.setPassword("test1234");
-        testUser.setTotalExp(0);
+        // ✅ User 객체 생성 (Builder 사용)
+        testUser = User.builder()
+                .employeeId("EMP0012") // 사번 추가
+                .name("홍길동")
+                .joinDate(java.time.LocalDate.of(2020, 5, 15))
+                .department(Department.음성1센터) // 소속 추가
+                .part(1) // 직무 그룹
+                .level(3) // 레벨
+                .loginId("hong")
+                .password("test1234")
+                .role(Role.USER) // 역할 추가
+                .profileImageUrl("https://example.com/profile.jpg") // 프로필 이미지 추가
+                .totalExp(0)
+                .build();
 
-        em.persist(testUser);  // User 저장
-        em.flush();  // ★ DB 반영
+        em.persist(testUser);
+        em.flush();
 
-        // ✅ ExpBar 데이터 생성 및 저장
-        testExpBar = new ExpBar(testUser, Department.음성1센터, "홍길동", "F1-Ⅰ", 500);
+        // ✅ ExpBar 객체 저장 (User와 매핑)
+        testExpBar = new ExpBar();
+        testExpBar.setUser(testUser);
+        testExpBar.setDepartment(testUser.getDepartment()); // User의 department 사용
+        testExpBar.setName(testUser.getName());
+        testExpBar.setLevel("F1-Ⅰ");
+        testExpBar.setTotalExp(500);
+
         expBarRepository.save(testExpBar);
-
-        em.flush();  // ★ DB 반영
-        em.clear();  // ★ 영속성 컨텍스트 초기화
+        em.flush();
+        em.clear();
     }
 
     @Test
     void createExpBar_shouldSaveExpBar() {
-        // ✅ 새로운 User 생성
-        User newUser = new User();
-        newUser.setName("이몽룡");
-        newUser.setLoginId("mongryong");
-        newUser.setPassword("test1234");
-        newUser.setTotalExp(0);
+        // ✅ 새로운 User 객체 생성
+        User newUser = User.builder()
+                .employeeId("EMP0020")
+                .name("이몽룡")
+                .joinDate(java.time.LocalDate.of(2021, 7, 10))
+                .department(Department.사업기획팀)
+                .part(2)
+                .level(2)
+                .loginId("mongryong")
+                .password("test1234")
+                .role(Role.USER)
+                .profileImageUrl("https://example.com/profile2.jpg")
+                .totalExp(0)
+                .build();
 
         em.persist(newUser);
         em.flush();
 
         // ✅ ExpBar 저장
-        ExpBar newExpBar = new ExpBar(newUser, Department.사업기획팀, "이몽룡", "F2-Ⅰ", 1000);
+        ExpBar newExpBar = new ExpBar();
+        newExpBar.setUser(newUser);
+        newExpBar.setDepartment(newUser.getDepartment());
+        newExpBar.setName(newUser.getName());
+        newExpBar.setLevel("F2-Ⅰ");
+        newExpBar.setTotalExp(1000);
+
         ExpBar savedExpBar = expBarService.createExpBar(newExpBar);
 
         // ✅ ExpBar 검증

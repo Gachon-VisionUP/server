@@ -3,11 +3,11 @@ package GaVisionUp.server.service.exp.personalexp;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.ExpType;
+import GaVisionUp.server.entity.enums.Role;
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.PersonalExp;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.exp.personalexp.PersonalExpRepository;
-import GaVisionUp.server.service.exp.personalexp.PersonalExpService;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,26 +42,30 @@ class PersonalExpServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // Users 생성 및 저장
-        testUser = new User();
-        testUser.setName("홍길동");
-        testUser.setJoinDate(LocalDate.of(2020, 5, 15));
-        testUser.setJoinNumber(12);
-        testUser.setJobGroup(1);
-        testUser.setLevel(3);
-        testUser.setLoginId("hong123");
-        testUser.setPassword("password");
-        testUser.setTotalExp(0);
+        // ✅ User 객체 생성 (Builder 사용)
+        testUser = User.builder()
+                .employeeId("EMP0012") // 사번 추가
+                .name("홍길동")
+                .joinDate(LocalDate.of(2020, 5, 15))
+                .department(Department.음성1센터) // 소속 추가
+                .part(1) // 직무 그룹
+                .level(3) // 레벨
+                .loginId("hong123")
+                .password("password")
+                .role(Role.USER) // 역할 추가
+                .profileImageUrl("https://example.com/profile.jpg") // 프로필 이미지 추가
+                .totalExp(0)
+                .build();
 
         em.persist(testUser);
         em.flush();
         em.clear();
 
-        // ExpBar 생성 및 저장
+        // ✅ ExpBar 객체 저장 (User와 매핑)
         testExpBar = new ExpBar();
         testExpBar.setUser(testUser);
-        testExpBar.setDepartment(Department.음성1센터);
-        testExpBar.setName("홍길동");
+        testExpBar.setDepartment(testUser.getDepartment()); // User의 department 사용
+        testExpBar.setName(testUser.getName());
         testExpBar.setLevel("F1-Ⅰ");
         testExpBar.setTotalExp(0);
 
