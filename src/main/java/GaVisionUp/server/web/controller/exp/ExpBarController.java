@@ -2,6 +2,7 @@ package GaVisionUp.server.web.controller.exp;
 
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
+import GaVisionUp.server.web.dto.ExpBarResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +21,15 @@ public class ExpBarController {
 
     // 특정 사원의 경험치 바 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<ExpBar> getExpBar(@PathVariable Long userId) {
-        return ResponseEntity.ok(expBarService.getExpBarByUserId(userId));
+    public ResponseEntity<ExpBarResponse> getExpBar(@PathVariable Long userId) {
+        ExpBar expBar = expBarService.getExpBarByUserId(userId);
+        return ResponseEntity.ok(new ExpBarResponse(expBar));  // ✅ DTO 변환
     }
 
-    // 총 경험치에 새로 경험치 추가
+    // 경험치 추가
     @PostMapping("/{userId}/add-exp")
-    public ResponseEntity<ExpBar> addExperience(@PathVariable Long userId, @RequestParam int exp) {
-        return ResponseEntity.ok(expBarService.addExperience(userId, exp));
+    public ResponseEntity<ExpBarResponse> addExperience(@PathVariable Long userId, @RequestParam int exp) {
+        ExpBar updatedExpBar = expBarService.addExperience(userId, exp);
+        return ResponseEntity.ok(new ExpBarResponse(updatedExpBar));  // ✅ DTO 변환
     }
 }

@@ -4,6 +4,7 @@ import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepositoryImpl;
 import GaVisionUp.server.repository.exp.personalexp.PersonalExpRepository;
 import GaVisionUp.server.repository.exp.personalexp.PersonalExpRepositoryImpl;
+import GaVisionUp.server.repository.user.UserRepository;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
 
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class LogicConfig {
     private final EntityManager em;
+    private final UserRepository userRepository;
 
     /**
      *     경험치 바
@@ -28,8 +30,8 @@ public class LogicConfig {
         return new ExpBarRepositoryImpl(em);
     }
     @Bean
-    public ExpBarService expBarService() {
-        return new ExpBarServiceImpl(expBarRepository());
+    public ExpBarService expBarService(UserRepository userRepository) {
+        return new ExpBarServiceImpl(expBarRepository(), userRepository);
     }
     /*
     public ExpBarRepository expBarRepository() {
