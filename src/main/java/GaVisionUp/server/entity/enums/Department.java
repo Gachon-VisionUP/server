@@ -28,11 +28,12 @@ public enum Department {
     @JsonCreator // Json -> Object, 역직렬화 수행하는 메서드
     public static Department from(String param) {
         for (Department department : Department.values()) {
-            if (department.getValue().equals(param)) {
+            if (department.getValue().equals(param) || department.name().equals(param)) { // ✅ Enum name 비교 추가
                 return department;
             }
         }
         log.error("department.from() exception occur param: {}", param);
         throw new RestApiException(GlobalErrorStatus._INVALID_DEPARTMENT);
     }
+
 }
