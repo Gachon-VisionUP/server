@@ -1,6 +1,6 @@
 package GaVisionUp.server.service.exp.personalexp;
 
-import GaVisionUp.server.entity.Users;
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.PersonalExp;
@@ -24,13 +24,13 @@ public class PersonalExpServiceImpl implements PersonalExpService {
      * ExpBar의 totalExp도 업데이트
      */
     @Transactional
-    public PersonalExp savePersonalExp(Users users, ExpType expType, int exp) {
+    public PersonalExp savePersonalExp(User user, ExpType expType, int exp) {
         // ExpBar 조회
-        ExpBar expBar = expBarRepository.findByUserId(users.getId())
+        ExpBar expBar = expBarRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 ExpBar가 존재하지 않습니다."));
 
         // PersonalExp 생성
-        PersonalExp personalExp = new PersonalExp(users, expType, exp, expBar);
+        PersonalExp personalExp = new PersonalExp(user, expType, exp, expBar);
 
         // ExpBar의 totalExp 업데이트
         expBar.setTotalExp(expBar.getTotalExp() + exp);

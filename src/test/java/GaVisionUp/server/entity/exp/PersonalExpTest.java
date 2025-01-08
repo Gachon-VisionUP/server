@@ -1,6 +1,6 @@
 package GaVisionUp.server.entity.exp;
 
-import GaVisionUp.server.entity.Users;
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
 import org.junit.jupiter.api.Test;
 
@@ -13,13 +13,13 @@ public class PersonalExpTest {
     @Test
     void createPersonalExpTest() {
         // Given: 가상의 Users 및 ExpBar 객체 생성
-        Users user = new Users();
+        User user = new User();
         user.setId(1001L);
         user.setName("홍길동");
 
         ExpBar expBar = new ExpBar();
         expBar.setId(1L);
-        expBar.setUserId(1001L);
+        expBar.setUser(user);
         expBar.setName("홍길동");
         expBar.setLevel("F1-Ⅰ");
         expBar.setTotalExp(500);
@@ -28,7 +28,7 @@ public class PersonalExpTest {
         PersonalExp personalExp = new PersonalExp(user, ExpType.인사평가, 4500, expBar);
 
         // When & Then: 값 검증
-        assertEquals(user, personalExp.getUsers());
+        assertEquals(user, personalExp.getUser());
         assertEquals(ExpType.인사평가, personalExp.getExpType());
         assertEquals(4500, personalExp.getExp());
         assertEquals(LocalDate.now(), personalExp.getObtainedDate());

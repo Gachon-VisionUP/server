@@ -48,7 +48,7 @@ public class PersonalExpRepositoryImpl implements PersonalExpRepository {
     public List<PersonalExp> findByUserId(Long userId) {
         return queryFactory
                 .selectFrom(qPersonalExp)
-                .where(qPersonalExp.users.id.eq(userId))
+                .where(qPersonalExp.user.id.eq(userId))
                 .fetch();
     }
 }

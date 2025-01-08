@@ -1,9 +1,6 @@
 package GaVisionUp.server.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import javax.management.relation.Role;
@@ -11,10 +8,11 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-public class Users {
+@Table(name = "users")
+public class User {
     @Id
-    @GeneratedValue
-    private Long id; // 사번
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private LocalDate joinDate; // 입사일 (YYYY-MM-DD 형식)
     private int joinNumber; // 입사번호 (2자리 숫자)

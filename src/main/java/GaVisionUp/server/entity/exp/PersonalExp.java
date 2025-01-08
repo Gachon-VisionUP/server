@@ -1,6 +1,6 @@
 package GaVisionUp.server.entity.exp;
 
-import GaVisionUp.server.entity.Users;
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,10 +9,10 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+
 @Data
 @Entity
+@Table(name = "personal_exp")
 public class PersonalExp {
 
     @Id
@@ -21,7 +21,7 @@ public class PersonalExp {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private Users users;
+    private User user;
 
 
     @Enumerated(EnumType.STRING)
@@ -38,8 +38,8 @@ public class PersonalExp {
     @JoinColumn(name = "exp_bar_id", nullable = false)
     private ExpBar expBar;  // ExpBar에 총 경험치 축적
 
-    public PersonalExp(Users users, ExpType expType, int exp, ExpBar expBar) {
-        this.users = users;
+    public PersonalExp(User user, ExpType expType, int exp, ExpBar expBar) {
+        this.user = user;
         this.expType = expType;
         this.exp = exp;
         this.obtainedDate = LocalDate.now();

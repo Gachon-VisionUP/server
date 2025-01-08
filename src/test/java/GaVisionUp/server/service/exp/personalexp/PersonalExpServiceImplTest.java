@@ -1,6 +1,6 @@
-package GaVisionUp.server.service;
+package GaVisionUp.server.service.exp.personalexp;
 
-import GaVisionUp.server.entity.Users;
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.ExpBar;
@@ -37,13 +37,13 @@ class PersonalExpServiceImplTest {
     @Autowired
     private EntityManager em;
 
-    private Users testUser;
+    private User testUser;
     private ExpBar testExpBar;
 
     @BeforeEach
     void setUp() {
         // Users 생성 및 저장
-        testUser = new Users();
+        testUser = new User();
         testUser.setName("홍길동");
         testUser.setJoinDate(LocalDate.of(2020, 5, 15));
         testUser.setJoinNumber(12);
@@ -59,7 +59,7 @@ class PersonalExpServiceImplTest {
 
         // ExpBar 생성 및 저장
         testExpBar = new ExpBar();
-        testExpBar.setUserId(testUser.getId());
+        testExpBar.setUser(testUser);
         testExpBar.setDepartment(Department.음성1센터);
         testExpBar.setName("홍길동");
         testExpBar.setLevel("F1-Ⅰ");
@@ -81,7 +81,7 @@ class PersonalExpServiceImplTest {
 
         // Then
         assertThat(savedExp).isNotNull();
-        assertThat(savedExp.getUsers().getId()).isEqualTo(testUser.getId());
+        assertThat(savedExp.getUser().getId()).isEqualTo(testUser.getId());
         assertThat(savedExp.getExpType()).isEqualTo(ExpType.인사평가);
         assertThat(savedExp.getExp()).isEqualTo(expToAdd);
         assertThat(updatedExpBar.getTotalExp()).isEqualTo(expToAdd);
@@ -98,8 +98,8 @@ class PersonalExpServiceImplTest {
 
         // Then
         assertThat(expList).hasSize(2);
-        assertThat(expList.get(0).getUsers().getId()).isEqualTo(testUser.getId());
-        assertThat(expList.get(1).getUsers().getId()).isEqualTo(testUser.getId());
+        assertThat(expList.get(0).getUser().getId()).isEqualTo(testUser.getId());
+        assertThat(expList.get(1).getUser().getId()).isEqualTo(testUser.getId());
     }
 
     @Test
@@ -112,7 +112,7 @@ class PersonalExpServiceImplTest {
 
         // Then
         assertThat(foundExp).isNotNull();
-        assertThat(foundExp.getUsers().getId()).isEqualTo(testUser.getId());
+        assertThat(foundExp.getUser().getId()).isEqualTo(testUser.getId());
         assertThat(foundExp.getExpType()).isEqualTo(ExpType.인사평가);
         assertThat(foundExp.getExp()).isEqualTo(4500);
     }

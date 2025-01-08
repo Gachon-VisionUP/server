@@ -43,7 +43,7 @@ public class ExpBarRepositoryImpl implements ExpBarRepository {
         return Optional.ofNullable(
                 queryFactory
                         .selectFrom(expBar)
-                        .where(expBar.userId.eq(userId))
+                        .where(expBar.user.id.eq(userId))
                         .fetchOne()
         );
     }
@@ -52,7 +52,7 @@ public class ExpBarRepositoryImpl implements ExpBarRepository {
     public void updateTotalExp(Long userId, int exp) {
         ExpBar foundExpBar = queryFactory
                 .selectFrom(expBar)
-                .where(expBar.userId.eq(userId))
+                .where(expBar.user.id.eq(userId))
                 .fetchOne();
 
         if (foundExpBar != null) {

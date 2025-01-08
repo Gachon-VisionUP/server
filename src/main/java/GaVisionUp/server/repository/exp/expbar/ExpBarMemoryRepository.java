@@ -32,7 +32,7 @@ public class ExpBarMemoryRepository implements ExpBarRepository {
     @Override
     public Optional<ExpBar> findByUserId(Long userId) {
         return store.values().stream()
-                .filter(expBar -> expBar.getUserId() == userId)
+                .filter(expBar -> expBar.getUser().getId() == userId)
                 .findFirst();
     }
 
