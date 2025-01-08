@@ -24,8 +24,14 @@ public enum GlobalErrorStatus implements ApiErrorCodeInterface {
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "예외처리 테스트입니다."),
 
     // User Error Status
-    _INVALID_DEPARTMENT(HttpStatus.BAD_REQUEST, "USER4001", "잘못된 소속입니다."),
-    _INVALID_ROLE(HttpStatus.BAD_REQUEST, "USER4002", "잘못된 권한입니다.")
+    _USER_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 사원입니다."),
+    _INVALID_USER(HttpStatus.BAD_REQUEST, "USER4002", "일치하지 않는 유저입니다."),
+    _INVALID_DEPARTMENT(HttpStatus.BAD_REQUEST, "USER4003", "잘못된 소속입니다."),
+    _INVALID_ROLE(HttpStatus.BAD_REQUEST, "USER4004", "잘못된 권한입니다."),
+    _ID_WRONG(HttpStatus.BAD_REQUEST, "USER4005", "잘못된 아이디입니다."),
+    _PW_WRONG(HttpStatus.BAD_REQUEST, "USER4006", "비밀번호가 틀렸습니다."),
+    _NOT_LOGIN(HttpStatus.UNAUTHORIZED, "USER4007", "로그인 되지 않은 사용자입니다."),
+    _NOT_FOUND_INFORMATION(HttpStatus.NOT_FOUND, "USER4008", "사용자 정보를 찾을 수 없습니다.")
     ;
 
     private final HttpStatus httpStatus;

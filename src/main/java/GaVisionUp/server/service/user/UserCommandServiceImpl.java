@@ -1,6 +1,8 @@
 package GaVisionUp.server.service.user;
 
 import GaVisionUp.server.entity.User;
+import GaVisionUp.server.global.exception.RestApiException;
+import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.repository.user.UserRepository;
 import GaVisionUp.server.web.dto.UserRequest;
 import GaVisionUp.server.web.dto.UserResponse;
@@ -21,7 +23,7 @@ public class UserCommandServiceImpl implements UserCommandService{
     @Override
     public UserResponse.UpdateInformation updateInformation(Long userId, UserRequest.Update request) {
         User user = userRepository.findById(userId).
-                orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사원입니다."));
+                orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
 
         String changedImageUrl = user.getProfileImageUrl();
 

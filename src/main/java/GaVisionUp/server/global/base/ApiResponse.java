@@ -1,5 +1,6 @@
 package GaVisionUp.server.global.base;
 
+import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.global.exception.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -28,5 +29,9 @@ public class ApiResponse<T> {
     // 실패한 경우 응답 생성
     public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
         return new ApiResponse<>(false, code, message, data);
+    }
+
+    public static <T> ApiResponse<T> onFailure(GlobalErrorStatus errorStatus, T data) {
+        return new ApiResponse<>(false, errorStatus.getCode(), errorStatus.getMessage(), data);
     }
 }
