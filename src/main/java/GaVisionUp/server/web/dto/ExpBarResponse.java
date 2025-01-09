@@ -1,6 +1,5 @@
 package GaVisionUp.server.web.dto;
 
-import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.exp.ExpBar;
 import lombok.Getter;
 
@@ -8,17 +7,19 @@ import lombok.Getter;
 public class ExpBarResponse {
     private final Long id;
     private final Long userId;
-    private final Department department;
     private final String name;
     private final String level;
     private final int totalExp;
+    private final int currentTotalExp;
+    private final int previousTotalExp;
 
     public ExpBarResponse(ExpBar expBar) {
         this.id = expBar.getId();
-        this.userId = expBar.getUser().getId();  // ✅ 프록시 방지 (User 직접 조회)
-        this.department = expBar.getUser().getDepartment();  // ✅ Enum을 문자열로 변환
+        this.userId = expBar.getUser().getId();
         this.name = expBar.getUser().getName();
         this.level = expBar.getUser().getLevel();
         this.totalExp = expBar.getUser().getTotalExp();
+        this.currentTotalExp = expBar.getCurrentTotalExp();  // ✅ 현재 연도 총 경험치
+        this.previousTotalExp = expBar.getPreviousTotalExp();  // ✅ 이전 연도 총 경험치
     }
 }

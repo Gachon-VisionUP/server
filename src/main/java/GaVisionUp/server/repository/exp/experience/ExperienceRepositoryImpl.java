@@ -1,6 +1,7 @@
 package GaVisionUp.server.repository.exp.experience;
 
 import GaVisionUp.server.entity.User;
+import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.Experience;
 import GaVisionUp.server.entity.exp.QExperience;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -8,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,5 +62,44 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
                 .selectFrom(qExperience)
                 .where(qExperience.user.id.eq(userId))
                 .fetch();
+    }
+
+    // ✅ 올해(Current Year) 경험치 조회 및 총 경험치 반영
+    @Override
+    public List<Experience> findByUserIdAndCurrentYear(Long userId, int currentYear, ExpBar expBar) {
+        List<Experience> experiences = queryFactory
+                .selectFrom(qExperience)
+                .where(
+                        qExperience.user.id.eq(userId)
+                                .and(qExperience.obtainedDate.year().eq(currentYear)) // ✅ 현재 연도 필터링
+                )
+                .fetch();
+
+        // ✅ currentTotalExp 업데이트
+        int currentTotalExp = experiences.stream().mapToInt(Experience::getExp).sum();
+        expBar.setCurrentTotalExp(currentTotalExp);
+        em.merge(expBar); // 업데이트 적용
+
+        return experiences;
+    }
+
+    // ✅ 작년(Previous Years)까지 경험치 조회 및 총 경험치 반영
+    @Override
+    public List<Experience> findByUserIdAndPreviousYears(Long userId, int previousYear, LocalDate joinDate, ExpBar expBar) {
+        List<Experience> experiences = queryFactory
+                .selectFrom(qExperience)
+                .where(
+                        qExperience.user.id.eq(userId)
+                                .and(qExperience.obtainedDate.year().loe(previousYear)) // ✅ 작년까지 필터링
+                                .and(qExperience.obtainedDate.goe(joinDate)) // ✅ 유저 입사일부터 필터링
+                )
+                .fetch();
+
+        // ✅ previousTotalExp 업데이트
+        int previousTotalExp = experiences.stream().mapToInt(Experience::getExp).sum();
+        expBar.setPreviousTotalExp(previousTotalExp);
+        em.merge(expBar); // 업데이트 적용
+
+        return experiences;
     }
 }

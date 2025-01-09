@@ -1,6 +1,7 @@
 package GaVisionUp.server.web.dto;
 
 import GaVisionUp.server.entity.enums.ExpType;
+import GaVisionUp.server.entity.exp.Experience;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -13,11 +14,11 @@ public class ExperienceResponse {
     private final int exp;
     private final LocalDate obtainedDate;
 
-    public ExperienceResponse(Long id, Long userId, ExpType expType, int exp, LocalDate obtainedDate) {
-        this.id = id;
-        this.userId = userId;
-        this.expType = expType;
-        this.exp = exp;
-        this.obtainedDate = obtainedDate;
+    public ExperienceResponse(Experience experience) {
+        this.id = experience.getId();
+        this.userId = experience.getUser().getId();  // ✅ Lazy-Loaded Proxy 방지
+        this.expType = experience.getExpType();
+        this.exp = experience.getExp();
+        this.obtainedDate = experience.getObtainedDate();
     }
 }

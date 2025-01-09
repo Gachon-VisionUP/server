@@ -40,6 +40,6 @@ public class LogicConfig {
 
     @Bean
     public ExperienceService experienceService() {
-        return new ExperienceServiceImpl(experienceRepository(), userRepository);
+        return new ExperienceServiceImpl(experienceRepository(), userRepository, expBarRepository());
     }
 }

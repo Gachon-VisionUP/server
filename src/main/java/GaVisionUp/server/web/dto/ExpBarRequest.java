@@ -5,13 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class ExpBarRequest {
-    private Long userId;
-    private Department department;  // ✅ Enum 대신 String으로 받음
-    private String name;
-    private String level;
-
+    private Long userId;  // ✅ User ID만 필요함
 }

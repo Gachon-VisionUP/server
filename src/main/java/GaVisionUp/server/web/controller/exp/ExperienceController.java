@@ -1,13 +1,15 @@
 package GaVisionUp.server.web.controller.exp;
 
-import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.Experience;
+import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import GaVisionUp.server.web.dto.ExperienceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,13 +27,7 @@ public class ExperienceController {
             @RequestParam ExpType expType,
             @RequestParam int exp) {
         Experience experience = experienceService.addExperience(userId, expType, exp);
-        return ResponseEntity.ok(new ExperienceResponse(
-                experience.getId(),
-                experience.getUser().getId(),
-                experience.getExpType(),
-                experience.getExp(),
-                experience.getObtainedDate()
-        ));
+        return ResponseEntity.ok(new ExperienceResponse(experience));
     }
 
     // ✅ 특정 경험치 조회
@@ -39,13 +35,7 @@ public class ExperienceController {
     public ResponseEntity<ExperienceResponse> getExperienceById(@PathVariable Long id) {
         Experience experience = experienceService.getExperienceById(id)
                 .orElseThrow(() -> new IllegalArgumentException("경험치 기록을 찾을 수 없습니다."));
-        return ResponseEntity.ok(new ExperienceResponse(
-                experience.getId(),
-                experience.getUser().getId(),
-                experience.getExpType(),
-                experience.getExp(),
-                experience.getObtainedDate()
-        ));
+        return ResponseEntity.ok(new ExperienceResponse(experience));
     }
 
     // ✅ 특정 유저의 모든 경험치 조회
@@ -53,13 +43,29 @@ public class ExperienceController {
     public ResponseEntity<List<ExperienceResponse>> getExperiencesByUserId(@PathVariable Long userId) {
         List<Experience> experiences = experienceService.getExperiencesByUserId(userId);
         List<ExperienceResponse> response = experiences.stream()
-                .map(exp -> new ExperienceResponse(
-                        exp.getId(),
-                        exp.getUser().getId(),
-                        exp.getExpType(),
-                        exp.getExp(),
-                        exp.getObtainedDate()
-                ))
+                .map(ExperienceResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    // ✅ 올해(2024년) 경험치 조회
+    @GetMapping("/user/{userId}/current")
+    public ResponseEntity<List<ExperienceResponse>> getExperiencesByCurrentYear(@PathVariable Long userId) {
+        int currentYear = Year.now().getValue();
+        List<Experience> experiences = experienceService.getExperiencesByCurrentYear(userId, currentYear);
+        List<ExperienceResponse> response = experiences.stream()
+                .map(ExperienceResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    // ✅ 작년까지(입사일부터 2023년까지) 경험치 조회
+    @GetMapping("/user/{userId}/previous")
+    public ResponseEntity<List<ExperienceResponse>> getExperiencesByPreviousYears(@PathVariable Long userId) {
+        int previousYear = Year.now().getValue() - 1; // 작년 (ex: 2023)
+        List<Experience> experiences = experienceService.getExperiencesByPreviousYears(userId, previousYear);
+        List<ExperienceResponse> response = experiences.stream()
+                .map(ExperienceResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }

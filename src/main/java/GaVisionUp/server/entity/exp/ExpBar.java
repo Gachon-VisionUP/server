@@ -18,6 +18,11 @@ public class ExpBar {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user; // 사번 User에서 받아옴
 
+    @Column(nullable = false)
+    private int currentTotalExp = 0;
+
+    @Column(nullable = false)
+    private int previousTotalExp = 0;
     // 기본 생성자
     public ExpBar() {}
 
