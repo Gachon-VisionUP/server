@@ -36,7 +36,7 @@ public class User {
     private int part; // 직무 그룹
 
     @Column(nullable = false)
-    private String level; // 레벨
+    private String level; // 레벨 타입 변환 완 -> Level 클래스를 받아오도록 처리 필요
 
     @Column(unique = true, nullable = false)
     private String loginId; // 아이디
