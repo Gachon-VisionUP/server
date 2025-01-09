@@ -1,4 +1,4 @@
-package GaVisionUp.server.web.controller;
+package GaVisionUp.server.web.controller.level;
 
 import GaVisionUp.server.entity.Level;
 import GaVisionUp.server.entity.enums.JobGroup;

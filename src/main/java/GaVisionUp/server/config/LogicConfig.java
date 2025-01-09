@@ -6,6 +6,8 @@ import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepositoryImpl;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.level.LevelRepositoryImpl;
+import GaVisionUp.server.repository.performance.PerformanceReviewRepository;
+import GaVisionUp.server.repository.performance.PerformanceReviewRepositoryImpl;
 import GaVisionUp.server.repository.user.UserRepository;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
@@ -13,6 +15,8 @@ import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import GaVisionUp.server.service.exp.experience.ExperienceServiceImpl;
 import GaVisionUp.server.service.level.LevelServiceImpl;
+import GaVisionUp.server.service.performance.PerformanceReviewService;
+import GaVisionUp.server.service.performance.PerformanceReviewServiceImpl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -54,5 +58,16 @@ public class LogicConfig {
     @Bean
     public LevelServiceImpl levelService(){
         return new LevelServiceImpl(levelRepository());
+    }
+
+    // 인사평가 빈 등록
+    @Bean
+    public PerformanceReviewRepository performanceReviewRepository(){
+        return new PerformanceReviewRepositoryImpl(em);
+    }
+
+    @Bean
+    public PerformanceReviewService performanceReviewService(){
+        return new PerformanceReviewServiceImpl(userRepository, experienceRepository(),performanceReviewRepository());
     }
 }
