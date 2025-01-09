@@ -17,7 +17,7 @@ public enum ExpType {
     H2_PERFORMANCE("하반기 인사평가"),
     JOB_QUEST("직무별 퀘스트"),
     LEADER_QUEST("리더 부여 퀘스트"),
-    WARRIOR_PROJECT("전사 프로젝트");
+    ENTIRE_PROJECT("전사 프로젝트");
 
     @JsonValue
     private final String value;
