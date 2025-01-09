@@ -48,6 +48,9 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
 
         em.merge(user); // ✅ User의 totalExp 변경 반영
 
+        // ✅ ExpBar 업데이트 (레벨 변경 반영)
+        updateExpBar(user);
+
         if (experience.getId() == null) {
             em.persist(experience);
         } else {
@@ -62,6 +65,15 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
         JobGroup jobGroup = user.getLevel().getJobGroup(); // ✅ 현재 직군 가져오기
         levelRepository.findLevelByExp(jobGroup, user.getTotalExp()) // ✅ 총 경험치 기준으로 정확한 레벨 조회
                 .ifPresent(user::setLevel); // ✅ 새로운 레벨 설정 (경험치 기준 충족 시)
+    }
+
+    // ✅ ExpBar 업데이트 (레벨 반영)
+    private void updateExpBar(User user) {
+        ExpBar expBar = expBarRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 사원의 ExpBar가 존재하지 않습니다."));
+
+        expBar.updateLevel(); // ✅ ExpBar의 levelName 업데이트
+        em.merge(expBar); // ✅ 변경 사항 저장
     }
 
     @Override

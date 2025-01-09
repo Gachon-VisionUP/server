@@ -21,6 +21,13 @@ public class ExpBarRepositoryImpl implements ExpBarRepository {
 
     @Override
     public ExpBar save(ExpBar expBar) {
+        // ✅ 유저 ID 중복 검사 (ExpBar는 유저당 하나만 존재)
+        Optional<ExpBar> existingExpBar = findByUserId(expBar.getUser().getId());
+
+        if (existingExpBar.isPresent()) {
+            throw new IllegalArgumentException("해당 유저의 경험치 바가 이미 존재합니다.");
+        }
+
         if (expBar.getId() == null) {
             em.persist(expBar); // 신규 저장
         } else {
@@ -28,6 +35,7 @@ public class ExpBarRepositoryImpl implements ExpBarRepository {
         }
         return expBar;
     }
+
 
     @Override
     public Optional<ExpBar> findById(Long id) {

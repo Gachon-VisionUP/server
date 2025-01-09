@@ -11,19 +11,18 @@ public class ExpBarResponse {
     private final Long id;
     private final Long userId;
     private final String name;
-    private final String levelName;
+    private final String levelName;  // ✅ ExpBar에서 levelName 바로 가져오기
     private final int totalExp;
     private final int currentTotalExp;
     private final int previousTotalExp;
 
     public ExpBarResponse(ExpBar expBar) {
         this.id = expBar.getId();
-        this.userId = expBar.getUser().getId();  // ✅ Lazy Loading 문제 발생 지점
+        this.userId = expBar.getUser().getId();
         this.name = expBar.getUser().getName();
-        this.levelName = expBar.getUser().getLevel().getLevelName(); // ✅ Level 엔티티에서 이름 추출
+        this.levelName = expBar.getLevelName();  // ✅ ExpBar에 저장된 levelName 사용
         this.totalExp = expBar.getUser().getTotalExp();
         this.currentTotalExp = expBar.getCurrentTotalExp();
         this.previousTotalExp = expBar.getPreviousTotalExp();
     }
 }
-
