@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +45,7 @@ class ExperienceRepositoryImplTest {
                 .joinDate(LocalDate.of(2020, 5, 15))
                 .department(Department.EUMSEONG1)
                 .part(1)
-                .level(3)
+                .level("F1-Ⅰ")
                 .loginId("hong123")
                 .password("password")
                 .role(Role.USER)

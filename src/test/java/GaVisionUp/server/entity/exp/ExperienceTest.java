@@ -23,7 +23,7 @@ public class ExperienceTest {
                 .joinDate(LocalDate.of(2020, 5, 15))
                 .department(Department.EUMSEONG1) // 소속 추가
                 .part(1) // 직무 그룹
-                .level(3) // 레벨
+                .level("F1-Ⅰ") // 레벨
                 .loginId("hong123")
                 .password("password")
                 .role(Role.USER) // 역할 추가
@@ -35,9 +35,6 @@ public class ExperienceTest {
         ExpBar expBar = new ExpBar();
         expBar.setId(1L);
         expBar.setUser(user);
-        expBar.setDepartment(user.getDepartment()); // User의 department 사용
-        expBar.setName(user.getName());
-        expBar.setLevel("F1-Ⅰ");
         user.addExperience(500);
 
         // Given: PersonalExp 객체 생성

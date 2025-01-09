@@ -36,7 +36,7 @@ public class User {
     private int part; // 직무 그룹
 
     @Column(nullable = false)
-    private int level; // 레벨
+    private String level; // 레벨
 
     @Column(unique = true, nullable = false)
     private String loginId; // 아이디

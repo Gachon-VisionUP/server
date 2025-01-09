@@ -26,7 +26,7 @@ public class UserResponse {
         String employeeId;
         Department department;
         LocalDate joinDate;
-        int level;
+        String level;
     }
 
     @Getter

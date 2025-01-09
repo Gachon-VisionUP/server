@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +51,7 @@ class ExpBarServiceImplTest {
                 .joinDate(LocalDate.of(2020, 5, 15))
                 .department(Department.EUMSEONG1)
                 .part(1)
-                .level(3)
+                .level("F1-Ⅰ")
                 .loginId("hong")
                 .password("test1234")
                 .role(Role.USER)
@@ -67,9 +65,6 @@ class ExpBarServiceImplTest {
         // ✅ ExpBar 객체 저장 (User와 매핑)
         testExpBar = new ExpBar();
         testExpBar.setUser(testUser);
-        testExpBar.setDepartment(testUser.getDepartment()); // User의 department 사용
-        testExpBar.setName(testUser.getName());
-        testExpBar.setLevel("F1-Ⅰ");
 
         expBarRepository.save(testExpBar);
         em.flush();
@@ -85,7 +80,7 @@ class ExpBarServiceImplTest {
                 .joinDate(LocalDate.of(2021, 7, 10))
                 .department(Department.BUSINESS)
                 .part(2)
-                .level(2)
+                .level("F2-Ⅰ")
                 .loginId("mongryong")
                 .password("test1234")
                 .role(Role.USER)
@@ -99,9 +94,6 @@ class ExpBarServiceImplTest {
         // ✅ ExpBar 저장
         ExpBar newExpBar = new ExpBar();
         newExpBar.setUser(newUser);
-        newExpBar.setDepartment(newUser.getDepartment());
-        newExpBar.setName(newUser.getName());
-        newExpBar.setLevel("F2-Ⅰ");
 
         ExpBar savedExpBar = expBarRepository.save(newExpBar);
 

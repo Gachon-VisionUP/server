@@ -16,9 +16,9 @@ public class ExpBarResponse {
     public ExpBarResponse(ExpBar expBar) {
         this.id = expBar.getId();
         this.userId = expBar.getUser().getId();  // ✅ 프록시 방지 (User 직접 조회)
-        this.department = expBar.getDepartment();  // ✅ Enum을 문자열로 변환
-        this.name = expBar.getName();
-        this.level = expBar.getLevel();
+        this.department = expBar.getUser().getDepartment();  // ✅ Enum을 문자열로 변환
+        this.name = expBar.getUser().getName();
+        this.level = expBar.getUser().getLevel();
         this.totalExp = expBar.getUser().getTotalExp();
     }
 }
