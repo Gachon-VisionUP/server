@@ -1,5 +1,6 @@
 package GaVisionUp.server.repository.exp.experience;
 
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.Experience;
 
@@ -13,5 +14,4 @@ public interface ExperienceRepository {
     List<Experience> findByUserId(Long userId);  // 특정 사용자 경험치 조회
     List<Experience> findByUserIdAndCurrentYear(Long userId, int currentYear, ExpBar expBar);
     List<Experience> findByUserIdAndPreviousYears(Long userId, int previousYear, LocalDate joinDate, ExpBar expBar);
-
 }

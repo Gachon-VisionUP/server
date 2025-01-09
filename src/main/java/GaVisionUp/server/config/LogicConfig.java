@@ -38,7 +38,7 @@ public class LogicConfig {
     // 경험치 목록
     @Bean
     public ExperienceRepository experienceRepository() {
-        return new ExperienceRepositoryImpl(em);
+        return new ExperienceRepositoryImpl(em,levelRepository(), expBarRepository());
     }
 
     @Bean

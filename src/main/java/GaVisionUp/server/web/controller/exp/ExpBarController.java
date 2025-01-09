@@ -24,9 +24,10 @@ public class ExpBarController {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사원입니다.")); // ✅ userId 검증
 
-        ExpBar expBar = new ExpBar(user);
+        ExpBar expBar = new ExpBar(user); // ✅ ExpBar 생성 시 유저 레벨 자동 반영
+        ExpBar savedExpBar = expBarService.createExpBar(expBar);
 
-        return ResponseEntity.ok(expBarService.createExpBar(expBar));
+        return ResponseEntity.ok(savedExpBar);
     }
 
 

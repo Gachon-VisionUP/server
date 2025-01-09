@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface LevelRepository {
     List<Level> findByJobGroup(JobGroup jobGroup);
     Optional<Level> findLevelByExp(JobGroup jobGroup, int totalExp);
+    Optional<Level> findNextLevel(JobGroup jobGroup, int totalExp, String currentLevelName);
 }

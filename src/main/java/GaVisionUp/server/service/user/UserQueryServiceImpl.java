@@ -66,7 +66,7 @@ public class UserQueryServiceImpl implements UserQueryService{
                 .employeeId(user.getEmployeeId())
                 .department(user.getDepartment())
                 .joinDate(user.getJoinDate())
-                .level(user.getLevel())
+                .level(user.getLevel().getLevelName())
                 .build();
     }
 }
