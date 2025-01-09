@@ -134,7 +134,7 @@ class ExpBarRepositoryImplTest {
     void experienceAddition_shouldUpdateExpBarTotalExp() {
         // ✅ 경험치 추가
         int expToAdd = 3000;
-        Experience experience = new Experience(testUser, ExpType.인사평가, expToAdd);
+        Experience experience = new Experience(testUser, ExpType.H1_PERFORMANCE, expToAdd);
         experienceRepository.save(experience);
         em.flush();
 

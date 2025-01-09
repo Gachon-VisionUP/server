@@ -61,7 +61,7 @@ class ExperienceRepositoryImplTest {
     @Test
     void saveExperience_shouldPersistSuccessfully() {
         // Given
-        Experience experience = new Experience(testUser, ExpType.인사평가, 4500);
+        Experience experience = new Experience(testUser, ExpType.H1_PERFORMANCE, 4500);
         experienceRepository.save(experience);
         em.flush();
         em.clear();
@@ -73,7 +73,7 @@ class ExperienceRepositoryImplTest {
         assertThat(savedExp).isPresent();
         assertThat(savedExp.get().getUser().getId()).isEqualTo(testUser.getId());
         assertThat(savedExp.get().getUser().getName()).isEqualTo("홍길동");
-        assertThat(savedExp.get().getExpType()).isEqualTo(ExpType.인사평가);
+        assertThat(savedExp.get().getExpType()).isEqualTo(ExpType.H1_PERFORMANCE);
         assertThat(savedExp.get().getExp()).isEqualTo(4500);
         assertThat(userRepository.findById(testUser.getId()).get().getTotalExp()).isEqualTo(4500); // ✅ User의 totalExp 업데이트 확인
 
@@ -83,7 +83,7 @@ class ExperienceRepositoryImplTest {
     @Test
     void findExperienceById_shouldReturnCorrectData() {
         // Given
-        Experience experience = new Experience(testUser, ExpType.인사평가, 4500);
+        Experience experience = new Experience(testUser, ExpType.H1_PERFORMANCE, 4500);
         experienceRepository.save(experience);
         em.flush();
 
@@ -95,7 +95,7 @@ class ExperienceRepositoryImplTest {
         assertThat(foundExp.get().getUser().getId()).isEqualTo(testUser.getId());
         assertThat(foundExp.get().getUser().getName()).isEqualTo("홍길동");
         assertThat(foundExp.get().getExp()).isEqualTo(4500);
-        assertThat(foundExp.get().getExpType()).isEqualTo(ExpType.인사평가);
+        assertThat(foundExp.get().getExpType()).isEqualTo(ExpType.H1_PERFORMANCE);
 
         log.info("✅ Found Experience: {}", foundExp.get());
     }
@@ -103,8 +103,8 @@ class ExperienceRepositoryImplTest {
     @Test
     void findByUserId_shouldReturnAllExperiences() {
         // Given
-        Experience experience1 = new Experience(testUser, ExpType.인사평가, 4500);
-        Experience experience2 = new Experience(testUser, ExpType.리더_부여_퀘스트, 3000);
+        Experience experience1 = new Experience(testUser, ExpType.H1_PERFORMANCE, 4500);
+        Experience experience2 = new Experience(testUser, ExpType.LEADER_QUEST, 3000);
         experienceRepository.save(experience1);
         experienceRepository.save(experience2);
         em.flush();

@@ -38,12 +38,12 @@ public class ExperienceTest {
         user.addExperience(500);
 
         // Given: PersonalExp 객체 생성
-        Experience experience = new Experience(user, ExpType.인사평가, 4500);
+        Experience experience = new Experience(user, ExpType.H1_PERFORMANCE, 4500);
         user.addExperience(4500);
 
         // When & Then: 값 검증
         assertEquals(user, experience.getUser());
-        assertEquals(ExpType.인사평가, experience.getExpType());
+        assertEquals(ExpType.H1_PERFORMANCE, experience.getExpType());
         assertEquals(4500, experience.getExp());
         assertEquals(LocalDate.now(), experience.getObtainedDate());
         assertThat(expBar.getUser().getTotalExp()).isEqualTo(5000);
