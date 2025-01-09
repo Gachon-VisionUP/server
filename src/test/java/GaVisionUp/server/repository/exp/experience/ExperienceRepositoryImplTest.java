@@ -23,8 +23,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@DataJpaTest  // ✅ Spring Boot 전체 컨텍스트가 아니라 JPA 관련된 Bean만 로딩
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)  // ✅ 실제 DB 사용 가능하게 설정 (H2 사용 시 제거 가능)
+@SpringBootTest
+@Transactional
 class ExperienceRepositoryImplTest {
 
     @Autowired

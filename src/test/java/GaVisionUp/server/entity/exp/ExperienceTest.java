@@ -42,6 +42,7 @@ public class ExperienceTest {
 
         // Given: PersonalExp 객체 생성
         Experience experience = new Experience(user, ExpType.인사평가, 4500);
+        user.addExperience(4500);
 
         // When & Then: 값 검증
         assertEquals(user, experience.getUser());
