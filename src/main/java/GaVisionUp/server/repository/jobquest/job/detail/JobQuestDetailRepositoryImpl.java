@@ -1,6 +1,7 @@
 package GaVisionUp.server.repository.jobquest.job.detail;
 
 import GaVisionUp.server.entity.enums.Cycle;
+import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.quest.job.JobQuestDetail;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -22,19 +23,16 @@ public class JobQuestDetailRepositoryImpl implements JobQuestDetailRepository {
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기, 회차의 데이터를 조회
-    @Override
-    public Optional<JobQuestDetail> findByDepartmentAndRound(String department, int part, Cycle cycle, int round) {
-        return Optional.ofNullable(
-                queryFactory
-                        .selectFrom(jobQuestDetail)
-                        .where(
-                                jobQuestDetail.department.stringValue().eq(department),
-                                jobQuestDetail.part.eq(part),
-                                jobQuestDetail.cycle.eq(cycle),
-                                jobQuestDetail.round.eq(round)
-                        )
-                        .fetchOne()
-        );
+    public List<JobQuestDetail> findAllByDepartmentAndRound(Department department, int part, Cycle cycle, int round) {
+        return queryFactory
+                .selectFrom(jobQuestDetail)
+                .where(
+                        jobQuestDetail.department.eq(department),
+                        jobQuestDetail.part.eq(part),
+                        jobQuestDetail.cycle.eq(cycle),
+                        jobQuestDetail.round.eq(round)
+                )
+                .fetch(); // ✅ 여러 개의 데이터를 리스트로 반환
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기의 모든 데이터를 조회

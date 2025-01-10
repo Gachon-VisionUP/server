@@ -49,11 +49,19 @@ public class JobQuestServiceImpl implements JobQuestService {
     // ✅ 직무별 퀘스트 점수 평가 및 경험치 부여
     @Override
     public void evaluateJobQuest(String department, int part, Cycle cycle, int round) {
-        // ✅ 해당 부서, 직무 그룹, 주기, 회차의 JobQuestDetail 조회
-        Optional<JobQuestDetail> detailOpt = jobQuestDetailRepository.findByDepartmentAndRound(department, part, cycle, round);
+        // ✅ 해당 부서, 직무 그룹, 주기, 회차의 모든 JobQuestDetail 데이터 조회
+        List<JobQuestDetail> details = jobQuestDetailRepository.findAllByDepartmentAndRound(Department.valueOf(department), part, cycle, round);
 
-        // ✅ 매출과 인건비 정보를 가져와서 생산성 계산
-        double productivity = detailOpt.map(JobQuestDetail::calculateProductivity).orElse(0.0);
+        if (details.isEmpty()) {
+            throw new IllegalArgumentException("해당 주차의 직무별 퀘스트 상세 데이터가 존재하지 않습니다.");
+        }
+
+        // ✅ 매출과 인건비 총합 계산
+        double totalSales = details.stream().mapToDouble(JobQuestDetail::getSales).sum();
+        double totalLaborCost = details.stream().mapToDouble(JobQuestDetail::getLaborCost).sum();
+
+        // ✅ 생산성 계산 (총 매출 / 총 인건비)
+        double productivity = (totalLaborCost == 0) ? 0.0 : totalSales / totalLaborCost;
         int grantedExp = calculateExp(productivity);
 
         // ✅ JobQuest 기록 저장
@@ -69,6 +77,7 @@ public class JobQuestServiceImpl implements JobQuestService {
             user.addExperience(grantedExp); // ✅ 유저 총 경험치 반영
         }
     }
+
 
     // ✅ 생산성에 따라 경험치 계산
     private int calculateExp(double productivity) {
