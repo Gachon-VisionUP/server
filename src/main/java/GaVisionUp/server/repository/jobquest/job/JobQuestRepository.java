@@ -1,6 +1,6 @@
-package GaVisionUp.server.repository.jobquest;
+package GaVisionUp.server.repository.jobquest.job;
 
-import GaVisionUp.server.entity.JobQuest;
+import GaVisionUp.server.entity.quest.job.JobQuest;
 
 import java.util.List;
 import java.util.Optional;

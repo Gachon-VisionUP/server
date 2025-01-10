@@ -1,20 +1,19 @@
-package GaVisionUp.server.entity;
+package GaVisionUp.server.entity.quest.job;
 
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
-import GaVisionUp.server.entity.enums.ExpType;
 import jakarta.persistence.*;
-import lombok.*;
+        import lombok.*;
 
-import java.time.LocalDate;
+        import java.time.LocalDate;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "job_quest")
-public class JobQuest {
+@Table(name = "job_quest_detail")
+public class JobQuestDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,28 +34,28 @@ public class JobQuest {
     private int round; // ✅ 회차 (ex: 1~52, 1~12)
 
     @Column(nullable = false)
-    private double productivity; // ✅ 생산성 (5.1 이상이면 Max 등급)
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ExpType expType; // ✅ ExpType.JOB_QUEST
+    private double sales; // ✅ 매출 (ex: 1000000)
 
     @Column(nullable = false)
-    private int grantedExp; // ✅ 부여 경험치 (80, 40, 0)
+    private double laborCost; // ✅ 인건비 (ex: 500000)
 
     @Column(nullable = false)
-    private LocalDate grantedDate; // ✅ 경험치 부여 날짜
+    private LocalDate recordedDate; // ✅ 사용자가 입력한 날짜
 
-    public static JobQuest create(Department department, int part, Cycle cycle, int round, double productivity, int grantedExp) {
-        return JobQuest.builder()
+    // ✅ 생산성 자동 계산 (매출 / 인건비)
+    public double calculateProductivity() {
+        return (laborCost == 0) ? 0 : sales / laborCost;
+    }
+
+    public static JobQuestDetail create(Department department, int part, Cycle cycle, int round, double sales, double laborCost, LocalDate recordedDate) {
+        return JobQuestDetail.builder()
                 .department(department)
                 .part(part)
                 .cycle(cycle)
                 .round(round)
-                .productivity(productivity)
-                .expType(ExpType.JOB_QUEST)
-                .grantedExp(grantedExp)
-                .grantedDate(LocalDate.now())
+                .sales(sales)
+                .laborCost(laborCost)
+                .recordedDate(recordedDate) // ✅ 사용자 입력 날짜 반영
                 .build();
     }
 }

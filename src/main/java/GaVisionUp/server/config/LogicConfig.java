@@ -4,8 +4,10 @@ import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepositoryImpl;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepositoryImpl;
-import GaVisionUp.server.repository.jobquest.JobQuestRepository;
-import GaVisionUp.server.repository.jobquest.JobQuestRepositoryImpl;
+import GaVisionUp.server.repository.jobquest.job.JobQuestRepository;
+import GaVisionUp.server.repository.jobquest.job.JobQuestRepositoryImpl;
+import GaVisionUp.server.repository.jobquest.job.detail.JobQuestDetailRepository;
+import GaVisionUp.server.repository.jobquest.job.detail.JobQuestDetailRepositoryImpl;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.level.LevelRepositoryImpl;
 import GaVisionUp.server.repository.performance.PerformanceReviewRepository;
@@ -16,11 +18,13 @@ import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
 
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import GaVisionUp.server.service.exp.experience.ExperienceServiceImpl;
-import GaVisionUp.server.service.jobquest.JobQuestService;
-import GaVisionUp.server.service.jobquest.JobQuestServiceImpl;
+import GaVisionUp.server.service.quest.job.JobQuestService;
+import GaVisionUp.server.service.quest.job.JobQuestServiceImpl;
 import GaVisionUp.server.service.level.LevelServiceImpl;
 import GaVisionUp.server.service.performance.PerformanceReviewService;
 import GaVisionUp.server.service.performance.PerformanceReviewServiceImpl;
+import GaVisionUp.server.service.quest.job.detail.JobQuestDetailService;
+import GaVisionUp.server.service.quest.job.detail.JobQuestDetailServiceImpl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -83,6 +87,16 @@ public class LogicConfig {
 
     @Bean
     public JobQuestService jobQuestService(){
-        return new JobQuestServiceImpl(jobQuestRepository(), userRepository, experienceRepository());
+        return new JobQuestServiceImpl(jobQuestRepository(), userRepository, experienceRepository(), jobQuestDetailRepository());
+    }
+
+    @Bean
+    public JobQuestDetailRepository jobQuestDetailRepository(){
+        return new JobQuestDetailRepositoryImpl(em);
+    }
+
+    @Bean
+    public JobQuestDetailService jobQuestDetailService(){
+        return new JobQuestDetailServiceImpl(jobQuestDetailRepository());
     }
 }

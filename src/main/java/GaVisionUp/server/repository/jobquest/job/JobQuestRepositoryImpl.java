@@ -1,6 +1,6 @@
-package GaVisionUp.server.repository.jobquest;
+package GaVisionUp.server.repository.jobquest.job;
 
-import GaVisionUp.server.entity.JobQuest;
+import GaVisionUp.server.entity.quest.job.JobQuest;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import static GaVisionUp.server.entity.QJobQuest.jobQuest;
+import static GaVisionUp.server.entity.quest.job.QJobQuest.jobQuest;
+
 
 @Repository
 public class JobQuestRepositoryImpl implements JobQuestRepository {

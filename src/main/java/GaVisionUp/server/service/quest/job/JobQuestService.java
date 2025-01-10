@@ -1,7 +1,7 @@
-package GaVisionUp.server.service.jobquest;
+package GaVisionUp.server.service.quest.job;
 
-import GaVisionUp.server.entity.JobQuest;
-import GaVisionUp.server.entity.enums.Department;
+import GaVisionUp.server.entity.enums.Cycle;
+import GaVisionUp.server.entity.quest.job.JobQuest;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +16,5 @@ public interface JobQuestService {
 
     // ✅ 새로운 JobQuest 저장
     JobQuest createJobQuest(JobQuest jobQuest);
-    void evaluateJobQuest(String department, int part, String cycle, int round, double productivity);
+    void evaluateJobQuest(String department, int part, Cycle cycle, int round);
 }
