@@ -8,8 +8,8 @@ import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.Experience;
 import GaVisionUp.server.entity.quest.job.JobQuestDetail;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
-import GaVisionUp.server.repository.jobquest.job.JobQuestRepository;
-import GaVisionUp.server.repository.jobquest.job.detail.JobQuestDetailRepository;
+import GaVisionUp.server.repository.quest.job.JobQuestRepository;
+import GaVisionUp.server.repository.quest.job.detail.JobQuestDetailRepository;
 import GaVisionUp.server.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +74,6 @@ public class JobQuestServiceImpl implements JobQuestService {
             // ✅ 경험치 기록 생성 및 저장
             Experience experience = new Experience(user, ExpType.JOB_QUEST, grantedExp);
             experienceRepository.save(experience);
-            user.addExperience(grantedExp); // ✅ 유저 총 경험치 반영
         }
     }
 

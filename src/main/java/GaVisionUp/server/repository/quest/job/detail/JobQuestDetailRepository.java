@@ -1,4 +1,4 @@
-package GaVisionUp.server.repository.jobquest.job.detail;
+package GaVisionUp.server.repository.quest.job.detail;
 
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
@@ -6,7 +6,6 @@ import GaVisionUp.server.entity.quest.job.JobQuestDetail;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface JobQuestDetailRepository {

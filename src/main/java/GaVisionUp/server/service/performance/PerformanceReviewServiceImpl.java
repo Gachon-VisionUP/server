@@ -34,7 +34,6 @@ public class PerformanceReviewServiceImpl implements PerformanceReviewService {
         // ✅ 경험치 추가 로직 실행
         Experience experience = new Experience(user, expType, grade.getExp());
         experienceRepository.save(experience);
-
         return review;
     }
 

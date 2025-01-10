@@ -1,4 +1,4 @@
-package GaVisionUp.server.repository.jobquest.job.detail;
+package GaVisionUp.server.repository.quest.job.detail;
 
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
@@ -8,7 +8,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
+
 import static GaVisionUp.server.entity.quest.job.QJobQuestDetail.jobQuestDetail;
 
 @Repository

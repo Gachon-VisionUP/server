@@ -4,14 +4,18 @@ import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepositoryImpl;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepositoryImpl;
-import GaVisionUp.server.repository.jobquest.job.JobQuestRepository;
-import GaVisionUp.server.repository.jobquest.job.JobQuestRepositoryImpl;
-import GaVisionUp.server.repository.jobquest.job.detail.JobQuestDetailRepository;
-import GaVisionUp.server.repository.jobquest.job.detail.JobQuestDetailRepositoryImpl;
+import GaVisionUp.server.repository.quest.job.JobQuestRepository;
+import GaVisionUp.server.repository.quest.job.JobQuestRepositoryImpl;
+import GaVisionUp.server.repository.quest.job.detail.JobQuestDetailRepository;
+import GaVisionUp.server.repository.quest.job.detail.JobQuestDetailRepositoryImpl;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.level.LevelRepositoryImpl;
 import GaVisionUp.server.repository.performance.PerformanceReviewRepository;
 import GaVisionUp.server.repository.performance.PerformanceReviewRepositoryImpl;
+import GaVisionUp.server.repository.quest.leader.LeaderQuestRepository;
+import GaVisionUp.server.repository.quest.leader.LeaderQuestRepositoryImpl;
+import GaVisionUp.server.repository.quest.leader.condition.LeaderQuestConditionRepository;
+import GaVisionUp.server.repository.quest.leader.condition.LeaderQuestConditionRepositoryImpl;
 import GaVisionUp.server.repository.user.UserRepository;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
@@ -25,6 +29,10 @@ import GaVisionUp.server.service.performance.PerformanceReviewService;
 import GaVisionUp.server.service.performance.PerformanceReviewServiceImpl;
 import GaVisionUp.server.service.quest.job.detail.JobQuestDetailService;
 import GaVisionUp.server.service.quest.job.detail.JobQuestDetailServiceImpl;
+import GaVisionUp.server.service.quest.leader.LeaderQuestService;
+import GaVisionUp.server.service.quest.leader.LeaderQuestServiceImpl;
+import GaVisionUp.server.service.quest.leader.condition.LeaderQuestConditionService;
+import GaVisionUp.server.service.quest.leader.condition.LeaderQuestConditionServiceImpl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -98,5 +106,26 @@ public class LogicConfig {
     @Bean
     public JobQuestDetailService jobQuestDetailService(){
         return new JobQuestDetailServiceImpl(jobQuestDetailRepository());
+    }
+
+    // 리더 부여 퀘스트
+    @Bean
+    public LeaderQuestRepository leaderQuestRepository(){
+        return new LeaderQuestRepositoryImpl(em);
+    }
+
+    @Bean
+    public LeaderQuestService leaderQuestService(){
+        return new LeaderQuestServiceImpl(leaderQuestRepository(), leaderQuestConditionRepository(), userRepository, experienceRepository());
+    }
+
+    @Bean
+    public LeaderQuestConditionRepository leaderQuestConditionRepository(){
+        return new LeaderQuestConditionRepositoryImpl(em);
+    }
+
+    @Bean
+    public LeaderQuestConditionService leaderQuestConditionService(){
+        return new LeaderQuestConditionServiceImpl(leaderQuestConditionRepository());
     }
 }

@@ -3,7 +3,7 @@ package GaVisionUp.server.service.quest.job.detail;
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.quest.job.JobQuestDetail;
-import GaVisionUp.server.repository.jobquest.job.detail.JobQuestDetailRepository;
+import GaVisionUp.server.repository.quest.job.detail.JobQuestDetailRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

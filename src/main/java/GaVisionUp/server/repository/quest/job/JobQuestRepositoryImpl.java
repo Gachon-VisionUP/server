@@ -1,4 +1,4 @@
-package GaVisionUp.server.repository.jobquest.job;
+package GaVisionUp.server.repository.quest.job;
 
 import GaVisionUp.server.entity.quest.job.JobQuest;
 import com.querydsl.jpa.impl.JPAQueryFactory;
