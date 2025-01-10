@@ -30,7 +30,7 @@ public class JobQuestRepositoryImpl implements JobQuestRepository {
                         .where(
                                 jobQuest.department.stringValue().eq(department),
                                 jobQuest.part.eq(part),
-                                jobQuest.cycle.eq(cycle),
+                                jobQuest.cycle.stringValue().eq(cycle),
                                 jobQuest.round.eq(round)
                         )
                         .fetchOne()
@@ -45,7 +45,7 @@ public class JobQuestRepositoryImpl implements JobQuestRepository {
                 .where(
                         jobQuest.department.stringValue().eq(department),
                         jobQuest.part.eq(part),
-                        jobQuest.cycle.eq(cycle)
+                        jobQuest.cycle.stringValue().eq(cycle)
                 )
                 .orderBy(jobQuest.round.asc()) // ✅ 회차 기준 정렬
                 .fetch();

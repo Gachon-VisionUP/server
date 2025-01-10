@@ -2,6 +2,7 @@ package GaVisionUp.server.service.jobquest;
 
 import GaVisionUp.server.entity.JobQuest;
 import GaVisionUp.server.entity.User;
+import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.Experience;
@@ -48,7 +49,7 @@ public class JobQuestServiceImpl implements JobQuestService {
         int grantedExp = calculateExp(productivity);
 
         // ✅ JobQuest 기록 저장
-        JobQuest jobQuest = JobQuest.create(Department.valueOf(department), part, round, cycle, productivity, grantedExp);
+        JobQuest jobQuest = JobQuest.create(Department.valueOf(department), part, Cycle.valueOf(cycle), round, productivity, grantedExp);
         jobQuestRepository.save(jobQuest);
 
         // ✅ 해당 부서와 직무 그룹에 속한 모든 사용자 조회

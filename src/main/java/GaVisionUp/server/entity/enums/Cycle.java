@@ -11,23 +11,21 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 @RequiredArgsConstructor
-public enum JobGroup {
-    F("현장직군"),
-    B("관리직군"),
-    G("성장전략"),
-    T("기술직군");
+public enum Cycle {
+    MONTHLY("월"),
+    WEEKLY("주");
 
     @JsonValue
     private final String value;
 
     @JsonCreator // Json -> Object, 역직렬화 수행하는 메서드
-    public static JobGroup from(String param) {
-        for (JobGroup jobGroup : JobGroup.values()) {
-            if (jobGroup.getValue().equals(param)) {
-                return jobGroup;
+    public static Cycle from(String param) {
+        for (Cycle cycle : Cycle.values()) {
+            if (cycle.getValue().equals(param) || cycle.name().equals(param)) { // ✅ 한글 값과 Enum name 둘 다 허용
+                return cycle;
             }
         }
-        log.error("JobGroup.from() exception occur param: {}", param);
-        throw new RestApiException(GlobalErrorStatus._INVALID_JOB_GROUP);
+        log.error("Cycle.from() exception occur param: {}", param);
+        throw new RestApiException(GlobalErrorStatus._INVALID_CYCLE);
     }
 }

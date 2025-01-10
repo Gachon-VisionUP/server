@@ -1,5 +1,6 @@
 package GaVisionUp.server.entity;
 
+import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.ExpType;
 import jakarta.persistence.*;
@@ -26,11 +27,12 @@ public class JobQuest {
     @Column(nullable = false)
     private int part; // ✅ 직무 그룹 (ex: 1)
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private int round; // ✅ 회차 (ex: 1~52, 1~12)
+    private Cycle cycle; // ✅ 주기 (ex: "주간", "월간")
 
     @Column(nullable = false)
-    private String cycle; // ✅ 주기 (ex: "주간", "월간")
+    private int round; // ✅ 회차 (ex: 1~52, 1~12)
 
     @Column(nullable = false)
     private double productivity; // ✅ 생산성 (5.1 이상이면 Max 등급)
@@ -45,12 +47,12 @@ public class JobQuest {
     @Column(nullable = false)
     private LocalDate grantedDate; // ✅ 경험치 부여 날짜
 
-    public static JobQuest create(Department department, int part, int round, String cycle, double productivity, int grantedExp) {
+    public static JobQuest create(Department department, int part, Cycle cycle, int round, double productivity, int grantedExp) {
         return JobQuest.builder()
                 .department(department)
                 .part(part)
-                .round(round)
                 .cycle(cycle)
+                .round(round)
                 .productivity(productivity)
                 .expType(ExpType.JOB_QUEST)
                 .grantedExp(grantedExp)
