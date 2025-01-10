@@ -1,4 +1,4 @@
-package GaVisionUp.server.web.dto;
+package GaVisionUp.server.web.dto.exp;
 
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.Experience;

@@ -1,4 +1,4 @@
-package GaVisionUp.server.web.dto;
+package GaVisionUp.server.web.dto.exp.bar;
 
 import GaVisionUp.server.entity.exp.ExpBar;
 import lombok.Getter;

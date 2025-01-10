@@ -1,10 +1,8 @@
 package GaVisionUp.server.service.user;
 
 import GaVisionUp.server.entity.User;
-import GaVisionUp.server.web.dto.UserRequest;
-import GaVisionUp.server.web.dto.UserResponse;
-
-import java.util.Optional;
+import GaVisionUp.server.web.dto.user.UserRequest;
+import GaVisionUp.server.web.dto.user.UserResponse;
 
 public interface UserQueryService {
 

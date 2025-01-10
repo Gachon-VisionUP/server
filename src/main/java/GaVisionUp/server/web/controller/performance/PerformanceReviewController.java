@@ -1,11 +1,9 @@
 package GaVisionUp.server.web.controller.performance;
 
 import GaVisionUp.server.entity.PerformanceReview;
-import GaVisionUp.server.entity.enums.ExpType;
-import GaVisionUp.server.entity.enums.PerformanceGrade;
 import GaVisionUp.server.service.performance.PerformanceReviewService;
-import GaVisionUp.server.web.dto.PerformanceReviewRequest;
-import GaVisionUp.server.web.dto.PerformanceReviewResponse;
+import GaVisionUp.server.web.dto.performance.PerformanceReviewRequest;
+import GaVisionUp.server.web.dto.performance.PerformanceReviewResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

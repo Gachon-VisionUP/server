@@ -1,7 +1,7 @@
 package GaVisionUp.server.web.controller.jobquest;
 
 import GaVisionUp.server.service.jobquest.JobQuestService;
-import GaVisionUp.server.web.dto.JobQuestRequest;
+import GaVisionUp.server.web.dto.quest.JobQuestRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

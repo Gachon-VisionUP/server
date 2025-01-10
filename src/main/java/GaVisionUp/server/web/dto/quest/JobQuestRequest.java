@@ -1,6 +1,5 @@
-package GaVisionUp.server.web.dto;
+package GaVisionUp.server.web.dto.quest;
 
-import GaVisionUp.server.entity.enums.Department;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -1,4 +1,4 @@
-package GaVisionUp.server.web.dto;
+package GaVisionUp.server.web.dto.user;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;

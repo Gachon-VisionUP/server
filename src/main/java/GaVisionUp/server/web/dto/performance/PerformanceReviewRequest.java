@@ -1,4 +1,4 @@
-package GaVisionUp.server.web.dto;
+package GaVisionUp.server.web.dto.performance;
 
 
 import GaVisionUp.server.entity.enums.ExpType;

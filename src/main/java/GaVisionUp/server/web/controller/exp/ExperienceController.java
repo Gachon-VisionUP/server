@@ -3,12 +3,11 @@ package GaVisionUp.server.web.controller.exp;
 import GaVisionUp.server.entity.exp.Experience;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
-import GaVisionUp.server.web.dto.ExperienceResponse;
+import GaVisionUp.server.web.dto.exp.ExperienceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.Year;
 import java.util.List;
 import java.util.stream.Collectors;
