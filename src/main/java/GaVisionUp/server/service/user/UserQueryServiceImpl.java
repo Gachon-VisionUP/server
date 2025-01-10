@@ -4,8 +4,8 @@ import GaVisionUp.server.entity.User;
 import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.repository.user.UserRepository;
-import GaVisionUp.server.web.dto.UserRequest;
-import GaVisionUp.server.web.dto.UserResponse;
+import GaVisionUp.server.web.dto.user.UserRequest;
+import GaVisionUp.server.web.dto.user.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -66,7 +66,7 @@ public class UserQueryServiceImpl implements UserQueryService{
                 .employeeId(user.getEmployeeId())
                 .department(user.getDepartment())
                 .joinDate(user.getJoinDate())
-                .level(user.getLevel())
+                .level(user.getLevel().getLevelName())
                 .build();
     }
 }

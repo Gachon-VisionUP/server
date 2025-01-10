@@ -23,7 +23,7 @@ public class ExperienceTest {
                 .joinDate(LocalDate.of(2020, 5, 15))
                 .department(Department.EUMSEONG1) // 소속 추가
                 .part(1) // 직무 그룹
-                .level(3) // 레벨
+                .level("F1-Ⅰ") // 레벨
                 .loginId("hong123")
                 .password("password")
                 .role(Role.USER) // 역할 추가
@@ -35,17 +35,15 @@ public class ExperienceTest {
         ExpBar expBar = new ExpBar();
         expBar.setId(1L);
         expBar.setUser(user);
-        expBar.setDepartment(user.getDepartment()); // User의 department 사용
-        expBar.setName(user.getName());
-        expBar.setLevel("F1-Ⅰ");
         user.addExperience(500);
 
         // Given: PersonalExp 객체 생성
-        Experience experience = new Experience(user, ExpType.인사평가, 4500);
+        Experience experience = new Experience(user, ExpType.H1_PERFORMANCE, 4500);
+        user.addExperience(4500);
 
         // When & Then: 값 검증
         assertEquals(user, experience.getUser());
-        assertEquals(ExpType.인사평가, experience.getExpType());
+        assertEquals(ExpType.H1_PERFORMANCE, experience.getExpType());
         assertEquals(4500, experience.getExp());
         assertEquals(LocalDate.now(), experience.getObtainedDate());
         assertThat(expBar.getUser().getTotalExp()).isEqualTo(5000);

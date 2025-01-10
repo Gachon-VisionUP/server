@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -23,8 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@DataJpaTest // ✅ JPA 관련 Bean만 로드
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // ✅ 실제 DB 사용 (H2가 아니라면 필요)
+@SpringBootTest
 @Transactional
 class ExpBarRepositoryImplTest {
 
@@ -49,7 +47,7 @@ class ExpBarRepositoryImplTest {
                 .joinDate(LocalDate.of(2020, 5, 15))
                 .department(Department.EUMSEONG1) // 소속 추가
                 .part(1) // 직무 그룹
-                .level(3) // 레벨
+                .level("F1-Ⅰ") // 레벨
                 .loginId("hong")
                 .password("test1234")
                 .role(Role.USER) // 역할 추가
@@ -63,10 +61,6 @@ class ExpBarRepositoryImplTest {
         // ✅ ExpBar 객체 저장 (User와 매핑)
         testExpBar = new ExpBar();
         testExpBar.setUser(testUser);
-        testExpBar.setDepartment(testUser.getDepartment()); // User의 department 사용
-        testExpBar.setName(testUser.getName());
-        testExpBar.setLevel("F1-Ⅰ");
-
         expBarRepository.save(testExpBar);
         em.flush();
         em.clear();
@@ -81,7 +75,7 @@ class ExpBarRepositoryImplTest {
                 .joinDate(LocalDate.of(2021, 7, 10))
                 .department(Department.BUSINESS)
                 .part(2)
-                .level(2)
+                .level("F2-Ⅰ")
                 .loginId("mongryong")
                 .password("test1234")
                 .role(Role.USER)
@@ -95,9 +89,6 @@ class ExpBarRepositoryImplTest {
         // ✅ ExpBar 저장
         ExpBar newExpBar = new ExpBar();
         newExpBar.setUser(newUser);
-        newExpBar.setDepartment(newUser.getDepartment());
-        newExpBar.setName(newUser.getName());
-        newExpBar.setLevel("F2-Ⅰ");
 
         ExpBar savedExpBar = expBarRepository.save(newExpBar);
 
@@ -105,9 +96,9 @@ class ExpBarRepositoryImplTest {
         Optional<ExpBar> foundExpBar = expBarRepository.findById(savedExpBar.getId());
         assertThat(foundExpBar).isPresent();
         assertThat(foundExpBar.get().getUser().getId()).isEqualTo(newUser.getId());
-        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.BUSINESS);
-        assertThat(foundExpBar.get().getName()).isEqualTo("이몽룡");
-        assertThat(foundExpBar.get().getLevel()).isEqualTo("F2-Ⅰ");
+        assertThat(foundExpBar.get().getUser().getDepartment()).isEqualTo(Department.BUSINESS);
+        assertThat(foundExpBar.get().getUser().getName()).isEqualTo("이몽룡");
+        assertThat(foundExpBar.get().getUser().getLevel()).isEqualTo("F2-Ⅰ");
 
         log.info("✅ Saved ExpBar: {}", foundExpBar.get());
     }
@@ -119,9 +110,9 @@ class ExpBarRepositoryImplTest {
 
         assertTrue(foundExpBar.isPresent());
         assertThat(foundExpBar.get().getUser().getId()).isEqualTo(testUser.getId());
-        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.EUMSEONG1);
-        assertThat(foundExpBar.get().getName()).isEqualTo("홍길동");
-        assertThat(foundExpBar.get().getLevel()).isEqualTo("F1-Ⅰ");
+        assertThat(foundExpBar.get().getUser().getDepartment()).isEqualTo(Department.EUMSEONG1);
+        assertThat(foundExpBar.get().getUser().getName()).isEqualTo("홍길동");
+        assertThat(foundExpBar.get().getUser().getLevel()).isEqualTo("F1-Ⅰ");
 
         log.info("✅ Found ExpBar by ID: {}", foundExpBar.get());
     }
@@ -132,9 +123,9 @@ class ExpBarRepositoryImplTest {
         Optional<ExpBar> foundExpBar = expBarRepository.findByUserId(testUser.getId());
 
         assertTrue(foundExpBar.isPresent());
-        assertThat(foundExpBar.get().getDepartment()).isEqualTo(Department.EUMSEONG1);
-        assertThat(foundExpBar.get().getName()).isEqualTo("홍길동");
-        assertThat(foundExpBar.get().getLevel()).isEqualTo("F1-Ⅰ");
+        assertThat(foundExpBar.get().getUser().getDepartment()).isEqualTo(Department.EUMSEONG1);
+        assertThat(foundExpBar.get().getUser().getName()).isEqualTo("홍길동");
+        assertThat(foundExpBar.get().getUser().getLevel()).isEqualTo("F1-Ⅰ");
 
         log.info("✅ Found ExpBar by User ID: {}", foundExpBar.get());
     }
@@ -143,7 +134,7 @@ class ExpBarRepositoryImplTest {
     void experienceAddition_shouldUpdateExpBarTotalExp() {
         // ✅ 경험치 추가
         int expToAdd = 3000;
-        Experience experience = new Experience(testUser, ExpType.인사평가, expToAdd);
+        Experience experience = new Experience(testUser, ExpType.H1_PERFORMANCE, expToAdd);
         experienceRepository.save(experience);
         em.flush();
 

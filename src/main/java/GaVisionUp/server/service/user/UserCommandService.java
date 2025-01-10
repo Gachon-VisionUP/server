@@ -1,7 +1,7 @@
 package GaVisionUp.server.service.user;
 
-import GaVisionUp.server.web.dto.UserRequest;
-import GaVisionUp.server.web.dto.UserResponse;
+import GaVisionUp.server.web.dto.user.UserRequest;
+import GaVisionUp.server.web.dto.user.UserResponse;
 
 public interface UserCommandService {
 

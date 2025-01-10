@@ -1,7 +1,10 @@
 package GaVisionUp.server.entity;
 
 import GaVisionUp.server.entity.enums.Department;
+import GaVisionUp.server.entity.enums.JobGroup;
 import GaVisionUp.server.entity.enums.Role;
+import GaVisionUp.server.repository.level.LevelRepository;
+import GaVisionUp.server.service.user.UserCommandService;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,8 +38,9 @@ public class User {
     @Column(nullable = false)
     private int part; // 직무 그룹
 
-    @Column(nullable = false)
-    private int level; // 레벨
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "level_id", nullable = false)
+    private Level level;  // 레벨
 
     @Column(unique = true, nullable = false)
     private String loginId; // 아이디
@@ -65,5 +69,10 @@ public class User {
     // ✅ 경험치 추가 메서드
     public void addExperience(int exp) {
         this.totalExp += exp;
+    }
+
+    // ✅ 레벨 업데이트
+    public void setLevel(Level level) {
+        this.level = level;
     }
 }
