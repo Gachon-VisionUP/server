@@ -4,6 +4,8 @@ import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepositoryImpl;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepositoryImpl;
+import GaVisionUp.server.repository.jobquest.JobQuestRepository;
+import GaVisionUp.server.repository.jobquest.JobQuestRepositoryImpl;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.level.LevelRepositoryImpl;
 import GaVisionUp.server.repository.performance.PerformanceReviewRepository;
@@ -14,6 +16,8 @@ import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
 
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import GaVisionUp.server.service.exp.experience.ExperienceServiceImpl;
+import GaVisionUp.server.service.jobquest.JobQuestService;
+import GaVisionUp.server.service.jobquest.JobQuestServiceImpl;
 import GaVisionUp.server.service.level.LevelServiceImpl;
 import GaVisionUp.server.service.performance.PerformanceReviewService;
 import GaVisionUp.server.service.performance.PerformanceReviewServiceImpl;
@@ -69,5 +73,16 @@ public class LogicConfig {
     @Bean
     public PerformanceReviewService performanceReviewService(){
         return new PerformanceReviewServiceImpl(userRepository, experienceRepository(),performanceReviewRepository());
+    }
+
+    // 직무별 퀘스트
+    @Bean
+    public JobQuestRepository jobQuestRepository(){
+        return new JobQuestRepositoryImpl(em);
+    }
+
+    @Bean
+    public JobQuestService jobQuestService(){
+        return new JobQuestServiceImpl(jobQuestRepository(), userRepository, experienceRepository());
     }
 }
