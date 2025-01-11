@@ -33,14 +33,14 @@ public class JobQuestServiceImpl implements JobQuestService {
 
     // ✅ 특정 부서, 직무 그룹, 주기 및 round 값으로 JobQuest 조회
     @Override
-    public Optional<JobQuest> getJobQuest(String department, int jobGroup, String cycle, int round) {
-        return jobQuestRepository.findByDepartmentAndRound(department, jobGroup, cycle, round);
+    public Optional<JobQuest> getJobQuest(String department, int jobGroup, Cycle cycle, int round) {
+        return jobQuestRepository.findByDepartmentAndCycleAndRound(department, jobGroup, cycle, round);
     }
 
     // ✅ 특정 부서, 직무 그룹의 전체 JobQuest 조회
     @Override
     public List<JobQuest> getAllJobQuests(String department, int jobGroup, String cycle) {
-        return jobQuestRepository.findAllByDepartment(department, jobGroup, cycle);
+        return jobQuestRepository.findAllByDepartment(department, jobGroup, Cycle.valueOf(cycle));
     }
 
     // ✅ 새로운 JobQuest 저장
@@ -49,10 +49,10 @@ public class JobQuestServiceImpl implements JobQuestService {
         return jobQuestRepository.save(jobQuest);
     }
 
-    // ✅ 직무별 퀘스트 점수 평가 및 경험치 부여
+    // ✅ 직무별 퀘스트 점수 평가 및 경험치 부여 (round 직접 입력)
     @Override
     public void evaluateJobQuest(String department, int part, Cycle cycle, int round) {
-        List<JobQuestDetail> details = jobQuestDetailRepository.findAllByDepartmentAndRound(
+        List<JobQuestDetail> details = jobQuestDetailRepository.findAllByDepartmentAndCycleAndRound(
                 Department.valueOf(department), part, cycle, round);
 
         if (details.isEmpty()) {
@@ -76,7 +76,6 @@ public class JobQuestServiceImpl implements JobQuestService {
             grantedExp = 0;
             questGrade = TeamQuestGrade.MIN;
         }
-
 
         log.info("📌 [DEBUG] cycle: {}, round: {}", cycle, round);
 

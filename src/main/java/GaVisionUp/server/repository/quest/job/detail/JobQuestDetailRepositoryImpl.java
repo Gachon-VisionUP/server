@@ -22,17 +22,18 @@ public class JobQuestDetailRepositoryImpl implements JobQuestDetailRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    // ✅ 특정 부서, 직무 그룹, 주기, round 기반으로 조회
+    // ✅ 특정 부서, 직무 그룹, 주기, round 기반으로 조회 (새롭게 추가됨)
     @Override
-    public List<JobQuestDetail> findAllByDepartmentAndRound(Department department, int part, Cycle cycle, int round) {
+    public List<JobQuestDetail> findAllByDepartmentAndCycleAndRound(Department department, int part, Cycle cycle, int round) {
         return queryFactory
                 .selectFrom(jobQuestDetail)
                 .where(
                         jobQuestDetail.department.eq(department),
                         jobQuestDetail.part.eq(part),
                         jobQuestDetail.cycle.eq(cycle),
-                        jobQuestDetail.round.eq(round) // ✅ round 값 직접 조회
+                        jobQuestDetail.round.eq(round) // ✅ round 값 기준 조회
                 )
+                .orderBy(jobQuestDetail.round.asc()) // ✅ round 기준 정렬 추가
                 .fetch();
     }
 

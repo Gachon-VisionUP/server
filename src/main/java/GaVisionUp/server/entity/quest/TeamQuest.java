@@ -38,13 +38,17 @@ public class TeamQuest {
     private DayOfWeek dayOfWeek; // ✅ 요일 필드 추가 (월요일~일요일)
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TeamQuestGrade questGrade; // ✅ 부여된 등급 (MAX, MEDIAN, MIN)
+    @Column(name = "job_grade", nullable = true)
+    private TeamQuestGrade jobGrade; // ✅ 직무별 퀘스트 평가 등급 (nullable)
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "leader_grade", nullable = true)
+    private TeamQuestGrade leaderGrade; // ✅ 리더 부여 퀘스트 평가 등급 (nullable)
 
     @Column(nullable = false)
     private LocalDate recordedDate; // ✅ 실제 기록된 날짜
 
-    public static TeamQuest create(User user, int month, int week, int day, DayOfWeek dayOfWeek, LocalDate recordedDate, TeamQuestGrade questGrade) {
+    public static TeamQuest create(User user, int month, int week, int day, DayOfWeek dayOfWeek, LocalDate recordedDate, TeamQuestGrade jobGrade, TeamQuestGrade leaderGrade) {
         return TeamQuest.builder()
                 .user(user)
                 .month(month)
@@ -52,7 +56,8 @@ public class TeamQuest {
                 .day(day)
                 .dayOfWeek(dayOfWeek) // ✅ 요일 저장
                 .recordedDate(recordedDate)
-                .questGrade(questGrade)
+                .jobGrade(jobGrade) // ✅ 직무별 퀘스트 평가 등급 저장
+                .leaderGrade(leaderGrade) // ✅ 리더 부여 퀘스트 평가 등급 저장
                 .build();
     }
 }

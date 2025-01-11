@@ -15,7 +15,8 @@ public class TeamQuestResponse {
     private int day;
     private DayOfWeek dayOfWeek; // ✅ 요일 추가
     private LocalDate recordedDate;
-    private TeamQuestGrade questGrade;
+    private TeamQuestGrade jobGrade;
+    private TeamQuestGrade leaderGrade;
 
     public TeamQuestResponse(TeamQuest teamQuest) {
         this.userId = teamQuest.getUser().getId();
@@ -24,6 +25,7 @@ public class TeamQuestResponse {
         this.day = teamQuest.getDay();
         this.dayOfWeek = teamQuest.getDayOfWeek(); // ✅ 요일 추가
         this.recordedDate = teamQuest.getRecordedDate();
-        this.questGrade = teamQuest.getQuestGrade();
+        this.jobGrade = teamQuest.getJobGrade();
+        this.leaderGrade = teamQuest.getLeaderGrade();
     }
 }

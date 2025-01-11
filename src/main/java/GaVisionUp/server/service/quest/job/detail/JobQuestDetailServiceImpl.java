@@ -21,7 +21,7 @@ public class JobQuestDetailServiceImpl implements JobQuestDetailService {
     // ✅ 특정 부서, 직무 그룹, 주기, round의 JobQuestDetail 조회
     @Override
     public List<JobQuestDetail> getJobQuestDetails(String department, int part, Cycle cycle, int round) {
-        return jobQuestDetailRepository.findAllByDepartmentAndRound(Department.valueOf(department), part, cycle, round);
+        return jobQuestDetailRepository.findAllByDepartmentAndCycleAndRound(Department.valueOf(department), part, cycle, round);
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기의 모든 JobQuestDetail 조회

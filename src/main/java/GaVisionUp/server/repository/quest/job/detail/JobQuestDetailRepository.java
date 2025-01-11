@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface JobQuestDetailRepository {
-    List<JobQuestDetail> findAllByDepartmentAndRound(Department department, int part, Cycle cycle, int round);
+    List<JobQuestDetail> findAllByDepartmentAndCycleAndRound(Department department, int part, Cycle cycle, int round);
     List<JobQuestDetail> findAllByDepartmentAndCycle(Department department, int part, Cycle cycle);
     JobQuestDetail save(JobQuestDetail jobQuestDetail);
 }
