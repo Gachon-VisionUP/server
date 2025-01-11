@@ -29,7 +29,7 @@ public class Notification {
     private String message; // ✅ 알림 내용
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "read_status", nullable = false)
     private boolean read = false; // ✅ 읽음 여부 (기본값: false)
 
     @Column(nullable = false)
