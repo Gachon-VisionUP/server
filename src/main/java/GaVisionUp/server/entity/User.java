@@ -1,10 +1,7 @@
 package GaVisionUp.server.entity;
 
 import GaVisionUp.server.entity.enums.Department;
-import GaVisionUp.server.entity.enums.JobGroup;
 import GaVisionUp.server.entity.enums.Role;
-import GaVisionUp.server.repository.level.LevelRepository;
-import GaVisionUp.server.service.user.UserCommandService;
 import jakarta.persistence.*;
 import lombok.*;
 

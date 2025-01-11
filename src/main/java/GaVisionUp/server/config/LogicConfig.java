@@ -35,6 +35,7 @@ import GaVisionUp.server.service.quest.leader.LeaderQuestService;
 import GaVisionUp.server.service.quest.leader.LeaderQuestServiceImpl;
 import GaVisionUp.server.service.quest.leader.condition.LeaderQuestConditionService;
 import GaVisionUp.server.service.quest.leader.condition.LeaderQuestConditionServiceImpl;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +48,11 @@ public class LogicConfig {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final ExpoNotificationService expoNotificationService;
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory() {
+        return new JPAQueryFactory(em);
+    }
 
     // 경험치 바
     @Bean

@@ -56,7 +56,7 @@ public class UserQueryServiceImpl implements UserQueryService{
     @Override
     public UserResponse.Information getUserInformation(Long userId) {
         User user = userRepository.findById(userId).
-                orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사원입니다."));
+                orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
 
         String profileImageUrl = serverUrl + "/images/" + user.getProfileImageUrl() + ".png";
 
