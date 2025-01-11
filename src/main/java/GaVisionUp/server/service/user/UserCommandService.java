@@ -6,4 +6,6 @@ import GaVisionUp.server.web.dto.user.UserResponse;
 public interface UserCommandService {
 
     UserResponse.UpdateInformation updateInformation(Long userId, UserRequest.Update request);
+
+    void updatePushToken(Long userId, String pushToken);
 }

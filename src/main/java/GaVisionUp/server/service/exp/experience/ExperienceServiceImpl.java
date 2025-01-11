@@ -7,6 +7,7 @@ import GaVisionUp.server.entity.exp.Experience;
 import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.user.UserRepository;
+import GaVisionUp.server.service.notification.ExpoNotificationService;
 import GaVisionUp.server.service.notification.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ExperienceServiceImpl implements ExperienceService {
     private final UserRepository userRepository;
     private final ExpBarRepository expBarRepository;
     private final NotificationService notificationService;
+    private final ExpoNotificationService expoNotificationService;
 
     // ✅ 경험치 추가 및 알림 전송
     public Experience addExperience(Long userId, ExpType expType, int exp) {
@@ -34,10 +36,13 @@ public class ExperienceServiceImpl implements ExperienceService {
         Experience experience = new Experience(user, expType, exp);
         experienceRepository.save(experience);
 
-        // ✅ 알림 메시지 생성 및 저장
+        // ✅ 내부 알림 저장
         String title = "📢 경험치 획득!";
         String message = String.format("%s님, %s 경험치 %d점을 획득했습니다!", user.getName(), expType.name(), exp);
         notificationService.createNotification(user, title, message);
+
+        // ✅ Expo 푸쉬 알림 전송
+        expoNotificationService.sendPushNotification(user.getExpoPushToken(), title, message);
 
         log.info("✅ 경험치 추가 및 알림 전송 완료 - 유저: {}, ExpType: {}, 획득 경험치: {}", user.getName(), expType, exp);
         return experience;

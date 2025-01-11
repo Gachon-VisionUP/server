@@ -61,6 +61,9 @@ public class User {
 
     private String profileImageUrl;
 
+    @Column(nullable = true)
+    private String expoPushToken; // ✅ Expo 푸쉬 토큰 추가
+
     public void update(String changedPW, String profileImageUrl) {
         this.changedPW = changedPW;
         this.profileImageUrl = profileImageUrl;
@@ -74,5 +77,10 @@ public class User {
     // ✅ 레벨 업데이트
     public void setLevel(Level level) {
         this.level = level;
+    }
+
+    // ✅ 푸쉬 토큰 업데이트 메서드
+    public void updatePushToken(String pushToken) {
+        this.expoPushToken = pushToken;
     }
 }
