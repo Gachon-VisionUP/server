@@ -32,9 +32,18 @@ public enum GlobalErrorStatus implements ApiErrorCodeInterface {
     _PW_WRONG(HttpStatus.BAD_REQUEST, "USER4006", "비밀번호가 틀렸습니다."),
     _NOT_LOGIN(HttpStatus.UNAUTHORIZED, "USER4007", "로그인 되지 않은 사용자입니다."),
     _NOT_FOUND_INFORMATION(HttpStatus.NOT_FOUND, "USER4008", "사용자 정보를 찾을 수 없습니다."),
-    _INVALID_EXP_TYPE(HttpStatus.BAD_REQUEST, "USER4009", "잘못된 경험치 유형입니다"),
-    _INVALID_JOB_GROUP(HttpStatus.BAD_REQUEST, "USER4010", "잘못된 직군입니다"),
-    _INVALID_CYCLE(HttpStatus.BAD_REQUEST, "USER4011", "잘못된 주기입니다")
+
+    // EXP Error Status
+    _INVALID_EXP_TYPE(HttpStatus.BAD_REQUEST, "EXP4001", "잘못된 경험치 유형입니다"),
+    _INVALID_JOB_GROUP(HttpStatus.BAD_REQUEST, "EXP4002", "잘못된 직군입니다"),
+    _INVALID_CYCLE(HttpStatus.BAD_REQUEST, "EXP4003", "잘못된 주기입니다"),
+
+    // Post Error Status
+    _POST_NOT_EXIST(HttpStatus.BAD_REQUEST, "POST4001", "존재하지 않는 게시글입니다."),
+    _INVALID_FILTER(HttpStatus.BAD_REQUEST, "POST4002", "잘못된 필터입니다."),
+    _QUERY_SO_SHORT(HttpStatus.BAD_REQUEST, "POST4003", "검색어가 너무 짧습니다."),
+    _QUERY_SO_LONG(HttpStatus.BAD_REQUEST, "POST4004", "검색어가 너무 깁니다."),
+
     ;
 
     private final HttpStatus httpStatus;
