@@ -22,30 +22,32 @@ public class JobQuestDetailRepositoryImpl implements JobQuestDetailRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    // ✅ 특정 부서, 직무 그룹, 주기, 회차의 데이터를 조회
-    public List<JobQuestDetail> findAllByDepartmentAndRound(Department department, int part, Cycle cycle, int round) {
+    // ✅ 특정 부서, 직무 그룹, 주기, round 기반으로 조회 (새롭게 추가됨)
+    @Override
+    public List<JobQuestDetail> findAllByDepartmentAndCycleAndRound(Department department, int part, Cycle cycle, int round) {
         return queryFactory
                 .selectFrom(jobQuestDetail)
                 .where(
                         jobQuestDetail.department.eq(department),
                         jobQuestDetail.part.eq(part),
                         jobQuestDetail.cycle.eq(cycle),
-                        jobQuestDetail.round.eq(round)
+                        jobQuestDetail.round.eq(round) // ✅ round 값 기준 조회
                 )
-                .fetch(); // ✅ 여러 개의 데이터를 리스트로 반환
+                .orderBy(jobQuestDetail.round.asc()) // ✅ round 기준 정렬 추가
+                .fetch();
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기의 모든 데이터를 조회
     @Override
-    public List<JobQuestDetail> findAllByDepartmentAndCycle(String department, int part, Cycle cycle) {
+    public List<JobQuestDetail> findAllByDepartmentAndCycle(Department department, int part, Cycle cycle) {
         return queryFactory
                 .selectFrom(jobQuestDetail)
                 .where(
-                        jobQuestDetail.department.stringValue().eq(department),
+                        jobQuestDetail.department.eq(department),
                         jobQuestDetail.part.eq(part),
                         jobQuestDetail.cycle.eq(cycle)
                 )
-                .orderBy(jobQuestDetail.round.asc()) // ✅ 회차 기준 오름차순 정렬
+                .orderBy(jobQuestDetail.month.asc(), jobQuestDetail.round.asc()) // ✅ month 및 round 기준 정렬
                 .fetch();
     }
 

@@ -17,13 +17,13 @@ public class JobQuestController {
 
     private final JobQuestService jobQuestService;
 
-    // ✅ 직무별 퀘스트 경험치 평가 API
+    // ✅ 직무별 퀘스트 경험치 평가 API (month, week 기반 평가)
     @PostMapping("/evaluate")
     public ResponseEntity<Void> evaluateJobQuest(@RequestBody JobQuestRequest request) {
         jobQuestService.evaluateJobQuest(
                 request.getDepartment(), request.getPart(), request.getCycle(), request.getRound());
 
-        return ResponseEntity.status(HttpStatus.CREATED).build(); // ✅ 201 Created 반환
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기의 JobQuest 목록 조회

@@ -7,18 +7,21 @@ import java.time.LocalDate;
 
 @Getter
 public class JobQuestDetailResponse {
-    private final String department;
-    private final int part;
-    private final String cycle;
-    private final int round;
-    private final double sales;
-    private final double laborCost;
-    private final LocalDate recordedDate;
+
+    private String department;
+    private int part;
+    private String cycle;
+    private int month;
+    private int round;
+    private double sales;
+    private double laborCost;
+    private LocalDate recordedDate;
 
     public JobQuestDetailResponse(JobQuestDetail jobQuestDetail) {
         this.department = jobQuestDetail.getDepartment().name();
         this.part = jobQuestDetail.getPart();
         this.cycle = jobQuestDetail.getCycle().name();
+        this.month = jobQuestDetail.getMonth();
         this.round = jobQuestDetail.getRound();
         this.sales = jobQuestDetail.getSales();
         this.laborCost = jobQuestDetail.getLaborCost();
