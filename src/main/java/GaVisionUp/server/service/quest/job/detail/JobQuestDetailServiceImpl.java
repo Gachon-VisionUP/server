@@ -18,10 +18,10 @@ public class JobQuestDetailServiceImpl implements JobQuestDetailService {
 
     private final JobQuestDetailRepository jobQuestDetailRepository;
 
-    // ✅ 특정 부서, 직무 그룹, 주기, 월, 주차의 JobQuestDetail 조회
+    // ✅ 특정 부서, 직무 그룹, 주기, round의 JobQuestDetail 조회
     @Override
-    public List<JobQuestDetail> getJobQuestDetails(String department, int part, Cycle cycle, int month, Integer week) {
-        return jobQuestDetailRepository.findAllByDepartmentAndMonthAndWeek(Department.valueOf(department), part, cycle, month, week);
+    public List<JobQuestDetail> getJobQuestDetails(String department, int part, Cycle cycle, int round) {
+        return jobQuestDetailRepository.findAllByDepartmentAndRound(Department.valueOf(department), part, cycle, round);
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기의 모든 JobQuestDetail 조회
@@ -32,8 +32,7 @@ public class JobQuestDetailServiceImpl implements JobQuestDetailService {
 
     // ✅ JobQuestDetail 데이터 저장
     @Override
-    public JobQuestDetail saveJobQuestDetail(String department, int part, Cycle cycle, int month, Integer week, double sales, double laborCost, LocalDate recordedDate) {
-        // ✅ 문자열로 전달된 department를 Enum으로 변환
+    public JobQuestDetail saveJobQuestDetail(String department, int part, Cycle cycle, int month, int round, double sales, double laborCost, LocalDate recordedDate) {
         Department deptEnum;
         try {
             deptEnum = Department.valueOf(department);
@@ -42,7 +41,7 @@ public class JobQuestDetailServiceImpl implements JobQuestDetailService {
         }
 
         JobQuestDetail jobQuestDetail = JobQuestDetail.create(
-                deptEnum, part, cycle, month, week, sales, laborCost, recordedDate);
+                deptEnum, part, cycle, month, round, sales, laborCost, recordedDate);
         return jobQuestDetailRepository.save(jobQuestDetail);
     }
 }

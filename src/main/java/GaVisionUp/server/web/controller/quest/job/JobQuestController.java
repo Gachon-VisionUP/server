@@ -21,9 +21,9 @@ public class JobQuestController {
     @PostMapping("/evaluate")
     public ResponseEntity<Void> evaluateJobQuest(@RequestBody JobQuestRequest request) {
         jobQuestService.evaluateJobQuest(
-                request.getDepartment(), request.getPart(), request.getCycle(), request.getMonth(), request.getWeek());
+                request.getDepartment(), request.getPart(), request.getCycle(), request.getRound());
 
-        return ResponseEntity.status(HttpStatus.CREATED).build(); // ✅ 201 Created 반환
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기의 JobQuest 목록 조회

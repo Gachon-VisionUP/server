@@ -25,7 +25,7 @@ public class JobQuestRepositoryImpl implements JobQuestRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    // ✅ 특정 부서, 직무 그룹, 주기 및 회차로 조회
+    // ✅ 특정 부서, 직무 그룹, 주기 및 round로 조회
     @Override
     public Optional<JobQuest> findByDepartmentAndRound(String department, int part, String cycle, int round) {
         Optional<JobQuest> result = Optional.ofNullable(
@@ -35,36 +35,12 @@ public class JobQuestRepositoryImpl implements JobQuestRepository {
                                 jobQuest.department.eq(Department.valueOf(department)),
                                 jobQuest.part.eq(part),
                                 jobQuest.cycle.eq(Cycle.valueOf(cycle)),
-                                jobQuest.round.eq(round) // ✅ 정확한 round 기준 조회
+                                jobQuest.round.eq(round) // ✅ round 기준 조회
                         )
                         .fetchOne()
         );
 
         log.info("📌 [DEBUG] JobQuest 조회 결과: {}", result.isPresent() ? "존재함" : "없음");
-        return result;
-    }
-
-    // ✅ 특정 부서, 직무 그룹, 월, 주차 기준으로 조회
-    @Override
-    public Optional<JobQuest> findByDepartmentAndMonthAndWeek(String department, int part, int month, Integer week) {
-        Optional<JobQuest> result = Optional.ofNullable(
-                queryFactory
-                        .selectFrom(jobQuest)
-                        .where(
-                                jobQuest.department.eq(Department.valueOf(department)),
-                                jobQuest.part.eq(part),
-                                jobQuest.month.eq(month),
-                                jobQuest.week.eq(week)
-                        )
-                        .fetchOne()
-        );
-
-        if (result.isPresent()) {
-            log.info("✅ [INFO] JobQuest 조회 성공: {} {}월 {}주차 - {}", department, month, week, result.get().getQuestGrade());
-        } else {
-            log.warn("⚠️ [WARN] JobQuest 조회 실패: {} {}월 {}주차 데이터 없음", department, month, week);
-        }
-
         return result;
     }
 
@@ -78,7 +54,7 @@ public class JobQuestRepositoryImpl implements JobQuestRepository {
                         jobQuest.part.eq(part),
                         jobQuest.cycle.stringValue().eq(cycle)
                 )
-                .orderBy(jobQuest.round.asc()) // ✅ 회차 기준 정렬
+                .orderBy(jobQuest.round.asc()) // ✅ round 기준 정렬
                 .fetch();
     }
 

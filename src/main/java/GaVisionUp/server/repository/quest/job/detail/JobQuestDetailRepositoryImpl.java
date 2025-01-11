@@ -22,18 +22,18 @@ public class JobQuestDetailRepositoryImpl implements JobQuestDetailRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    // ✅ 특정 부서, 직무 그룹, 주기, 월, 주차의 데이터를 조회 (기존 round → month & week 변경)
-    public List<JobQuestDetail> findAllByDepartmentAndMonthAndWeek(Department department, int part, Cycle cycle, int month, Integer week) {
+    // ✅ 특정 부서, 직무 그룹, 주기, round 기반으로 조회
+    @Override
+    public List<JobQuestDetail> findAllByDepartmentAndRound(Department department, int part, Cycle cycle, int round) {
         return queryFactory
                 .selectFrom(jobQuestDetail)
                 .where(
                         jobQuestDetail.department.eq(department),
                         jobQuestDetail.part.eq(part),
                         jobQuestDetail.cycle.eq(cycle),
-                        jobQuestDetail.month.eq(month),
-                        jobQuestDetail.week.eq(week)
+                        jobQuestDetail.round.eq(round) // ✅ round 값 직접 조회
                 )
-                .fetch(); // ✅ 여러 개의 데이터를 리스트로 반환
+                .fetch();
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기의 모든 데이터를 조회
@@ -46,7 +46,7 @@ public class JobQuestDetailRepositoryImpl implements JobQuestDetailRepository {
                         jobQuestDetail.part.eq(part),
                         jobQuestDetail.cycle.eq(cycle)
                 )
-                .orderBy(jobQuestDetail.month.asc(), jobQuestDetail.week.asc()) // ✅ 월, 주차 기준 정렬
+                .orderBy(jobQuestDetail.month.asc(), jobQuestDetail.round.asc()) // ✅ month 및 round 기준 정렬
                 .fetch();
     }
 

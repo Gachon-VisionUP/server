@@ -23,50 +23,41 @@ public class JobQuest {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Department department; // ✅ 소속
+    private Department department;
 
     @Column(nullable = false)
-    private int part; // ✅ 직무 그룹
+    private int part;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Cycle cycle; // ✅ 주기 (MONTHLY, WEEKLY)
+    private Cycle cycle;
 
     @Column(name = "round_value", nullable = false)
-    private int round; // ✅ 연속된 월 또는 주 (CYCLE에 따라 다름)
-
-    @Column(name = "month_value", nullable = false)
-    private int month; // ✅ 월 (1~12)
-
-    @Column(name = "week_value", nullable = true)
-    private Integer week; // ✅ 주차 (1~5) - 월간 데이터는 null
+    private int round; // ✅ month, week 제거 후 round만 유지
 
     @Column(nullable = false)
-    private double productivity; // ✅ 생산성
+    private double productivity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ExpType expType; // ✅ ExpType.JOB_QUEST
+    private ExpType expType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TeamQuestGrade questGrade; // ✅ 부여된 등급
+    private TeamQuestGrade questGrade;
 
     @Column(nullable = false)
-    private int grantedExp; // ✅ 부여 경험치
+    private int grantedExp;
 
     @Column(nullable = false)
-    private LocalDate grantedDate; // ✅ 경험치 부여 날짜
+    private LocalDate grantedDate;
 
-    public static JobQuest create(Department department, int part, Cycle cycle, int round, int month, Integer week, double productivity, TeamQuestGrade questGrade, int grantedExp) {
-
+    public static JobQuest create(Department department, int part, Cycle cycle, int round, double productivity, TeamQuestGrade questGrade, int grantedExp) {
         return JobQuest.builder()
                 .department(department)
                 .part(part)
                 .cycle(cycle)
                 .round(round)
-                .month(month)
-                .week(week)
                 .productivity(productivity)
                 .expType(ExpType.JOB_QUEST)
                 .questGrade(questGrade)

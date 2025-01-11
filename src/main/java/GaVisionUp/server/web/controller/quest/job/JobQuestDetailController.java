@@ -22,7 +22,7 @@ public class JobQuestDetailController {
     public ResponseEntity<Void> addJobQuestDetail(@RequestBody JobQuestDetailRequest request) {
         jobQuestDetailService.saveJobQuestDetail(
                 request.getDepartment(), request.getPart(), request.getCycle(),
-                request.getMonth(), request.getWeek(), request.getSales(), request.getLaborCost(), request.getRecordedDate());
+                request.getMonth(), request.getRound(), request.getSales(), request.getLaborCost(), request.getRecordedDate());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

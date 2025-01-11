@@ -2,16 +2,14 @@ package GaVisionUp.server.web.dto.quest.job;
 
 import GaVisionUp.server.entity.enums.Cycle;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDate;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class JobQuestRequest {
-    private String department;
-    private int part;
-    private Cycle cycle;
-    private int month; // ✅ 월 (1~12)
-    private Integer week; // ✅ 주차 (1~5) - 월간 데이터는 null
+
+    private String department; // ✅ 부서명
+    private int part; // ✅ 직무 그룹
+    private Cycle cycle; // ✅ 주기 (WEEKLY, MONTHLY)
+    private int round;
 }

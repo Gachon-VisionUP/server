@@ -1,6 +1,5 @@
 package GaVisionUp.server.web.dto.quest.team;
 
-import GaVisionUp.server.entity.enums.TeamQuestGrade;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

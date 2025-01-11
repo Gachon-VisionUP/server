@@ -5,6 +5,7 @@ import GaVisionUp.server.entity.enums.TeamQuestGrade;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 @Entity
@@ -33,18 +34,23 @@ public class TeamQuest {
     private int day; // ✅ 퀘스트 달성 일 (1~31)
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "day_of_week", nullable = false)
+    private DayOfWeek dayOfWeek; // ✅ 요일 필드 추가 (월요일~일요일)
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TeamQuestGrade questGrade; // ✅ 부여된 등급 (MAX, MEDIAN, MIN)
 
     @Column(nullable = false)
     private LocalDate recordedDate; // ✅ 실제 기록된 날짜
 
-    public static TeamQuest create(User user, int month, int week, int day, LocalDate recordedDate, TeamQuestGrade questGrade) {
+    public static TeamQuest create(User user, int month, int week, int day, DayOfWeek dayOfWeek, LocalDate recordedDate, TeamQuestGrade questGrade) {
         return TeamQuest.builder()
                 .user(user)
                 .month(month)
                 .week(week)
-                .day(day) // ✅ day 값 저장
+                .day(day)
+                .dayOfWeek(dayOfWeek) // ✅ 요일 저장
                 .recordedDate(recordedDate)
                 .questGrade(questGrade)
                 .build();

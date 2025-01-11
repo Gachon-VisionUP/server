@@ -21,40 +21,40 @@ public class JobQuestDetail {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Department department; // ✅ 소속 (ex: "음성 1센터")
+    private Department department;
 
     @Column(nullable = false)
-    private int part; // ✅ 직무 그룹 (ex: 1)
+    private int part;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Cycle cycle; // ✅ 주기 (ex: "주간", "월간")
+    private Cycle cycle;
 
     @Column(name = "month_value", nullable = false)
-    private int month; // ✅ 월 정보 추가 (1~12)
+    private int month; // ✅ 월 정보 유지
 
-    @Column(name = "week_value", nullable = true)
-    private Integer week; // ✅ 주차 정보 추가 (1~5, 월간일 경우 NULL 허용)
-
-    @Column(nullable = false)
-    private double sales; // ✅ 매출 (ex: 1000000)
+    @Column(name = "round_value", nullable = false)
+    private int round; // ✅ 주차 대신 round 값 저장
 
     @Column(nullable = false)
-    private double laborCost; // ✅ 인건비 (ex: 500000)
+    private double sales;
 
     @Column(nullable = false)
-    private LocalDate recordedDate; // ✅ 사용자가 입력한 날짜
+    private double laborCost;
 
-    public static JobQuestDetail create(Department department, int part, Cycle cycle, int month, Integer week, double sales, double laborCost, LocalDate recordedDate) {
+    @Column(nullable = false)
+    private LocalDate recordedDate;
+
+    public static JobQuestDetail create(Department department, int part, Cycle cycle, int month, int round, double sales, double laborCost, LocalDate recordedDate) {
         return JobQuestDetail.builder()
                 .department(department)
                 .part(part)
                 .cycle(cycle)
-                .month(month) // ✅ 추가된 필드 반영
-                .week(week) // ✅ 추가된 필드 반영
+                .month(month)
+                .round(round)
                 .sales(sales)
                 .laborCost(laborCost)
-                .recordedDate(recordedDate) // ✅ 사용자 입력 날짜 반영
+                .recordedDate(recordedDate)
                 .build();
     }
 }

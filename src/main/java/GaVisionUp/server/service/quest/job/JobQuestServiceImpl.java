@@ -31,7 +31,7 @@ public class JobQuestServiceImpl implements JobQuestService {
     private final ExperienceRepository experienceRepository;
     private final JobQuestDetailRepository jobQuestDetailRepository;
 
-    // ✅ 특정 부서, 직무 그룹, 주기 및 회차의 JobQuest 조회
+    // ✅ 특정 부서, 직무 그룹, 주기 및 round 값으로 JobQuest 조회
     @Override
     public Optional<JobQuest> getJobQuest(String department, int jobGroup, String cycle, int round) {
         return jobQuestRepository.findByDepartmentAndRound(department, jobGroup, cycle, round);
@@ -51,13 +51,12 @@ public class JobQuestServiceImpl implements JobQuestService {
 
     // ✅ 직무별 퀘스트 점수 평가 및 경험치 부여
     @Override
-    public void evaluateJobQuest(String department, int part, Cycle cycle, int month, Integer week) {
-        List<JobQuestDetail> details = jobQuestDetailRepository.findAllByDepartmentAndMonthAndWeek(
-                Department.valueOf(department), part, cycle, month, week
-        );
+    public void evaluateJobQuest(String department, int part, Cycle cycle, int round) {
+        List<JobQuestDetail> details = jobQuestDetailRepository.findAllByDepartmentAndRound(
+                Department.valueOf(department), part, cycle, round);
 
         if (details.isEmpty()) {
-            throw new IllegalArgumentException("해당 주차의 직무별 퀘스트 상세 데이터가 존재하지 않습니다.");
+            throw new IllegalArgumentException("해당 round의 직무별 퀘스트 상세 데이터가 존재하지 않습니다.");
         }
 
         double totalSales = details.stream().mapToDouble(JobQuestDetail::getSales).sum();
@@ -78,14 +77,11 @@ public class JobQuestServiceImpl implements JobQuestService {
             questGrade = TeamQuestGrade.MIN;
         }
 
-        // ✅ CYCLE에 따른 round 계산
-        int round = calculateRound(cycle, month, week);
 
-        log.info("📌 [DEBUG] cycle: {}, month: {}, week: {}, round: {}", cycle, month, week, round);
+        log.info("📌 [DEBUG] cycle: {}, round: {}", cycle, round);
 
-        // ✅ JobQuest 기록 저장
         JobQuest jobQuest = JobQuest.create(
-                Department.valueOf(department), part, cycle, round, month, week, productivity, questGrade, grantedExp
+                Department.valueOf(department), part, cycle, round, productivity, questGrade, grantedExp
         );
         jobQuestRepository.save(jobQuest);
 
@@ -95,20 +91,6 @@ public class JobQuestServiceImpl implements JobQuestService {
                 Experience experience = new Experience(user, ExpType.JOB_QUEST, grantedExp);
                 experienceRepository.save(experience);
             }
-        }
-    }
-
-    // ✅ CYCLE에 따라 round 계산 방식 변경
-    private int calculateRound(Cycle cycle, int month, Integer week) {
-        if (cycle == Cycle.MONTHLY) {
-            return month; // ✅ 월 단위이면 round는 month와 동일
-        } else if (cycle == Cycle.WEEKLY) {
-            if (week == null) {
-                throw new IllegalArgumentException("주 단위 평가에서는 week 값이 필요합니다.");
-            }
-            return (month - 1) * 5 + week; // ✅ 주 단위이면 (월 - 1) * 5 + 주차
-        } else {
-            throw new IllegalArgumentException("지원하지 않는 cycle 값입니다: " + cycle);
         }
     }
 }
