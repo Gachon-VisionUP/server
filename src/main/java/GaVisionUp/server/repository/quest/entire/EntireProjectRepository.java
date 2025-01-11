@@ -1,4 +1,4 @@
-package GaVisionUp.server.repository.quest;
+package GaVisionUp.server.repository.quest.entire;
 
 import GaVisionUp.server.entity.quest.EntireProject;
 import java.time.LocalDate;

@@ -18,18 +18,21 @@ public class JobQuestDetailServiceImpl implements JobQuestDetailService {
 
     private final JobQuestDetailRepository jobQuestDetailRepository;
 
-    // ✅ 특정 부서, 직무 그룹, 주기, 회차의 모든 JobQuestDetail 조회
-    public List<JobQuestDetail> getJobQuestDetails(String department, int part, Cycle cycle, int round) {
-        return jobQuestDetailRepository.findAllByDepartmentAndRound(Department.valueOf(department), part, cycle, round);
+    // ✅ 특정 부서, 직무 그룹, 주기, 월, 주차의 JobQuestDetail 조회
+    @Override
+    public List<JobQuestDetail> getJobQuestDetails(String department, int part, Cycle cycle, int month, Integer week) {
+        return jobQuestDetailRepository.findAllByDepartmentAndMonthAndWeek(Department.valueOf(department), part, cycle, month, week);
     }
 
     // ✅ 특정 부서, 직무 그룹, 주기의 모든 JobQuestDetail 조회
-    public List<JobQuestDetail> getAllJobQuestDetails(String department, int part, Cycle cycle) {
-        return jobQuestDetailRepository.findAllByDepartmentAndCycle(department, part, cycle);
+    @Override
+    public List<JobQuestDetail> getAllJobQuestDetails(String department, int part, String cycle) {
+        return jobQuestDetailRepository.findAllByDepartmentAndCycle(Department.valueOf(department), part, Cycle.valueOf(cycle));
     }
 
     // ✅ JobQuestDetail 데이터 저장
-    public JobQuestDetail saveJobQuestDetail(String department, int part, Cycle cycle, int round, double sales, double laborCost, LocalDate recordedDate) {
+    @Override
+    public JobQuestDetail saveJobQuestDetail(String department, int part, Cycle cycle, int month, Integer week, double sales, double laborCost, LocalDate recordedDate) {
         // ✅ 문자열로 전달된 department를 Enum으로 변환
         Department deptEnum;
         try {
@@ -39,7 +42,7 @@ public class JobQuestDetailServiceImpl implements JobQuestDetailService {
         }
 
         JobQuestDetail jobQuestDetail = JobQuestDetail.create(
-                deptEnum, part, cycle, round, sales, laborCost, recordedDate);
+                deptEnum, part, cycle, month, week, sales, laborCost, recordedDate);
         return jobQuestDetailRepository.save(jobQuestDetail);
     }
 }

@@ -1,6 +1,5 @@
 package GaVisionUp.server.web.controller.quest.job;
 
-import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.service.quest.job.detail.JobQuestDetailService;
 import GaVisionUp.server.web.dto.quest.job.detail.JobQuestDetailRequest;
 import GaVisionUp.server.web.dto.quest.job.detail.JobQuestDetailResponse;
@@ -18,12 +17,12 @@ public class JobQuestDetailController {
 
     private final JobQuestDetailService jobQuestDetailService;
 
-    // ✅ JobQuestDetail 추가 API
+    // ✅ JobQuestDetail 추가 API (month, week 추가)
     @PostMapping("/add")
     public ResponseEntity<Void> addJobQuestDetail(@RequestBody JobQuestDetailRequest request) {
         jobQuestDetailService.saveJobQuestDetail(
                 request.getDepartment(), request.getPart(), request.getCycle(),
-                request.getRound(), request.getSales(), request.getLaborCost(), request.getRecordedDate());
+                request.getMonth(), request.getWeek(), request.getSales(), request.getLaborCost(), request.getRecordedDate());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -33,7 +32,7 @@ public class JobQuestDetailController {
     public ResponseEntity<List<JobQuestDetailResponse>> getAllJobQuestDetails(
             @PathVariable String department,
             @PathVariable int part,
-            @PathVariable Cycle cycle) {
+            @PathVariable String cycle) {
         List<JobQuestDetailResponse> details = jobQuestDetailService.getAllJobQuestDetails(department, part, cycle)
                 .stream().map(JobQuestDetailResponse::new).toList();
         return ResponseEntity.ok(details);

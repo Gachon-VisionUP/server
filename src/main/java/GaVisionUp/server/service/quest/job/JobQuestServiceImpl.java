@@ -1,5 +1,6 @@
 package GaVisionUp.server.service.quest.job;
 
+import GaVisionUp.server.entity.enums.TeamQuestGrade;
 import GaVisionUp.server.entity.quest.job.JobQuest;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Cycle;
@@ -13,6 +14,7 @@ import GaVisionUp.server.repository.quest.job.detail.JobQuestDetailRepository;
 import GaVisionUp.server.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class JobQuestServiceImpl implements JobQuestService {
 
     private final JobQuestRepository jobQuestRepository;
@@ -48,44 +51,64 @@ public class JobQuestServiceImpl implements JobQuestService {
 
     // ✅ 직무별 퀘스트 점수 평가 및 경험치 부여
     @Override
-    public void evaluateJobQuest(String department, int part, Cycle cycle, int round) {
-        // ✅ 해당 부서, 직무 그룹, 주기, 회차의 모든 JobQuestDetail 데이터 조회
-        List<JobQuestDetail> details = jobQuestDetailRepository.findAllByDepartmentAndRound(Department.valueOf(department), part, cycle, round);
+    public void evaluateJobQuest(String department, int part, Cycle cycle, int month, Integer week) {
+        List<JobQuestDetail> details = jobQuestDetailRepository.findAllByDepartmentAndMonthAndWeek(
+                Department.valueOf(department), part, cycle, month, week
+        );
 
         if (details.isEmpty()) {
             throw new IllegalArgumentException("해당 주차의 직무별 퀘스트 상세 데이터가 존재하지 않습니다.");
         }
 
-        // ✅ 매출과 인건비 총합 계산
         double totalSales = details.stream().mapToDouble(JobQuestDetail::getSales).sum();
         double totalLaborCost = details.stream().mapToDouble(JobQuestDetail::getLaborCost).sum();
-
-        // ✅ 생산성 계산 (총 매출 / 총 인건비)
         double productivity = (totalLaborCost == 0) ? 0.0 : totalSales / totalLaborCost;
-        int grantedExp = calculateExp(productivity);
+
+        TeamQuestGrade questGrade;
+        int grantedExp;
+
+        if (productivity >= 5.1) {
+            grantedExp = 80;
+            questGrade = TeamQuestGrade.MAX;
+        } else if (productivity >= 4.3) {
+            grantedExp = 40;
+            questGrade = TeamQuestGrade.MEDIAN;
+        } else {
+            grantedExp = 0;
+            questGrade = TeamQuestGrade.MIN;
+        }
+
+        // ✅ CYCLE에 따른 round 계산
+        int round = calculateRound(cycle, month, week);
+
+        log.info("📌 [DEBUG] cycle: {}, month: {}, week: {}, round: {}", cycle, month, week, round);
 
         // ✅ JobQuest 기록 저장
-        JobQuest jobQuest = JobQuest.create(Department.valueOf(department), part, cycle, round, productivity, grantedExp);
+        JobQuest jobQuest = JobQuest.create(
+                Department.valueOf(department), part, cycle, round, month, week, productivity, questGrade, grantedExp
+        );
         jobQuestRepository.save(jobQuest);
 
-        // ✅ 해당 부서와 직무 그룹에 속한 모든 사용자 조회
         List<User> users = userRepository.findByDepartmentAndPart(Department.valueOf(department), part);
         for (User user : users) {
-            // ✅ 경험치 기록 생성 및 저장
-            Experience experience = new Experience(user, ExpType.JOB_QUEST, grantedExp);
-            experienceRepository.save(experience);
+            if (questGrade != TeamQuestGrade.MIN) {
+                Experience experience = new Experience(user, ExpType.JOB_QUEST, grantedExp);
+                experienceRepository.save(experience);
+            }
         }
     }
 
-
-    // ✅ 생산성에 따라 경험치 계산
-    private int calculateExp(double productivity) {
-        if (productivity >= 5.1) {
-            return 80; // ✅ Max 등급
-        } else if (productivity >= 4.3) {
-            return 40; // ✅ Medium 등급
+    // ✅ CYCLE에 따라 round 계산 방식 변경
+    private int calculateRound(Cycle cycle, int month, Integer week) {
+        if (cycle == Cycle.MONTHLY) {
+            return month; // ✅ 월 단위이면 round는 month와 동일
+        } else if (cycle == Cycle.WEEKLY) {
+            if (week == null) {
+                throw new IllegalArgumentException("주 단위 평가에서는 week 값이 필요합니다.");
+            }
+            return (month - 1) * 5 + week; // ✅ 주 단위이면 (월 - 1) * 5 + 주차
         } else {
-            return 0; // ✅ 경험치 없음
+            throw new IllegalArgumentException("지원하지 않는 cycle 값입니다: " + cycle);
         }
     }
 }

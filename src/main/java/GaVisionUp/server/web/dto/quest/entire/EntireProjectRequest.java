@@ -1,4 +1,4 @@
-package GaVisionUp.server.web.dto.quest;
+package GaVisionUp.server.web.dto.quest.entire;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

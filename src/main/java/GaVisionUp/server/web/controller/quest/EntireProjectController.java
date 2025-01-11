@@ -1,8 +1,8 @@
 package GaVisionUp.server.web.controller.quest;
 
-import GaVisionUp.server.service.quest.EntireProjectService;
-import GaVisionUp.server.web.dto.quest.EntireProjectRequest;
-import GaVisionUp.server.web.dto.quest.EntireProjectResponse;
+import GaVisionUp.server.service.quest.entire.EntireProjectService;
+import GaVisionUp.server.web.dto.quest.entire.EntireProjectRequest;
+import GaVisionUp.server.web.dto.quest.entire.EntireProjectResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

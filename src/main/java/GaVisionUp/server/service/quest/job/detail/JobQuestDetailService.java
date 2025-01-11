@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JobQuestDetailService {
-    List<JobQuestDetail> getJobQuestDetails(String department, int part, Cycle cycle, int round);
-    List<JobQuestDetail> getAllJobQuestDetails(String department, int part, Cycle cycle);
-    JobQuestDetail saveJobQuestDetail(String department, int part, Cycle cycle, int round, double sales, double laborCost, LocalDate recordedDate);
+    List<JobQuestDetail> getJobQuestDetails(String department, int part, Cycle cycle, int month, Integer week);
+    List<JobQuestDetail> getAllJobQuestDetails(String department, int part, String cycle);
+    JobQuestDetail saveJobQuestDetail(String department, int part, Cycle cycle, int month, Integer week, double sales, double laborCost, LocalDate recordedDate);
 }

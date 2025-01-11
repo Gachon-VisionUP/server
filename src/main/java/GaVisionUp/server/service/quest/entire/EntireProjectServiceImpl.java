@@ -1,11 +1,11 @@
-package GaVisionUp.server.service.quest;
+package GaVisionUp.server.service.quest.entire;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.Experience;
 import GaVisionUp.server.entity.quest.EntireProject;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
-import GaVisionUp.server.repository.quest.EntireProjectRepository;
+import GaVisionUp.server.repository.quest.entire.EntireProjectRepository;
 import GaVisionUp.server.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

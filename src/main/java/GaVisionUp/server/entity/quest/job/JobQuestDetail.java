@@ -3,9 +3,9 @@ package GaVisionUp.server.entity.quest.job;
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
 import jakarta.persistence.*;
-        import lombok.*;
+import lombok.*;
 
-        import java.time.LocalDate;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -30,8 +30,11 @@ public class JobQuestDetail {
     @Column(nullable = false)
     private Cycle cycle; // ✅ 주기 (ex: "주간", "월간")
 
-    @Column(nullable = false)
-    private int round; // ✅ 회차 (ex: 1~52, 1~12)
+    @Column(name = "month_value", nullable = false)
+    private int month; // ✅ 월 정보 추가 (1~12)
+
+    @Column(name = "week_value", nullable = true)
+    private Integer week; // ✅ 주차 정보 추가 (1~5, 월간일 경우 NULL 허용)
 
     @Column(nullable = false)
     private double sales; // ✅ 매출 (ex: 1000000)
@@ -42,17 +45,13 @@ public class JobQuestDetail {
     @Column(nullable = false)
     private LocalDate recordedDate; // ✅ 사용자가 입력한 날짜
 
-    // ✅ 생산성 자동 계산 (매출 / 인건비)
-    public double calculateProductivity() {
-        return (laborCost == 0) ? 0 : sales / laborCost;
-    }
-
-    public static JobQuestDetail create(Department department, int part, Cycle cycle, int round, double sales, double laborCost, LocalDate recordedDate) {
+    public static JobQuestDetail create(Department department, int part, Cycle cycle, int month, Integer week, double sales, double laborCost, LocalDate recordedDate) {
         return JobQuestDetail.builder()
                 .department(department)
                 .part(part)
                 .cycle(cycle)
-                .round(round)
+                .month(month) // ✅ 추가된 필드 반영
+                .week(week) // ✅ 추가된 필드 반영
                 .sales(sales)
                 .laborCost(laborCost)
                 .recordedDate(recordedDate) // ✅ 사용자 입력 날짜 반영

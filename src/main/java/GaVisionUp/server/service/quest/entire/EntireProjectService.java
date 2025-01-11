@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.quest;
+package GaVisionUp.server.service.quest.entire;
 
 import GaVisionUp.server.entity.quest.EntireProject;
 
