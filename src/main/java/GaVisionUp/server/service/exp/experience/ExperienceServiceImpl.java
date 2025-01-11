@@ -48,6 +48,24 @@ public class ExperienceServiceImpl implements ExperienceService {
         return experience;
     }
 
+    /* 추후에 expo 토큰 추가되면 사용
+    public Experience addExperience(Long userId, ExpType expType, int exp) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사원입니다."));
+
+    Experience experience = new Experience(user, expType, exp);
+    experienceRepository.save(experience);
+
+    // ✅ 푸쉬 알림 생성 및 전송 (NotificationService에서 처리)
+    String title = "📢 경험치 획득!";
+    String message = String.format("%s님, %s 경험치 %d점을 획득했습니다!", user.getName(), expType.name(), exp);
+    notificationService.createNotification(user, title, message);
+
+    log.info("✅ 경험치 추가 및 푸쉬 알림 전송 완료 - 유저: {}, ExpType: {}, 획득 경험치: {}", user.getName(), expType, exp);
+    return experience;
+}
+     */
+
     // ✅ 특정 경험치의 경험치 내역 조회
     @Override
     public Optional<Experience> getExperienceById(Long id) {
