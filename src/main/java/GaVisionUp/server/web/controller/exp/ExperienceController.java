@@ -3,6 +3,7 @@ package GaVisionUp.server.web.controller.exp;
 import GaVisionUp.server.entity.exp.Experience;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
+import GaVisionUp.server.web.dto.exp.ExperienceRequest;
 import GaVisionUp.server.web.dto.exp.ExperienceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,10 @@ public class ExperienceController {
 
     // ✅ 경험치 추가
     @PostMapping("/add")
-    public ResponseEntity<ExperienceResponse> addExperience(
-            @RequestParam Long userId,
-            @RequestParam ExpType expType,
-            @RequestParam int exp) {
-        Experience experience = experienceService.addExperience(userId, expType, exp);
+    public ResponseEntity<ExperienceResponse> addExperience(@RequestBody ExperienceRequest request) {
+        Experience experience = experienceService.addExperience(
+                request.getUserId(), request.getExpType(), request.getExp()
+        );
         return ResponseEntity.ok(new ExperienceResponse(experience));
     }
 
