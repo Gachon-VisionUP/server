@@ -2,6 +2,7 @@ package GaVisionUp.server.repository.user;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
+import GaVisionUp.server.entity.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByLoginId(String loginId);
 
     List<User> findByDepartmentAndPart(Department department, int part);
+
+    List<User> findAllByRoleEquals(Role role);
 }

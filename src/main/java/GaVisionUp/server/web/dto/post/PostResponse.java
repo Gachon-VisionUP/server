@@ -37,4 +37,11 @@ public class PostResponse {
         String body;
         LocalDate date;
     }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class AddPost{
+        Long postId;
+    }
 }

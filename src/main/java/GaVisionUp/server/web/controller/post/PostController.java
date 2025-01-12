@@ -2,7 +2,9 @@ package GaVisionUp.server.web.controller.post;
 
 import GaVisionUp.server.entity.enums.Filter;
 import GaVisionUp.server.global.base.ApiResponse;
+import GaVisionUp.server.service.post.PostCommandService;
 import GaVisionUp.server.service.post.PostQueryService;
+import GaVisionUp.server.web.dto.post.PostRequest;
 import GaVisionUp.server.web.dto.post.PostResponse;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostQueryService postQueryService;
+    private final PostCommandService postCommandService;
 
     @GetMapping()
     public ApiResponse<PostResponse.PreviewList> getPostsPreviewList(
@@ -31,5 +34,10 @@ public class PostController {
             @PathVariable Long postId
     ) {
         return ApiResponse.onSuccess(postQueryService.getPost(postId));
+    }
+
+    @PostMapping("/add")
+    public ApiResponse<PostResponse.AddPost> addPost(@RequestBody PostRequest.AddPost request) {
+        return ApiResponse.onSuccess(postCommandService.addPost(request));
     }
 }
