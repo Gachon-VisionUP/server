@@ -15,4 +15,5 @@ public interface ExperienceRepository {
     List<Experience> findByUserIdAndCurrentYear(Long userId, int currentYear, ExpBar expBar);
     List<Experience> findByUserIdAndPreviousYears(Long userId, int previousYear, LocalDate joinDate, ExpBar expBar);
     Optional<Experience> findTopByUserIdOrderByObtainedDateDesc(Long userId);
+    List<Experience> findTop3ByUserIdAndYearOrderByObtainedDateDesc(Long userId, int year);
 }
