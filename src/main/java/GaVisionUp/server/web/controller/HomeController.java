@@ -1,7 +1,9 @@
 package GaVisionUp.server.web.controller;
 
 import GaVisionUp.server.entity.User;
+import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.Experience;
+import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.HomeResponse;
@@ -17,9 +19,9 @@ import java.util.Optional;
 @RequestMapping("/api/home")
 @RequiredArgsConstructor
 public class HomeController {
-
-    private final ExperienceService experienceService;
     private final UserQueryService userQueryService;
+    private final ExperienceService experienceService;
+    private final ExpBarService expBarService;
 
     // ✅ 홈 데이터 조회 (최신 획득 경험치, 총 경험치)
     @GetMapping
@@ -32,6 +34,9 @@ public class HomeController {
         // ✅ 사용자 정보 가져오기
         User user = userQueryService.getUserById(sessionUserId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // ✅ 해당 유저의 ExpBar 확인 및 자동 생성
+        ExpBar expBar = expBarService.getOrCreateExpBarByUserId(sessionUserId);
 
         // ✅ 최신 경험치 조회
         Optional<Experience> latestExperienceOpt = experienceService.getLatestExperienceByUserId(sessionUserId);
