@@ -14,4 +14,5 @@ public interface ExperienceRepository {
     List<Experience> findByUserId(Long userId);  // 특정 사용자 경험치 조회
     List<Experience> findByUserIdAndCurrentYear(Long userId, int currentYear, ExpBar expBar);
     List<Experience> findByUserIdAndPreviousYears(Long userId, int previousYear, LocalDate joinDate, ExpBar expBar);
+    Optional<Experience> findTopByUserIdOrderByObtainedDateDesc(Long userId);
 }

@@ -13,4 +13,6 @@ public interface ExperienceService {
     List<Experience> getExperiencesByUserId(Long userId);
     List<Experience> getExperiencesByCurrentYear(Long userId, int currentYear);
     List<Experience> getExperiencesByPreviousYears(Long userId, int previousYear);
+
+    Optional<Experience> getLatestExperienceByUserId(Long userId);
 }

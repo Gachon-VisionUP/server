@@ -69,4 +69,10 @@ public class UserQueryServiceImpl implements UserQueryService{
                 .level(user.getLevel().getLevelName())
                 .build();
     }
+
+    // ✅ 유저 ID를 기반으로 사용자 정보 조회
+    @Override
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
 }
