@@ -3,6 +3,7 @@ package GaVisionUp.server.service.notification;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.Notification;
 import GaVisionUp.server.repository.notification.NotificationRepository;
+import GaVisionUp.server.service.user.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,22 +22,18 @@ import java.util.Map;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    /* Expo 토큰 필요
     private final RestTemplate restTemplate = new RestTemplate(); // ✅ REST API 호출용
     private static final String EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
-     */
-
-    // ✅ 특정 유저의 읽지 않은 알림 목록 조회
-    public List<Notification> getUnreadNotifications(Long userId) {
-        return notificationRepository.findByUserIdAndReadFalseOrderByCreatedAtDesc(userId);
-    }
 
     // ✅ 특정 유저의 모든 알림 조회 (읽음/안 읽음 관계없이)
+
     public List<Notification> getAllNotifications(Long userId) {
         return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
     // ✅ 알림 생성 및 저장
+    // Expo 토큰 없는 경우
+    /*
     public Notification createNotification(User user, String title, String message) {
         Notification notification = Notification.builder()
                 .user(user)
@@ -45,9 +42,9 @@ public class NotificationService {
                 .createdAt(LocalDateTime.now())
                 .build();
         return notificationRepository.save(notification);
-    }
+    }*/
 
-    /* Expo 토큰 필요
+    // Expo 토큰 필요
     // ✅ 알림 생성 및 Expo 푸쉬 알림 전송
     public Notification createNotification(User user, String title, String message) {
         Notification notification = Notification.builder()
@@ -91,7 +88,11 @@ public class NotificationService {
             throw new RuntimeException("Expo 푸쉬 알림 전송 실패: " + response.getBody());
         }
     }
-     */
+
+    // ✅ 특정 유저의 읽지 않은 알림 목록 조회
+    public List<Notification> getUnreadNotifications(Long userId) {
+        return notificationRepository.findByUserIdAndReadFalseOrderByCreatedAtDesc(userId);
+    }
 
     // ✅ 알림 읽음 처리
     public void markAsRead(Long notificationId) {
