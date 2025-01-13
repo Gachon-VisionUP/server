@@ -5,6 +5,7 @@ import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import GaVisionUp.server.web.dto.exp.ExperienceRequest;
 import GaVisionUp.server.web.dto.exp.ExperienceResponse;
+import GaVisionUp.server.web.dto.exp.list.ExperienceListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,4 +69,29 @@ public class ExperienceController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
+
+    // ✅ 경험치 목록 조회 (최신 1개 + 연도별 최신 3개)
+    @GetMapping("/list")
+    public ResponseEntity<?> getExperienceList(
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(value = "year", required = false) Integer selectedYear) {
+
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().body("로그인이 필요합니다.");
+        }
+
+        // ✅ 기본 연도는 현재 연도
+        int targetYear = (selectedYear != null) ? selectedYear : Year.now().getValue();
+
+        // ✅ 선택한 연도의 최신 경험치 3개 조회
+        List<Experience> latestThreeExperiences = experienceService.getTop3ExperiencesByYear(sessionUserId, targetYear);
+
+        // ✅ Response 변환
+        List<ExperienceResponse> top3ExperiencesResponse = latestThreeExperiences.stream()
+                .map(ExperienceResponse::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new ExperienceListResponse(targetYear, top3ExperiencesResponse));
+    }
+
 }

@@ -132,4 +132,30 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
 
         return experiences;
     }
+
+    // ✅ 최신 경험치 1개 조회 (ORDER BY obtainedDate DESC LIMIT 1)
+    @Override
+    public Optional<Experience> findTopByUserIdOrderByObtainedDateDesc(Long userId) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(qExperience)
+                        .where(qExperience.user.id.eq(userId))
+                        .orderBy(qExperience.obtainedDate.desc()) // 최신 경험치 기준 정렬
+                        .fetchFirst() // 가장 최신 경험치 1개 조회
+        );
+    }
+
+    // ✅ 특정 연도의 최신 3개 경험치 조회
+    @Override
+    public List<Experience> findTop3ByUserIdAndYearOrderByObtainedDateDesc(Long userId, int year) {
+        return queryFactory
+                .selectFrom(qExperience)
+                .where(
+                        qExperience.user.id.eq(userId),
+                        qExperience.obtainedDate.year().eq(year) // ✅ 특정 연도 필터링
+                )
+                .orderBy(qExperience.obtainedDate.desc()) // ✅ 최신순 정렬
+                .limit(3) // ✅ 최신 3개 제한
+                .fetch();
+    }
 }

@@ -98,4 +98,16 @@ public class ExperienceServiceImpl implements ExperienceService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사원입니다."));
         return experienceRepository.findByUserIdAndPreviousYears(userId, previousYear, user.getJoinDate(), expBar);
     }
+
+    // ✅ 최신 경험치 조회
+    @Override
+    public Optional<Experience> getLatestExperienceByUserId(Long userId) {
+        return experienceRepository.findTopByUserIdOrderByObtainedDateDesc(userId);
+    }
+
+    // ✅ 특정 연도의 최신 3개 경험치 조회
+    @Override
+    public List<Experience> getTop3ExperiencesByYear(Long userId, int year) {
+        return experienceRepository.findTop3ByUserIdAndYearOrderByObtainedDateDesc(userId, year);
+    }
 }
