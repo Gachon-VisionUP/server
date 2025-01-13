@@ -1,4 +1,4 @@
-package GaVisionUp.server.web.dto.exp.bar;
+package GaVisionUp.server.web.dto.exp.ring;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
