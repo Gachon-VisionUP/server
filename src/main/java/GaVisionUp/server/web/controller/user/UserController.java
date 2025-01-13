@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -106,5 +107,12 @@ public class UserController {
             lists.put(session.getId(), String.valueOf(session.getAttribute("userId")));
         }
         return lists;
+    }
+
+    // ✅ Expo 푸쉬 토큰 저장 API
+    @PostMapping("/{userId}/push-token")
+    public ResponseEntity<Void> updatePushToken(@PathVariable Long userId, @RequestBody String pushToken) {
+        userCommandService.updatePushToken(userId, pushToken);
+        return ResponseEntity.ok().build();
     }
 }

@@ -22,6 +22,8 @@ import GaVisionUp.server.service.exp.expbar.ExpBarServiceImpl;
 
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import GaVisionUp.server.service.exp.experience.ExperienceServiceImpl;
+import GaVisionUp.server.service.notification.ExpoNotificationService;
+import GaVisionUp.server.service.notification.NotificationService;
 import GaVisionUp.server.service.quest.job.JobQuestService;
 import GaVisionUp.server.service.quest.job.JobQuestServiceImpl;
 import GaVisionUp.server.service.level.LevelServiceImpl;
@@ -44,6 +46,8 @@ import org.springframework.context.annotation.Configuration;
 public class LogicConfig {
     private final EntityManager em;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
+    private final ExpoNotificationService expoNotificationService;
 
     @Bean
     public JPAQueryFactory jpaQueryFactory() {
@@ -69,7 +73,7 @@ public class LogicConfig {
 
     @Bean
     public ExperienceService experienceService() {
-        return new ExperienceServiceImpl(experienceRepository(), userRepository, expBarRepository());
+        return new ExperienceServiceImpl(experienceRepository(), userRepository, expBarRepository(), notificationService, expoNotificationService);
     }
 
     // 레벨 빈 등록

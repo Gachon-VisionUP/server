@@ -38,4 +38,14 @@ public class UserCommandServiceImpl implements UserCommandService{
                 .userId(user.getId())
                 .build();
     }
+
+    // ✅ Expo 푸쉬 토큰 업데이트 기능 추가
+    @Override
+    public void updatePushToken(Long userId, String pushToken) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
+
+        user.updatePushToken(pushToken);
+        userRepository.save(user);
+    }
 }

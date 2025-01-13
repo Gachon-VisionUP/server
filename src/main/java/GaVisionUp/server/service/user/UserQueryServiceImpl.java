@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -68,5 +69,13 @@ public class UserQueryServiceImpl implements UserQueryService{
                 .joinDate(user.getJoinDate())
                 .level(user.getLevel().getLevelName())
                 .build();
+    }
+
+    /*** 모든 사용자의 Expo Push Token 가져오기 */
+    public List<String> getAllExpoPushTokens() {
+        return userRepository.findAll().stream()
+                .map(User::getExpoPushToken)
+                .filter(token -> token != null && !token.isEmpty())
+                .toList();
     }
 }
