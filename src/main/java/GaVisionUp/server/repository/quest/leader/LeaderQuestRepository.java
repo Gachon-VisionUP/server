@@ -13,5 +13,7 @@ public interface LeaderQuestRepository {
     Optional<LeaderQuest> findByDepartmentAndCycleAndRound(String department, Cycle cycle, int round);
     Optional<LeaderQuest> findByDepartmentAndCycleAndMonth(String department, Cycle cycle, int month);
     LeaderQuest save(LeaderQuest leaderQuest);
+    Optional<LeaderQuest> findById(Long id);
+    List<LeaderQuest> findByUserIdAndYear(Long userId, int year);
 }
 

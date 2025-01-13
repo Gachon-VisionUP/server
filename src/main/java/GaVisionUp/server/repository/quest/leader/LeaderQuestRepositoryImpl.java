@@ -94,4 +94,27 @@ public class LeaderQuestRepositoryImpl implements LeaderQuestRepository {
         }
         return leaderQuest;
     }
+
+    // ✅ 특정 유저의 연도별 퀘스트 달성 조회
+    @Override
+    public List<LeaderQuest> findByUserIdAndYear(Long userId, int year) {
+        return queryFactory
+                .selectFrom(leaderQuest)
+                .where(
+                        leaderQuest.user.id.eq(userId),
+                        leaderQuest.assignedDate.year().eq(year)
+                )
+                .orderBy(leaderQuest.assignedDate.asc())
+                .fetch();
+    }
+
+    @Override
+    public Optional<LeaderQuest> findById(Long id) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(leaderQuest)
+                        .where(leaderQuest.id.eq(id))
+                        .fetchOne()
+        );
+    }
 }

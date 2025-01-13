@@ -100,7 +100,7 @@ public class LogicConfig {
     // 직무별 퀘스트
     @Bean
     public JobQuestRepository jobQuestRepository(){
-        return new JobQuestRepositoryImpl(em);
+        return new JobQuestRepositoryImpl(em, userRepository);
     }
 
     @Bean
