@@ -8,4 +8,5 @@ import java.util.List;
 public interface LevelService {
     List<Level> getLevelsByJobGroup(JobGroup jobGroup);
     Level getLevelByExp(JobGroup jobGroup, int totalExp);
+    Level getNextLevel(JobGroup jobGroup, int totalExp, String currentLevelName);
 }

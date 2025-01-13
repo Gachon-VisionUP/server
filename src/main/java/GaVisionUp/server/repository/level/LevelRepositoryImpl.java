@@ -46,7 +46,7 @@ public class LevelRepositoryImpl implements LevelRepository {
         );
     }
 
-    // ✅ 현재 레벨보다 높은 경험치가 있을 경우, 새로운 레벨 반환 (레벨업 판정)
+    // ✅ 현재 레벨보다 높은 경험치가 있을 경우, 새로운 레벨 반환 (레벨업에 사용)
     @Override
     public Optional<Level> findNextLevel(JobGroup jobGroup, int totalExp, String currentLevelName) {
         return Optional.ofNullable(
@@ -55,8 +55,11 @@ public class LevelRepositoryImpl implements LevelRepository {
                         .where(
                                 level.jobGroup.eq(jobGroup),
                                 level.requiredExp.loe(totalExp), // ✅ 현재 경험치 이하 중 가장 높은 레벨 선택
-                                level.requiredExp.gt(this.findLevelByExp(jobGroup, totalExp) // ✅ 여기 수정!
-                                        .map(Level::getRequiredExp).orElse(0)) // ✅ 현재 레벨보다 높은 값만 필터링
+                                level.requiredExp.gt(
+                                        this.findLevelByExp(jobGroup, totalExp) // ✅ 여기 수정!
+                                        .map(Level::getRequiredExp)
+                                        .orElse(0)
+                                ) // ✅ 현재 레벨보다 높은 값만 필터링
                         )
                         .orderBy(level.requiredExp.asc()) // ✅ 가장 가까운 상위 레벨 선택
                         .fetchFirst()

@@ -1,17 +1,25 @@
 package GaVisionUp.server.web.controller.exp;
 
+import GaVisionUp.server.entity.Level;
+import GaVisionUp.server.entity.User;
+import GaVisionUp.server.entity.enums.JobGroup;
 import GaVisionUp.server.entity.exp.Experience;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
+import GaVisionUp.server.service.level.LevelService;
+import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.exp.ExperienceRequest;
 import GaVisionUp.server.web.dto.exp.ExperienceResponse;
 import GaVisionUp.server.web.dto.exp.list.ExperienceListResponse;
+import GaVisionUp.server.web.dto.exp.list.ExperienceStateResponse;
+import GaVisionUp.server.web.dto.level.LevelResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Year;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -20,6 +28,8 @@ import java.util.stream.Collectors;
 public class ExperienceController {
 
     private final ExperienceService experienceService;
+    private final LevelService levelService;
+    private final UserQueryService userQueryService;
 
     // ✅ 경험치 추가
     @PostMapping("/add")
@@ -93,5 +103,76 @@ public class ExperienceController {
 
         return ResponseEntity.ok(new ExperienceListResponse(targetYear, top3ExperiencesResponse));
     }
+
+    // ✅ 경험치 현황 API ("/experience/state")
+    @GetMapping("/state")
+    public ResponseEntity<ExperienceStateResponse> getExperienceState(
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        // ✅ 사용자 정보 가져오기
+        User user = userQueryService.getUserById(sessionUserId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // ✅ 현재 레벨 정보
+        Level currentLevel = user.getLevel();
+        int totalExp = user.getTotalExp();
+
+        // ✅ 다음 레벨 정보 가져오기
+        Level nextLevel = levelService.getNextLevel(currentLevel.getJobGroup(), totalExp, currentLevel.getLevelName());
+        int nextLevelExpRequirement = nextLevel.getMinExp();
+
+        // ✅ 올해 경험치
+        int currentYear = Year.now().getValue();
+        List<Experience> currentYearExperiences = experienceService.getExperiencesByCurrentYear(sessionUserId, currentYear);
+        int currentYearTotalExp = currentYearExperiences.stream().mapToInt(Experience::getExp).sum();
+
+        // ✅ 작년 경험치
+        int previousYear = currentYear - 1;
+        List<Experience> previousYearExperiences = experienceService.getExperiencesByPreviousYears(sessionUserId, previousYear);
+        int previousYearTotalExp = previousYearExperiences.stream().mapToInt(Experience::getExp).sum();
+
+        // ✅ 경험치 현황 응답 생성
+        ExperienceStateResponse response = new ExperienceStateResponse(
+                currentLevel.getLevelName(),
+                totalExp,
+                nextLevel.getLevelName(),
+                nextLevelExpRequirement,
+                currentYearTotalExp,
+                previousYearTotalExp
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ✅ 전체 레벨 정보 조회 API (유저 직군 기반 필터링)
+    @GetMapping("/state/all-level")
+    public ResponseEntity<Map<String, List<LevelResponse>>> getAllLevels(
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        // ✅ 사용자 정보 가져오기
+        User user = userQueryService.getUserById(sessionUserId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // ✅ 사용자의 직군 기반으로 레벨 목록 조회
+        JobGroup jobGroup = user.getLevel().getJobGroup();
+        List<Level> levels = levelService.getLevelsByJobGroup(jobGroup);
+
+        // ✅ 응답 변환
+        List<LevelResponse> levelResponses = levels.stream()
+                .map(LevelResponse::new)
+                .toList();
+
+        // ✅ 특정 직군만 반환하도록 Map 형식으로 리턴
+        Map<String, List<LevelResponse>> response = Map.of(jobGroup.name(), levelResponses);
+
+        return ResponseEntity.ok(response);
+    }
+
 
 }
