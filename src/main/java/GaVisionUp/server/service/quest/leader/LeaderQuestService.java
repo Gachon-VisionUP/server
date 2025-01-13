@@ -16,4 +16,6 @@ public interface LeaderQuestService {
     List<LeaderQuestCondition> getConditionsByUserId(Long userId);
     List<LeaderQuest> getAchievementsByYear(Long userId, int year);
     LeaderQuestDetailResponse getQuestDetail(Long questId);
+    List<LeaderQuest> getMonthlyAchievements(Long userId, int year);
+    List<LeaderQuest> getWeeklyAchievements(Long userId, int year, int month);
 }

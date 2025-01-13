@@ -90,11 +90,23 @@ public class LeaderQuestServiceImpl implements LeaderQuestService {
     @Override
     public LeaderQuestDetailResponse getQuestDetail(Long questId) {
         LeaderQuest quest = leaderQuestRepository.findById(questId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 퀘스트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("퀘스트를 찾을 수 없습니다."));
 
         LeaderQuestCondition condition = leaderQuestConditionRepository.findByQuestName(quest.getQuestName())
-                .orElseThrow(() -> new IllegalArgumentException("해당 퀘스트 조건을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("퀘스트 조건을 찾을 수 없습니다."));
 
         return new LeaderQuestDetailResponse(quest, condition);
     }
+    // ✅ 연도별 리더 퀘스트 조회 (월별)
+    @Override
+    public List<LeaderQuest> getMonthlyAchievements(Long userId, int year) {
+        return leaderQuestRepository.findMonthlyByUserIdAndYear(userId, year);
+    }
+
+    // ✅ 연도 및 월별 리더 퀘스트 조회 (주별)
+    @Override
+    public List<LeaderQuest> getWeeklyAchievements(Long userId, int year, int month) {
+        return leaderQuestRepository.findWeeklyByUserIdAndYearAndMonth(userId, year, month);
+    }
+
 }

@@ -1,5 +1,6 @@
 package GaVisionUp.server.web.controller.quest;
 
+import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.quest.job.JobQuest;
 import GaVisionUp.server.service.quest.job.JobQuestService;
 import GaVisionUp.server.service.quest.leader.LeaderQuestService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Year;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,30 +45,32 @@ public class TeamQuestController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ 리더 부여 퀘스트 조회 (연도별)
+    // ✅ 리더 부여 퀘스트 조회 (연도별, 주기별)
     @GetMapping("/leader")
     public ResponseEntity<LeaderQuestListResponse> getLeaderQuests(
             @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(value = "year", required = false) Integer year) {
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "cycle", required = false, defaultValue = "MONTHLY") Cycle cycle) {
 
         if (sessionUserId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        // ✅ 연도 기본값 설정 (올해)
         int targetYear = (year != null) ? year : Year.now().getValue();
+        int currentMonth = YearMonth.now().getMonthValue(); // 현재 월
 
-        // ✅ 퀘스트 조건 목록 조회
-        List<LeaderQuestConditionResponse> conditions = leaderQuestService.getConditionsByUserId(sessionUserId)
+        var conditions = leaderQuestService.getConditionsByUserId(sessionUserId)
                 .stream()
                 .map(LeaderQuestConditionResponse::new)
                 .collect(Collectors.toList());
 
-        // ✅ 퀘스트 달성 등급 조회
-        List<LeaderQuestAchievementResponse> achievements = leaderQuestService.getAchievementsByYear(sessionUserId, targetYear)
-                .stream()
-                .map(LeaderQuestAchievementResponse::new)
-                .collect(Collectors.toList());
+        var achievements = (cycle == Cycle.MONTHLY) ?
+                leaderQuestService.getMonthlyAchievements(sessionUserId, targetYear).stream()
+                        .map(LeaderQuestAchievementResponse::new)
+                        .collect(Collectors.toList()) :
+                leaderQuestService.getWeeklyAchievements(sessionUserId, targetYear, currentMonth).stream()
+                        .map(LeaderQuestAchievementResponse::new)
+                        .collect(Collectors.toList());
 
         return ResponseEntity.ok(new LeaderQuestListResponse(conditions, achievements));
     }
@@ -74,7 +78,7 @@ public class TeamQuestController {
     // ✅ 리더 퀘스트 상세 조회
     @GetMapping("/leader/{id}")
     public ResponseEntity<LeaderQuestDetailResponse> getLeaderQuestDetail(@PathVariable Long id) {
-        LeaderQuestDetailResponse detail = leaderQuestService.getQuestDetail(id);
-        return ResponseEntity.ok(detail);
+        return ResponseEntity.ok(leaderQuestService.getQuestDetail(id));
     }
+
 }

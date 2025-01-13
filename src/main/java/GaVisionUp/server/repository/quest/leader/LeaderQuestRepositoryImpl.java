@@ -117,4 +117,33 @@ public class LeaderQuestRepositoryImpl implements LeaderQuestRepository {
                         .fetchOne()
         );
     }
+
+    // ✅ 특정 유저 ID 및 연도별 조회 (월별)
+    @Override
+    public List<LeaderQuest> findMonthlyByUserIdAndYear(Long userId, int year) {
+        return queryFactory
+                .selectFrom(leaderQuest)
+                .where(
+                        leaderQuest.user.id.eq(userId),
+                        leaderQuest.cycle.eq(Cycle.MONTHLY),
+                        leaderQuest.assignedDate.year().eq(year)
+                )
+                .orderBy(leaderQuest.month.asc()) // 월 기준 정렬
+                .fetch();
+    }
+
+    // ✅ 특정 유저 ID 및 연도/월별 조회 (주별)
+    @Override
+    public List<LeaderQuest> findWeeklyByUserIdAndYearAndMonth(Long userId, int year, int month) {
+        return queryFactory
+                .selectFrom(leaderQuest)
+                .where(
+                        leaderQuest.user.id.eq(userId),
+                        leaderQuest.cycle.eq(Cycle.WEEKLY),
+                        leaderQuest.assignedDate.year().eq(year),
+                        leaderQuest.month.eq(month)
+                )
+                .orderBy(leaderQuest.week.asc()) // 주차 기준 정렬
+                .fetch();
+    }
 }
