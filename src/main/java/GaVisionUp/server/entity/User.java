@@ -35,7 +35,7 @@ public class User {
     @Column(nullable = false)
     private int part; // 직무 그룹
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "level_id", nullable = false)
     private Level level;  // 레벨
 
