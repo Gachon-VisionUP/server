@@ -10,6 +10,7 @@ import GaVisionUp.server.service.level.LevelService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.exp.ExperienceRequest;
 import GaVisionUp.server.web.dto.exp.ExperienceResponse;
+import GaVisionUp.server.web.dto.exp.list.ExperienceGrowthResponse;
 import GaVisionUp.server.web.dto.exp.list.ExperienceListResponse;
 import GaVisionUp.server.web.dto.exp.list.ExperienceStateResponse;
 import GaVisionUp.server.web.dto.level.LevelResponse;
@@ -123,6 +124,7 @@ public class ExperienceController {
         // ✅ 다음 레벨 정보 가져오기
         Level nextLevel = levelService.getNextLevel(currentLevel.getJobGroup(), totalExp, currentLevel.getLevelName());
         int nextLevelExpRequirement = nextLevel.getMinExp();
+        int nextLevelTotalExpRequirement = nextLevel.getRequiredExp();  // 다음 레벨의 총 필요 경험치
 
         // ✅ 올해 경험치
         int currentYear = Year.now().getValue();
@@ -140,6 +142,7 @@ public class ExperienceController {
                 totalExp,
                 nextLevel.getLevelName(),
                 nextLevelExpRequirement,
+                nextLevelTotalExpRequirement,
                 currentYearTotalExp,
                 previousYearTotalExp
         );
@@ -174,5 +177,52 @@ public class ExperienceController {
         return ResponseEntity.ok(response);
     }
 
+
+    // ✅ 성장 현황 API ("/experience/growth")
+    @GetMapping("/growth")
+    public ResponseEntity<ExperienceGrowthResponse> getExperienceGrowth(
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        // ✅ 사용자 정보 가져오기
+        User user = userQueryService.getUserById(sessionUserId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // ✅ 현재 레벨 정보
+        Level currentLevel = user.getLevel();
+        int totalExp = user.getTotalExp();
+
+        // ✅ 다음 레벨 정보 가져오기
+        Level nextLevel = levelService.getNextLevel(currentLevel.getJobGroup(), totalExp, currentLevel.getLevelName());
+        int nextLevelTotalExpRequirement = nextLevel.getRequiredExp();  // ✅ 다음 레벨의 총 필요 경험치
+
+        // ✅ 작년까지 누적된 경험치 조회
+        int currentYear = Year.now().getValue();
+        int previousYear = currentYear - 1;
+        List<Experience> previousYearExperiences = experienceService.getExperiencesByPreviousYears(sessionUserId, previousYear);
+        int previousYearTotalExp = previousYearExperiences.stream().mapToInt(Experience::getExp).sum();
+
+        // ✅ 올해 획득한 경험치 조회
+        List<Experience> currentYearExperiences = experienceService.getExperiencesByCurrentYear(sessionUserId, currentYear);
+        int currentYearTotalExp = currentYearExperiences.stream().mapToInt(Experience::getExp).sum();
+
+        // ✅ 성장 비율 계산 (소수점 절삭)
+        int previousExpPercentage = (int) ((double) previousYearTotalExp / nextLevelTotalExpRequirement * 100); // 작년까지 누적된 경험치 퍼센트
+        int currentYearExpPercentage = (int) ((double) currentYearTotalExp / 9000 * 100); // 올해 경험치 퍼센트 (중위 평균 9000 기준)
+
+        // ✅ 응답 생성
+        ExperienceGrowthResponse response = new ExperienceGrowthResponse(
+                nextLevel.getLevelName(),
+                nextLevelTotalExpRequirement,
+                previousYearTotalExp,
+                previousExpPercentage,
+                currentYearTotalExp,
+                currentYearExpPercentage
+        );
+
+        return ResponseEntity.ok(response);
+    }
 
 }
