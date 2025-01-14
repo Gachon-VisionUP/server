@@ -2,10 +2,12 @@ package GaVisionUp.server.web.controller.notification;
 
 import GaVisionUp.server.entity.Notification;
 import GaVisionUp.server.global.base.ApiResponse;
+import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.service.notification.ExpoNotificationService;
 import GaVisionUp.server.service.notification.NotificationService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.notification.NotificationResponse;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,15 @@ public class NotificationController {
     // ✅ 현재 로그인한 유저의 모든 알림 조회 (세션 userId 검증 추가)
     @GetMapping("/all")
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
-
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(name = "userId", required = false) Long userId) {
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
         if (sessionUserId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
+        if (userId != null && !sessionUserId.equals(userId)) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -42,9 +50,16 @@ public class NotificationController {
     // ✅ 현재 로그인한 유저의 읽지 않은 알림 조회 (세션 userId 검증 추가)
     @GetMapping("/unread")
     public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(name = "userId", required = false) Long userId) {
 
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
         if (sessionUserId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
+        if (userId != null && !sessionUserId.equals(userId)) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -60,12 +75,18 @@ public class NotificationController {
     @PostMapping("/{notificationId}/read")
     public ResponseEntity<Void> markNotificationAsRead(
             @PathVariable Long notificationId,
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(name = "userId", required = false) Long userId) {
 
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
         if (sessionUserId == null) {
             return ResponseEntity.badRequest().build();
         }
 
+        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
+        if (userId != null && !sessionUserId.equals(userId)) {
+            return ResponseEntity.badRequest().build();
+        }
         // ✅ 해당 알림이 로그인한 유저의 것인지 검증
         Notification notification = notificationService.getNotificationById(notificationId);
         if (!notification.getUser().getId().equals(sessionUserId)) {
@@ -79,9 +100,16 @@ public class NotificationController {
     // ✅ 현재 로그인한 유저의 모든 알림을 읽음 처리 (세션 userId 검증 추가)
     @PostMapping("/mark-all-read")
     public ResponseEntity<Void> markAllNotificationsAsRead(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(name = "userId", required = false) Long userId) {
 
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
         if (sessionUserId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
+        if (userId != null && !sessionUserId.equals(userId)) {
             return ResponseEntity.badRequest().build();
         }
 
