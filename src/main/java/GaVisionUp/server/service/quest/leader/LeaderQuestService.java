@@ -15,8 +15,6 @@ public interface LeaderQuestService {
     LeaderQuest assignLeaderQuest(Long userId, Cycle cycle, String questName, int month, Integer week,
                                   String achievementType, String note, LocalDate assignedDate);
     List<LeaderQuestCondition> getConditionsByUserId(Long userId);
-    List<LeaderQuest> getAchievementsByYear(Long userId, int year);
-    List<LeaderQuest> getMonthlyAchievements(Long userId, int year);
-    List<LeaderQuest> getWeeklyAchievements(Long userId, int year, int month);
-    LeaderQuestDetailResponse getQuestDetail(Long questConditionId);
+    LeaderQuestDetailResponse getQuestDetailByUserId(Long userId, Long questId);
+    List<LeaderQuest> getAllAchievements(Long userId, int year);
 }

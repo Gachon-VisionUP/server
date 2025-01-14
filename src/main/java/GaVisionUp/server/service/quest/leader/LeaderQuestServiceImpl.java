@@ -98,34 +98,26 @@ public class LeaderQuestServiceImpl implements LeaderQuestService {
         return leaderQuestConditionRepository.findByDepartment(user.getDepartment());
     }
 
-    // ✅ 특정 연도의 퀘스트 달성 등급 조회
+    // ✅ 특정 유저가 수행한 리더 퀘스트 상세 조회 (퀘스트 ID 기반)
     @Override
-    public List<LeaderQuest> getAchievementsByYear(Long userId, int year) {
+    public LeaderQuestDetailResponse getQuestDetailByUserId(Long userId, Long questConditionId) {
+        // ✅ 퀘스트 조건 조회
+        LeaderQuestCondition condition = leaderQuestConditionRepository.findById(questConditionId)
+                .orElseThrow(() -> new IllegalArgumentException("퀘스트 조건을 찾을 수 없습니다."));
+
+        // ✅ 동일한 퀘스트 조건 ID를 가진 유저의 모든 퀘스트 조회
+        List<LeaderQuest> quests = leaderQuestRepository.findByUserIdAndConditionId(userId, questConditionId);
+
+        // ✅ 응답 생성
+        return new LeaderQuestDetailResponse(condition, quests);
+    }
+
+    // ✅ 리더 부여 퀘스트 전체 조회 (월별 + 주별 포함)
+    @Override
+    public List<LeaderQuest> getAllAchievements(Long userId, int year) {
+        // ✅ 특정 유저의 해당 연도 모든 리더 부여 퀘스트 조회 (MONTHLY + WEEKLY)
         return leaderQuestRepository.findByUserIdAndYear(userId, year);
     }
 
-    // ✅ 연도별 리더 퀘스트 조회 (월별)
-    @Override
-    public List<LeaderQuest> getMonthlyAchievements(Long userId, int year) {
-        return leaderQuestRepository.findMonthlyByUserIdAndYear(userId, year);
-    }
-
-    // ✅ 연도 및 월별 리더 퀘스트 조회 (주별)
-    @Override
-    public List<LeaderQuest> getWeeklyAchievements(Long userId, int year, int month) {
-        return leaderQuestRepository.findWeeklyByUserIdAndYearAndMonth(userId, year, month);
-    }
-
-    @Override
-    public LeaderQuestDetailResponse getQuestDetail(Long questConditionId) {
-        // ✅ 퀘스트 조건 조회
-        LeaderQuestCondition condition = leaderQuestConditionRepository.findById(questConditionId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 퀘스트 조건을 찾을 수 없습니다."));
-
-        // ✅ 동일한 조건을 가진 모든 퀘스트 조회
-        List<LeaderQuest> quests = leaderQuestRepository.findByConditionId(questConditionId);
-
-        return new LeaderQuestDetailResponse(condition, quests);
-    }
 
 }

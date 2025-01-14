@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -45,19 +46,17 @@ public class TeamQuestController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ 리더 부여 퀘스트 조회 (연도별, 주기별)
+    // ✅ 리더 부여 퀘스트 조회 (연도별)
     @GetMapping("/leader")
     public ResponseEntity<LeaderQuestListResponse> getLeaderQuests(
             @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "cycle", required = false, defaultValue = "MONTHLY") Cycle cycle) {
+            @RequestParam(value = "year", required = false) Integer year) {
 
         if (sessionUserId == null) {
             return ResponseEntity.badRequest().build();
         }
 
         int targetYear = (year != null) ? year : Year.now().getValue();
-        int currentMonth = YearMonth.now().getMonthValue(); // 현재 월
 
         // ✅ 상단 퀘스트 목록 (조건) 조회 → 항상 유저의 소속을 기준으로 모든 퀘스트 반환
         var conditions = leaderQuestService.getConditionsByUserId(sessionUserId)
@@ -65,29 +64,36 @@ public class TeamQuestController {
                 .map(LeaderQuestConditionResponse::new)
                 .collect(Collectors.toList());
 
-        // ✅ 퀘스트 달성 데이터 조회 (월별 / 주별)
-        List<LeaderQuestAchievementResponse> achievements;
-        if (cycle == Cycle.MONTHLY) {
-            achievements = leaderQuestService.getMonthlyAchievements(sessionUserId, targetYear)
-                    .stream()
-                    .map(LeaderQuestAchievementResponse::new)
-                    .collect(Collectors.toList());
-        } else {
-            achievements = leaderQuestService.getWeeklyAchievements(sessionUserId, targetYear, currentMonth)
-                    .stream()
-                    .map(LeaderQuestAchievementResponse::new)
-                    .collect(Collectors.toList());
-        }
+        // ✅ 퀘스트 달성 데이터 조회 (월별 + 주별 모두 포함)
+        List<LeaderQuestAchievementResponse> allAchievements = leaderQuestService.getAllAchievements(sessionUserId, targetYear)
+                .stream()
+                .map(LeaderQuestAchievementResponse::new)
+                .collect(Collectors.toList());
 
-        // ✅ 응답 생성
-        return ResponseEntity.ok(new LeaderQuestListResponse(conditions, achievements));
+        // ✅ 퀘스트 **명**을 기준으로 데이터 그룹화
+        Map<String, List<LeaderQuestAchievementResponse>> groupedAchievements = allAchievements.stream()
+                .collect(Collectors.groupingBy(LeaderQuestAchievementResponse::getQuestName));
+
+        // ✅ 응답 객체 생성
+        return ResponseEntity.ok(new LeaderQuestListResponse(conditions, groupedAchievements));
     }
 
 
-    // ✅ 리더 퀘스트 상세 조회 (퀘스트 조건 ID 기반)
+
+    // ✅ 로그인한 유저의 해당 퀘스트 달성 내용만 조회
     @GetMapping("/leader/{id}")
-    public ResponseEntity<LeaderQuestDetailResponse> getLeaderQuestDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(leaderQuestService.getQuestDetail(id));
+    public ResponseEntity<LeaderQuestDetailResponse> getLeaderQuestDetail(
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @PathVariable Long id) {
+
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // ✅ 로그인한 유저가 해당 퀘스트를 달성한 경우만 조회
+        LeaderQuestDetailResponse detail = leaderQuestService.getQuestDetailByUserId(sessionUserId, id);
+
+        return ResponseEntity.ok(detail);
     }
 
 }
