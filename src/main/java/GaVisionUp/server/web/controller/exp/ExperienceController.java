@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Year;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -117,12 +118,16 @@ public class ExperienceController {
         User user = userQueryService.getUserById(sessionUserId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // ✅ 현재 레벨 정보
-        Level currentLevel = user.getLevel();
+        // ✅ 현재 레벨 정보 가져오기 (객체 전체 조회)
+        Level currentLevel = levelService.getLevelByNameAndJobGroup(user.getLevel().getLevelName(), user.getLevel().getJobGroup());
         int totalExp = user.getTotalExp();
 
         // ✅ 다음 레벨 정보 가져오기
-        Level nextLevel = levelService.getNextLevel(currentLevel.getJobGroup(), totalExp, currentLevel.getLevelName());
+        Optional<Level> nextLevelOpt = levelService.findNextLevel(currentLevel.getJobGroup(), totalExp, currentLevel.getLevelName());
+        if (nextLevelOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);  // 다음 레벨이 존재하지 않을 경우
+        }
+        Level nextLevel = nextLevelOpt.get();
         int nextLevelExpRequirement = nextLevel.getMinExp();
         int nextLevelTotalExpRequirement = nextLevel.getRequiredExp();  // 다음 레벨의 총 필요 경험치
 
@@ -163,12 +168,16 @@ public class ExperienceController {
         User user = userQueryService.getUserById(sessionUserId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // ✅ 현재 레벨 정보
-        Level currentLevel = user.getLevel();
+        // ✅ 현재 레벨 정보 가져오기 (레벨명 + 직군 기반 조회)
+        Level currentLevel = levelService.getLevelByNameAndJobGroup(user.getLevel().getLevelName(), user.getLevel().getJobGroup());
         int totalExp = user.getTotalExp();
 
         // ✅ 다음 레벨 정보 가져오기
-        Level nextLevel = levelService.getNextLevel(currentLevel.getJobGroup(), totalExp, currentLevel.getLevelName());
+        Optional<Level> nextLevelOpt = levelService.findNextLevel(currentLevel.getJobGroup(), totalExp, currentLevel.getLevelName());
+        if (nextLevelOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);  // 다음 레벨이 없을 경우
+        }
+        Level nextLevel = nextLevelOpt.get();
         int nextLevelTotalExpRequirement = nextLevel.getRequiredExp();  // ✅ 다음 레벨의 총 필요 경험치
 
         // ✅ 작년까지 누적된 경험치 조회

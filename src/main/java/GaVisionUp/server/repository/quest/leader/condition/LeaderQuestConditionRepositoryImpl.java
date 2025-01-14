@@ -65,4 +65,14 @@ public class LeaderQuestConditionRepositoryImpl implements LeaderQuestConditionR
                 .where(leaderQuestCondition.department.eq(department))
                 .fetch();
     }
+
+    @Override
+    public Optional<LeaderQuestCondition> findById(Long id) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(leaderQuestCondition)
+                        .where(leaderQuestCondition.id.eq(id))
+                        .fetchOne()
+        );
+    }
 }

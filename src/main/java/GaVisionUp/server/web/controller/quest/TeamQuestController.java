@@ -4,10 +4,10 @@ import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.quest.job.JobQuest;
 import GaVisionUp.server.service.quest.job.JobQuestService;
 import GaVisionUp.server.service.quest.leader.LeaderQuestService;
+import GaVisionUp.server.web.dto.quest.leader.LeaderQuestDetailResponse;
 import GaVisionUp.server.web.dto.quest.team.TeamJobResponse;
 import GaVisionUp.server.web.dto.quest.team.leader.LeaderQuestAchievementResponse;
 import GaVisionUp.server.web.dto.quest.team.leader.LeaderQuestConditionResponse;
-import GaVisionUp.server.web.dto.quest.team.leader.LeaderQuestDetailResponse;
 import GaVisionUp.server.web.dto.quest.team.leader.LeaderQuestListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +75,7 @@ public class TeamQuestController {
         return ResponseEntity.ok(new LeaderQuestListResponse(conditions, achievements));
     }
 
-    // ✅ 리더 퀘스트 상세 조회
+    // ✅ 리더 퀘스트 상세 조회 (퀘스트 조건 ID 기반)
     @GetMapping("/leader/{id}")
     public ResponseEntity<LeaderQuestDetailResponse> getLeaderQuestDetail(@PathVariable Long id) {
         return ResponseEntity.ok(leaderQuestService.getQuestDetail(id));

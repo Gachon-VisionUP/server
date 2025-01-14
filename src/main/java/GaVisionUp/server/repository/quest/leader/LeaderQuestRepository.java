@@ -17,5 +17,6 @@ public interface LeaderQuestRepository {
     List<LeaderQuest> findByUserIdAndYear(Long userId, int year);
     List<LeaderQuest> findMonthlyByUserIdAndYear(Long userId, int year);
     List<LeaderQuest> findWeeklyByUserIdAndYearAndMonth(Long userId, int year, int month);
+    List<LeaderQuest> findByConditionId(Long conditionId);
 }
 

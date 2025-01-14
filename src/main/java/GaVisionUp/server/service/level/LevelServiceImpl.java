@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +35,18 @@ public class LevelServiceImpl implements LevelService {
     public Level getNextLevel(JobGroup jobGroup, int totalExp, String currentLevelName) {
         return levelRepository.findNextLevel(jobGroup, totalExp, currentLevelName)
                 .orElseThrow(() -> new IllegalArgumentException("해당 직군에서 다음 레벨이 존재하지 않습니다."));
+    }
+
+    // ✅ 현재 레벨 가져오기 (레벨명 + 직군 기반)
+    @Override
+    public Level getLevelByNameAndJobGroup(String levelName, JobGroup jobGroup) {
+        return levelRepository.findByLevelNameAndJobGroup(levelName, jobGroup)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 레벨이 존재하지 않습니다."));
+    }
+
+    // ✅ 다음 레벨 찾기 (직군 + 총 경험치 기준)
+    @Override
+    public Optional<Level> findNextLevel(JobGroup jobGroup, int totalExp, String currentLevelName) {
+        return levelRepository.findNextLevel(jobGroup, totalExp, currentLevelName);
     }
 }

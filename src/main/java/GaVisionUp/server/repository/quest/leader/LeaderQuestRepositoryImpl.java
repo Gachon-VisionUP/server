@@ -146,4 +146,13 @@ public class LeaderQuestRepositoryImpl implements LeaderQuestRepository {
                 .orderBy(leaderQuest.week.asc()) // 주차 기준 정렬
                 .fetch();
     }
+
+    @Override
+    public List<LeaderQuest> findByConditionId(Long conditionId) {
+        return queryFactory
+                .selectFrom(leaderQuest)
+                .where(leaderQuest.condition.id.eq(conditionId))
+                .orderBy(leaderQuest.assignedDate.asc()) // 날짜 기준 정렬
+                .fetch();
+    }
 }
