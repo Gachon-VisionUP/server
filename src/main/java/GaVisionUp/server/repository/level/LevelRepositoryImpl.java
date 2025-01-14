@@ -76,4 +76,9 @@ public class LevelRepositoryImpl implements LevelRepository {
         );
     }
 
+    @Override
+    public Optional<Level> findById(Long levelId) {
+        return Optional.empty();
+    }
+
 }

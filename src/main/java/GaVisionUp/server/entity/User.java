@@ -2,6 +2,7 @@ package GaVisionUp.server.entity;
 
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.Role;
+import GaVisionUp.server.web.dto.user.UserRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -61,11 +62,6 @@ public class User {
     @Column(nullable = true)
     private String expoPushToken; // ✅ Expo 푸쉬 토큰 추가
 
-    public void update(String changedPW, String profileImageUrl) {
-        this.changedPW = changedPW;
-        this.profileImageUrl = profileImageUrl;
-    }
-
     // ✅ 경험치 추가 메서드
     public void addExperience(int exp) {
         this.totalExp += exp;
@@ -74,6 +70,24 @@ public class User {
     // ✅ 레벨 업데이트
     public void setLevel(Level level) {
         this.level = level;
+    }
+
+    public void updatePassword(String password) {
+        this.changedPW = password;
+    }
+
+    public void updateImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public void updateInfo(UserRequest.UpdateUserInfo request) {
+        this.department = request.getDepartment();
+        this.part = request.getPart();
+        this.employeeId = request.getEmployeeId();
+        this.name = request.getName();
+        this.joinDate = request.getJoinDate();
+        this.loginId = request.getLoginId();
+        this.changedPW = request.getChangedPW();
     }
 
     // ✅ 푸쉬 토큰 업데이트 메서드

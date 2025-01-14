@@ -2,6 +2,7 @@ package GaVisionUp.server.web.controller.user;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.global.base.ApiResponse;
+import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.service.user.UserCommandService;
 import GaVisionUp.server.service.user.UserQueryService;
@@ -62,37 +63,33 @@ public class UserController {
     public ApiResponse<UserResponse.Information> getUserInformation(
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(name = "userId", required = false) Long userId) {
-        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
-            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN, null);
-        }
 
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
-        if (userId != null && !sessionUserId.equals(userId)) {
-            return ApiResponse.onFailure(GlobalErrorStatus._INVALID_USER, null);
-        }
+        validateUserIds(sessionUserId, userId);
 
         // 성공적으로 사용자 정보를 반환
         return ApiResponse.onSuccess(userQueryService.getUserInformation(userId));
     }
 
-    @PutMapping("/info")
-    public ApiResponse<UserResponse.UpdateInformation> updateInformation(
+    @PutMapping("/password")
+    public ApiResponse<UserResponse.UpdateInformation> changePassword(
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(name = "userId", required = false) Long userId,
-            @RequestBody UserRequest.Update request){
+            @RequestBody UserRequest.ChangePassword request){
 
-        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
-            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN, null);
-        }
+        validateUserIds(sessionUserId, userId);
 
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
-        if (userId != null && !sessionUserId.equals(userId)) {
-            return ApiResponse.onFailure(GlobalErrorStatus._INVALID_USER, null);
-        }
+        return ApiResponse.onSuccess(userCommandService.changePassword(userId, request));
+    }
 
-        return ApiResponse.onSuccess(userCommandService.updateInformation(userId, request));
+    @PutMapping("/image")
+    public ApiResponse<UserResponse.UpdateInformation> changeImage(
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestBody String changeImageUrl){
+
+        validateUserIds(sessionUserId, userId);
+
+        return ApiResponse.onSuccess(userCommandService.changeImage(userId, changeImageUrl));
     }
 
     public static Hashtable sessionList = new Hashtable();
@@ -114,5 +111,17 @@ public class UserController {
     public ResponseEntity<Void> updatePushToken(@PathVariable Long userId, @RequestBody String pushToken) {
         userCommandService.updatePushToken(userId, pushToken);
         return ResponseEntity.ok().build();
+    }
+
+    private void validateUserIds(Long sessionUserId, Long userId) {
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (sessionUserId == null) {
+            throw new RestApiException(GlobalErrorStatus._NOT_LOGIN);
+        }
+
+        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 발생
+        if (userId != null && !sessionUserId.equals(userId)) {
+            throw new RestApiException(GlobalErrorStatus._INVALID_USER);
+        }
     }
 }

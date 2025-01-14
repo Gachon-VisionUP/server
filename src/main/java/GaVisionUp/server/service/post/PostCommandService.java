@@ -6,6 +6,6 @@ import GaVisionUp.server.web.dto.post.PostResponse;
 
 public interface PostCommandService {
 
-    PostResponse.AddPost addPost(PostRequest.AddPost request);
+    PostResponse.AddPost addPost(Long userId, PostRequest.AddPost request);
 
 }

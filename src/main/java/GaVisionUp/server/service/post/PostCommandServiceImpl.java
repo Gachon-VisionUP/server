@@ -35,12 +35,11 @@ public class PostCommandServiceImpl implements PostCommandService {
 
 
     @Override
-    public PostResponse.AddPost addPost(PostRequest.AddPost request) {
+    public PostResponse.AddPost addPost(Long userId, PostRequest.AddPost request) {
 
-        /* TODO
-        추후 ADMIN 권한을 가진 유저만 게시글을 생성할 수 있도록 수정
-
-         */
+        if (!checkAdmin(userId)) {
+            throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
+        }
 
         Post post = Post.builder()
                 .title(request.getTitle())
@@ -60,12 +59,12 @@ public class PostCommandServiceImpl implements PostCommandService {
             // ✅ 내부 알림 저장
             String title = "📢 게시글 등록!";
             String message = String.format("%s님, %s 게시글이 등록되었습니다!", user.getName(), post.getTitle());
-            String expType;
-            expType = null;
-            notificationService.createNotification(user, title, message, expType);
+            String postType;
+            postType = null;
+            notificationService.createNotification(user, title, message, postType);
 
             // ✅ Expo 푸쉬 알림 전송
-            expoNotificationService.sendPushNotification(user.getExpoPushToken(), title, message, expType);
+            expoNotificationService.sendPushNotification(user.getExpoPushToken(), title, message, postType);
 
             log.info("✅ 게시글 등록 및 알림 전송 완료 - 유저: {}, 제목: {}", user.getName(), post.getTitle());
         }
@@ -105,4 +104,11 @@ public class PostCommandServiceImpl implements PostCommandService {
                 .build();
     }
      */
+
+    private boolean checkAdmin(Long userId) {
+        User admin = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
+
+        return admin.getRole() == Role.ADMIN;
+    }
 }

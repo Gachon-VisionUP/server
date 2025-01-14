@@ -1,6 +1,8 @@
 package GaVisionUp.server.service.user;
 
 import GaVisionUp.server.entity.User;
+import GaVisionUp.server.entity.enums.Role;
+import GaVisionUp.server.global.base.ApiResponse;
 import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.repository.user.UserRepository;
@@ -8,11 +10,15 @@ import GaVisionUp.server.web.dto.user.UserRequest;
 import GaVisionUp.server.web.dto.user.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -84,5 +90,36 @@ public class UserQueryServiceImpl implements UserQueryService{
                 .map(User::getExpoPushToken)
                 .filter(token -> token != null && !token.isEmpty())
                 .toList();
+    }
+
+    @Override
+    public UserResponse.UserInfoList getUserInfoList(Long userId, int page, int size) {
+
+        if (!checkAdmin(userId)) {
+            throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> userList = userRepository.findAllByOrderByIdDesc(pageable);
+
+        List<UserResponse.UserInfo> userInfoList =
+                userList.stream().map(user ->
+                        UserResponse.UserInfo.builder()
+                                .userId(user.getId())
+                                .department(user.getDepartment())
+                                .part(user.getPart())
+                                .employeeId(user.getEmployeeId())
+                                .userName(user.getName())
+                                .build()).toList();
+
+        return UserResponse.UserInfoList.builder().userInfoList(userInfoList).build();
+    }
+
+    private boolean checkAdmin(Long userId) {
+        User admin = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
+
+        return admin.getRole() == Role.ADMIN;
     }
 }

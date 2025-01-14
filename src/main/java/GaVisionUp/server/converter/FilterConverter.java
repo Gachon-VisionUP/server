@@ -1,4 +1,4 @@
-package GaVisionUp.server.converter.post;
+package GaVisionUp.server.converter;
 
 import GaVisionUp.server.entity.enums.Filter;
 import org.springframework.core.convert.converter.Converter;
