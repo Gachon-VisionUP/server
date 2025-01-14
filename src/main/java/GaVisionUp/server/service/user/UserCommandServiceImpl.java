@@ -10,11 +10,13 @@ import GaVisionUp.server.repository.user.UserRepository;
 import GaVisionUp.server.web.dto.user.UserRequest;
 import GaVisionUp.server.web.dto.user.UserResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class UserCommandServiceImpl implements UserCommandService{
@@ -112,6 +114,8 @@ public class UserCommandServiceImpl implements UserCommandService{
 
         if (target.getLevel().getJobGroup() != request.getJobGroup()) {
             target.setLevel(levelRepository.findByJobGroup(request.getJobGroup()).get(0));
+            target.setLevel(levelRepository.findLevelByExp(request.getJobGroup(), target.getTotalExp())
+                    .orElseThrow(() -> new IllegalArgumentException("해당 경험치에 맞는 레벨을 찾을 수 없습니다.")));
         }
 
         if (request.getChangedPW() != null || !request.getChangedPW().isEmpty() || !target.getChangedPW().equals(request.getChangedPW())) {
