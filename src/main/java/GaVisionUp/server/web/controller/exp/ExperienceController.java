@@ -128,7 +128,7 @@ public class ExperienceController {
             return ResponseEntity.badRequest().body(null);  // 다음 레벨이 존재하지 않을 경우
         }
         Level nextLevel = nextLevelOpt.get();
-        int nextLevelExpRequirement = nextLevel.getMinExp();
+        int nextLevelExpRequirement = nextLevel.getMinExp() - user.getTotalExp();
         int nextLevelTotalExpRequirement = nextLevel.getRequiredExp();  // 다음 레벨의 총 필요 경험치
 
         // ✅ 올해 경험치

@@ -12,7 +12,7 @@ import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.quest.leader.condition.LeaderQuestConditionRepository;
 import GaVisionUp.server.repository.quest.leader.LeaderQuestRepository;
 import GaVisionUp.server.repository.user.UserRepository;
-import GaVisionUp.server.web.dto.quest.leader.LeaderQuestDetailResponse;
+import GaVisionUp.server.web.dto.quest.team.leader.detail.LeaderQuestDetailResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -4,7 +4,7 @@ import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.quest.leader.LeaderQuest;
 import GaVisionUp.server.entity.quest.leader.LeaderQuestCondition;
-import GaVisionUp.server.web.dto.quest.leader.LeaderQuestDetailResponse;
+import GaVisionUp.server.web.dto.quest.team.leader.detail.LeaderQuestDetailResponse;
 
 import java.time.LocalDate;
 import java.util.List;

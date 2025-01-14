@@ -1,4 +1,4 @@
-package GaVisionUp.server.web.dto.quest.leader;
+package GaVisionUp.server.web.dto.quest.team.leader.detail;
 
 import GaVisionUp.server.entity.quest.leader.LeaderQuest;
 import GaVisionUp.server.entity.quest.leader.LeaderQuestCondition;
