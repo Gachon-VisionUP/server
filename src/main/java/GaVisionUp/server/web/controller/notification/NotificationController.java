@@ -7,12 +7,12 @@ import GaVisionUp.server.service.notification.NotificationService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.notification.NotificationResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -22,41 +22,74 @@ public class NotificationController {
     private final ExpoNotificationService expoNotificationService;
     private final UserQueryService userQueryService;
 
-    // ✅ 특정 유저의 모든 알림 조회
-    @GetMapping("/{userId}/all")
-    public ResponseEntity<List<NotificationResponse>> getAllNotifications(@PathVariable Long userId) {
-        List<NotificationResponse> notifications = notificationService.getAllNotifications(userId)
+    // ✅ 현재 로그인한 유저의 모든 알림 조회 (세션 userId 검증 추가)
+    @GetMapping("/all")
+    public ResponseEntity<List<NotificationResponse>> getAllNotifications(
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<NotificationResponse> notifications = notificationService.getAllNotifications(sessionUserId)
                 .stream()
                 .map(NotificationResponse::new)
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(notifications);
     }
 
-    // ✅ 특정 유저의 읽지 않은 알림 조회
-    @GetMapping("/{userId}/unread")
-    public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(@PathVariable Long userId) {
-        List<NotificationResponse> notifications = notificationService.getUnreadNotifications(userId)
+    // ✅ 현재 로그인한 유저의 읽지 않은 알림 조회 (세션 userId 검증 추가)
+    @GetMapping("/unread")
+    public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<NotificationResponse> notifications = notificationService.getUnreadNotifications(sessionUserId)
                 .stream()
                 .map(NotificationResponse::new)
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(notifications);
     }
 
-    // ✅ 특정 알림 읽음 처리
+    // ✅ 특정 알림 읽음 처리 (세션 userId 검증 추가)
     @PostMapping("/{notificationId}/read")
-    public ResponseEntity<Void> markNotificationAsRead(@PathVariable Long notificationId) {
+    public ResponseEntity<Void> markNotificationAsRead(
+            @PathVariable Long notificationId,
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // ✅ 해당 알림이 로그인한 유저의 것인지 검증
+        Notification notification = notificationService.getNotificationById(notificationId);
+        if (!notification.getUser().getId().equals(sessionUserId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // ✅ 접근 권한 없음
+        }
+
         notificationService.markAsRead(notificationId);
         return ResponseEntity.ok().build();
     }
 
-    // ✅ 특정 유저의 모든 알림을 읽음 처리
-    @PostMapping("/{userId}/mark-all-read")
-    public ResponseEntity<Void> markAllNotificationsAsRead(@PathVariable Long userId) {
-        notificationService.markAllAsRead(userId);
+    // ✅ 현재 로그인한 유저의 모든 알림을 읽음 처리 (세션 userId 검증 추가)
+    @PostMapping("/mark-all-read")
+    public ResponseEntity<Void> markAllNotificationsAsRead(
+            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+
+        if (sessionUserId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        notificationService.markAllAsRead(sessionUserId);
         return ResponseEntity.ok().build();
     }
 
-    // ✅ 푸쉬 알림 전송
+    // ✅ 푸쉬 알림 전송 (세션 userId 검증 필요 없음)
     @PostMapping("/send")
     public ApiResponse<String> sendNotificationToAllUsers(
             @RequestParam String title,
