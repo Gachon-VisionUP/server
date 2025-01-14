@@ -36,4 +36,6 @@ public class JobQuestController {
                 .stream().map(JobQuestResponse::new).toList();
         return ResponseEntity.ok(jobQuests);
     }
+
+
 }

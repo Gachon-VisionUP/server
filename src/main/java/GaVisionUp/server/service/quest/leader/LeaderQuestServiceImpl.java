@@ -12,6 +12,7 @@ import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.quest.leader.condition.LeaderQuestConditionRepository;
 import GaVisionUp.server.repository.quest.leader.LeaderQuestRepository;
 import GaVisionUp.server.repository.user.UserRepository;
+import GaVisionUp.server.web.dto.quest.team.leader.detail.LeaderQuestDetailResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,8 @@ public class LeaderQuestServiceImpl implements LeaderQuestService {
 
     // ✅ 새로운 리더 퀘스트 할당 및 경험치 추가
     @Override
-    public LeaderQuest assignLeaderQuest(Long userId, Cycle cycle, String questName, int month, Integer week, String achievementType, String note, LocalDate assignedDate) {
+    public LeaderQuest assignLeaderQuest(Long userId, Cycle cycle, String questName, int month, Integer week,
+                                         String achievementType, String note, LocalDate assignedDate) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
@@ -51,11 +53,16 @@ public class LeaderQuestServiceImpl implements LeaderQuestService {
         LeaderQuestCondition condition = leaderQuestConditionRepository.findByQuestName(questName)
                 .orElseThrow(() -> new IllegalArgumentException("퀘스트 조건을 찾을 수 없습니다."));
 
-        // ✅ Max or Median 경험치 설정
-        int grantedExp = "Max".equalsIgnoreCase(achievementType) ? condition.getMaxExp() : condition.getMedianExp();
+        // ✅ 주기 검증
+        if (!condition.getCycle().equals(cycle)) {
+            throw new IllegalArgumentException("퀘스트 주기가 조건과 일치하지 않습니다.");
+        }
+
+        // ✅ 경험치 계산
+        int grantedExp = calculateGrantedExp(achievementType, condition);
 
         // ✅ 퀘스트 할당 (경험치 자동 반영)
-        LeaderQuest assignment = LeaderQuest.create(user, cycle, questName, month, week, achievementType, grantedExp, note, assignedDate);
+        LeaderQuest assignment = LeaderQuest.create(user, cycle, questName, month, week, achievementType, grantedExp, note, assignedDate, condition);
         leaderQuestRepository.save(assignment);
 
         // ✅ 경험치 추가 및 레벨 반영
@@ -64,9 +71,53 @@ public class LeaderQuestServiceImpl implements LeaderQuestService {
         return assignment;
     }
 
+    // ✅ 경험치 계산 로직 분리
+    private int calculateGrantedExp(String achievementType, LeaderQuestCondition condition) {
+        if ("Max".equalsIgnoreCase(achievementType)) {
+            return condition.getMaxExp();
+        } else if ("Median".equalsIgnoreCase(achievementType)) {
+            return condition.getMedianExp();
+        } else {
+            throw new IllegalArgumentException("올바르지 않은 달성 유형입니다: " + achievementType);
+        }
+    }
+
+
     // ✅ 경험치 추가 및 레벨 업데이트
     private void addExperience(User user, int exp) {
         Experience experience = new Experience(user, ExpType.LEADER_QUEST, exp);
         experienceRepository.save(experience);
     }
+
+    // ✅ 퀘스트 조건 목록 조회 (유저 소속 기반)
+    @Override
+    public List<LeaderQuestCondition> getConditionsByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        return leaderQuestConditionRepository.findByDepartment(user.getDepartment());
+    }
+
+    // ✅ 특정 유저가 수행한 리더 퀘스트 상세 조회 (퀘스트 ID 기반)
+    @Override
+    public LeaderQuestDetailResponse getQuestDetailByUserId(Long userId, Long questConditionId) {
+        // ✅ 퀘스트 조건 조회
+        LeaderQuestCondition condition = leaderQuestConditionRepository.findById(questConditionId)
+                .orElseThrow(() -> new IllegalArgumentException("퀘스트 조건을 찾을 수 없습니다."));
+
+        // ✅ 동일한 퀘스트 조건 ID를 가진 유저의 모든 퀘스트 조회
+        List<LeaderQuest> quests = leaderQuestRepository.findByUserIdAndConditionId(userId, questConditionId);
+
+        // ✅ 응답 생성
+        return new LeaderQuestDetailResponse(condition, quests);
+    }
+
+    // ✅ 리더 부여 퀘스트 전체 조회 (월별 + 주별 포함)
+    @Override
+    public List<LeaderQuest> getAllAchievements(Long userId, int year) {
+        // ✅ 특정 유저의 해당 연도 모든 리더 부여 퀘스트 조회 (MONTHLY + WEEKLY)
+        return leaderQuestRepository.findByUserIdAndYear(userId, year);
+    }
+
+
 }

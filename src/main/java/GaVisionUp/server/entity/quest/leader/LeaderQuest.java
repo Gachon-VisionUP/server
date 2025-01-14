@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -53,7 +54,14 @@ public class LeaderQuest {
     @Column(nullable = false)
     private LocalDate assignedDate; // ✅ 퀘스트 달성 날짜
 
-    public static LeaderQuest create(User user, Cycle cycle, String questName, int month, Integer week, String achievementType, int grantedExp, String note, LocalDate assignedDate) {
+    // ✅ 퀘스트 조건 매핑 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "condition_id", referencedColumnName = "id", nullable = false)
+    private LeaderQuestCondition condition;
+
+    public static LeaderQuest create(User user, Cycle cycle, String questName, int month, Integer week,
+                                     String achievementType, int grantedExp, String note,
+                                     LocalDate assignedDate, LeaderQuestCondition condition) {
         return LeaderQuest.builder()
                 .user(user)
                 .department(user.getDepartment())
@@ -65,6 +73,7 @@ public class LeaderQuest {
                 .grantedExp(grantedExp)
                 .note(note)
                 .assignedDate(assignedDate)
+                .condition(condition) // ✅ 퀘스트 조건 설정
                 .build();
     }
 }

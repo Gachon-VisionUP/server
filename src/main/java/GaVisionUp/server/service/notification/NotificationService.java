@@ -46,11 +46,12 @@ public class NotificationService {
 
     // Expo 토큰 필요
     // ✅ 알림 생성 및 Expo 푸쉬 알림 전송
-    public Notification createNotification(User user, String title, String message) {
+    public Notification createNotification(User user, String title, String message, String expType) {
         Notification notification = Notification.builder()
                 .user(user)
                 .title(title)
                 .message(message)
+                .expType(expType)
                 .createdAt(LocalDateTime.now())
                 .build();
         notificationRepository.save(notification);
@@ -122,6 +123,11 @@ public class NotificationService {
         });
 
         notificationRepository.saveAll(notifications); // ✅ 일괄 저장
+    }
+
+    public Notification getNotificationById(Long notificationId) {
+        return notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 알림을 찾을 수 없습니다. ID: " + notificationId));
     }
 
 }

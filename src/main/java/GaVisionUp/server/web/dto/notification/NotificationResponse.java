@@ -11,6 +11,7 @@ public class NotificationResponse {
     private String title;
     private String message;
     private boolean read;
+    private String type;
     private LocalDateTime createdAt;
 
     public NotificationResponse(Notification notification) {
@@ -18,6 +19,7 @@ public class NotificationResponse {
         this.title = notification.getTitle();
         this.message = notification.getMessage();
         this.read = notification.isRead();
+        this.type = notification.getExpType();
         this.createdAt = notification.getCreatedAt();
     }
 }

@@ -4,7 +4,7 @@ import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.quest.leader.LeaderQuest;
 import GaVisionUp.server.service.quest.leader.LeaderQuestService;
 import GaVisionUp.server.web.dto.quest.leader.LeaderQuestRequest;
-import GaVisionUp.server.web.dto.quest.leader.LeaderQuestResponse;
+ import GaVisionUp.server.web.dto.quest.leader.LeaderQuestResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -30,4 +30,9 @@ public class Level {
         this.levelName = levelName;
         this.requiredExp = requiredExp;
     }
+
+    // ✅ 다음 레벨 경험치 요구량 가져오기
+    public int getMinExp() {
+        return this.requiredExp;
+    }
 }

@@ -1,6 +1,5 @@
 package GaVisionUp.server.entity.exp;
 
-import GaVisionUp.server.entity.Level;
 import GaVisionUp.server.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;

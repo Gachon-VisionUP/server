@@ -19,7 +19,7 @@ public class ExpoNotificationService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     // ✅ Expo 서버로 푸쉬 알림 전송
-    public void sendPushNotification(String pushToken, String title, String message) {
+    public void sendPushNotification(String pushToken, String title, String message, String expType) {
         if (pushToken == null || !pushToken.startsWith("ExponentPushToken")) {
             System.out.println("🚨 유효하지 않은 PushToken: " + pushToken);
             return;
@@ -31,7 +31,8 @@ public class ExpoNotificationService {
         Map<String, Object> body = Map.of(
                 "to", pushToken,
                 "title", title,
-                "body", message
+                "body", message,
+                    "expType", expType
         );
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);

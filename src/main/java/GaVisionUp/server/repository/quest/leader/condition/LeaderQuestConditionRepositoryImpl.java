@@ -56,4 +56,23 @@ public class LeaderQuestConditionRepositoryImpl implements LeaderQuestConditionR
         }
         return questCondition;
     }
+
+    // ✅ 특정 부서의 퀘스트 조건 조회
+    @Override
+    public List<LeaderQuestCondition> findByDepartment(Department department) {
+        return queryFactory
+                .selectFrom(leaderQuestCondition)
+                .where(leaderQuestCondition.department.eq(department))
+                .fetch();
+    }
+
+    @Override
+    public Optional<LeaderQuestCondition> findById(Long id) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(leaderQuestCondition)
+                        .where(leaderQuestCondition.id.eq(id))
+                        .fetchOne()
+        );
+    }
 }
