@@ -68,12 +68,12 @@ public class LogicConfig {
     // 경험치 목록
     @Bean
     public ExperienceRepository experienceRepository() {
-        return new ExperienceRepositoryImpl(em,levelRepository(), expBarRepository());
+        return new ExperienceRepositoryImpl(em,levelRepository(), expBarRepository(), notificationService, expoNotificationService);
     }
 
     @Bean
     public ExperienceService experienceService() {
-        return new ExperienceServiceImpl(experienceRepository(), userRepository, expBarRepository(), notificationService, expoNotificationService);
+        return new ExperienceServiceImpl(experienceRepository(), userRepository, expBarRepository());
     }
 
     // 레벨 빈 등록
@@ -100,7 +100,7 @@ public class LogicConfig {
     // 직무별 퀘스트
     @Bean
     public JobQuestRepository jobQuestRepository(){
-        return new JobQuestRepositoryImpl(em);
+        return new JobQuestRepositoryImpl(em, userRepository);
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package GaVisionUp.server.repository.exp.expbar;
 
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.exp.ExpBar;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -55,5 +56,13 @@ public class ExpBarRepositoryImpl implements ExpBarRepository {
                         .where(expBar.user.id.eq(userId))
                         .fetchOne()
         );
+    }
+
+    // ✅ 특정 유저의 ExpBar 생성 (ExpBarService에서 사용)
+    @Override
+    public ExpBar createExpBarForUser(User user) {
+        ExpBar newExpBar = new ExpBar(user);
+        em.persist(newExpBar);
+        return newExpBar;
     }
 }

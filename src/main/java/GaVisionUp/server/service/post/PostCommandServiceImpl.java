@@ -60,10 +60,12 @@ public class PostCommandServiceImpl implements PostCommandService {
             // ✅ 내부 알림 저장
             String title = "📢 게시글 등록!";
             String message = String.format("%s님, %s 게시글이 등록되었습니다!", user.getName(), post.getTitle());
-            notificationService.createNotification(user, title, message);
+            String expType;
+            expType = null;
+            notificationService.createNotification(user, title, message, expType);
 
             // ✅ Expo 푸쉬 알림 전송
-            expoNotificationService.sendPushNotification(user.getExpoPushToken(), title, message);
+            expoNotificationService.sendPushNotification(user.getExpoPushToken(), title, message, expType);
 
             log.info("✅ 게시글 등록 및 알림 전송 완료 - 유저: {}, 제목: {}", user.getName(), post.getTitle());
         }

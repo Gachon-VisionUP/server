@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,33 +64,47 @@ public class JobQuestServiceImpl implements JobQuestService {
         double totalLaborCost = details.stream().mapToDouble(JobQuestDetail::getLaborCost).sum();
         double productivity = (totalLaborCost == 0) ? 0.0 : totalSales / totalLaborCost;
 
+        // ✅ 평가 기준 및 부여 경험치 설정
+        double maxCondition = 5.1; // 예시값, DB나 API로부터 동적으로 가져올 수 있음
+        double medCondition = 4.3; // 예시값, DB나 API로부터 동적으로 가져올 수 있음
+        int maxExp = 80;           // 예시값, 동적으로 설정 가능
+        int medExp = 40;           // 예시값, 동적으로 설정 가능
+
         TeamQuestGrade questGrade;
         int grantedExp;
 
-        if (productivity >= 5.1) {
-            grantedExp = 80;
+        if (productivity >= maxCondition) {
             questGrade = TeamQuestGrade.MAX;
-        } else if (productivity >= 4.3) {
-            grantedExp = 40;
+            grantedExp = maxExp;
+        } else if (productivity >= medCondition) {
             questGrade = TeamQuestGrade.MEDIAN;
+            grantedExp = medExp;
         } else {
-            grantedExp = 0;
             questGrade = TeamQuestGrade.MIN;
+            grantedExp = 0;
         }
 
-        log.info("📌 [DEBUG] cycle: {}, round: {}", cycle, round);
+        log.info("📌 [DEBUG] cycle: {}, round: {}, productivity: {}, grade: {}, exp: {}",
+                cycle, round, productivity, questGrade, grantedExp);
 
         JobQuest jobQuest = JobQuest.create(
-                Department.valueOf(department), part, cycle, round, productivity, questGrade, grantedExp
+                Department.valueOf(department), part, cycle, round, productivity,
+                maxCondition, medCondition, maxExp, medExp, questGrade, grantedExp
         );
         jobQuestRepository.save(jobQuest);
 
         List<User> users = userRepository.findByDepartmentAndPart(Department.valueOf(department), part);
         for (User user : users) {
-            if (questGrade != TeamQuestGrade.MIN) {
+            if (grantedExp > 0) {
                 Experience experience = new Experience(user, ExpType.JOB_QUEST, grantedExp);
                 experienceRepository.save(experience);
             }
         }
+    }
+
+    // ✅ 특정 유저의 소속 & 직무 그룹을 기반으로 연도별 직무 퀘스트 조회
+    @Override
+    public List<JobQuest> getJobQuestsByYear(Long userId, int year) {
+        return jobQuestRepository.findByDepartmentAndPartAndYear(userId, year);
     }
 }

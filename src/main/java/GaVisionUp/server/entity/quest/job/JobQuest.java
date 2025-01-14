@@ -33,7 +33,7 @@ public class JobQuest {
     private Cycle cycle;
 
     @Column(name = "round_value", nullable = false)
-    private int round; // ✅ month, week 제거 후 round만 유지
+    private int round;
 
     @Column(nullable = false)
     private double productivity;
@@ -52,13 +52,31 @@ public class JobQuest {
     @Column(nullable = false)
     private LocalDate grantedDate;
 
-    public static JobQuest create(Department department, int part, Cycle cycle, int round, double productivity, TeamQuestGrade questGrade, int grantedExp) {
+    @Column(nullable = false)
+    private double maxCondition; // ✅ MAX 등급 기준 생산성
+
+    @Column(nullable = false)
+    private double medCondition; // ✅ MEDIAN 등급 기준 생산성
+
+    @Column(nullable = false)
+    private int maxExp; // ✅ MAX 등급 경험치
+
+    @Column(nullable = false)
+    private int medExp; // ✅ MEDIAN 등급 경험치
+
+    public static JobQuest create(Department department, int part, Cycle cycle, int round, double productivity,
+                                  double maxCondition, double medCondition, int maxExp, int medExp,
+                                  TeamQuestGrade questGrade, int grantedExp) {
         return JobQuest.builder()
                 .department(department)
                 .part(part)
                 .cycle(cycle)
                 .round(round)
                 .productivity(productivity)
+                .maxCondition(maxCondition)
+                .medCondition(medCondition)
+                .maxExp(maxExp)
+                .medExp(medExp)
                 .expType(ExpType.JOB_QUEST)
                 .questGrade(questGrade)
                 .grantedExp(grantedExp)

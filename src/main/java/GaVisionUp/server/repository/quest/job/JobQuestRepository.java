@@ -11,4 +11,6 @@ public interface JobQuestRepository {
     Optional<JobQuest> findByDepartmentAndCycleAndMonth(String department, int part, Cycle cycle, int month);
     List<JobQuest> findAllByDepartment(String department, int part, Cycle cycle);
     JobQuest save(JobQuest jobQuest);
+    List<JobQuest> findByDepartmentAndPartAndYear(String department, int part, int year);
+    List<JobQuest> findByDepartmentAndPartAndYear(Long userId, int year);
 }

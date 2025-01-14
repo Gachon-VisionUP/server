@@ -10,8 +10,10 @@ import java.util.Optional;
 public interface LeaderQuestRepository {
     List<LeaderQuest> findByUserId(Long userId);
     List<LeaderQuest> findAllByDepartmentAndCycle(Department department, Cycle cycle);
-    Optional<LeaderQuest> findByDepartmentAndCycleAndRound(String department, Cycle cycle, int round);
-    Optional<LeaderQuest> findByDepartmentAndCycleAndMonth(String department, Cycle cycle, int month);
     LeaderQuest save(LeaderQuest leaderQuest);
+    Optional<LeaderQuest> findById(Long id);
+    Optional<LeaderQuest> findByUserIdAndQuestId(Long userId, Long questId);
+    List<LeaderQuest> findByUserIdAndConditionId(Long userId, Long conditionId); // ✅ 추가됨
+    List<LeaderQuest> findByUserIdAndYear(Long userId, int year);
 }
 

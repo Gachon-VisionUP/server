@@ -11,4 +11,6 @@ public interface LeaderQuestConditionRepository {
     List<LeaderQuestCondition> findAllByDepartmentAndCycle(Department department, Cycle cycle);
     Optional<LeaderQuestCondition> findByQuestName(String questName);
     LeaderQuestCondition save(LeaderQuestCondition questCondition);
+    List<LeaderQuestCondition> findByDepartment(Department department);
+    Optional<LeaderQuestCondition> findById(Long id);
 }

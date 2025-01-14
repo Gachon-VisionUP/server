@@ -71,7 +71,14 @@ public class UserQueryServiceImpl implements UserQueryService{
                 .build();
     }
 
+    // ✅ 유저 ID를 기반으로 사용자 정보 조회
+    @Override
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
     /*** 모든 사용자의 Expo Push Token 가져오기 */
+    @Override
     public List<String> getAllExpoPushTokens() {
         return userRepository.findAll().stream()
                 .map(User::getExpoPushToken)

@@ -48,42 +48,6 @@ public class LeaderQuestRepositoryImpl implements LeaderQuestRepository {
                 .fetch();
     }
 
-    // ✅ 특정 부서, 주기 및 round 기준 조회 (WEEKLY)
-    @Override
-    public Optional<LeaderQuest> findByDepartmentAndCycleAndRound(String department, Cycle cycle, int round) {
-        Optional<LeaderQuest> result = Optional.ofNullable(
-                queryFactory
-                        .selectFrom(leaderQuest)
-                        .where(
-                                leaderQuest.department.eq(Department.valueOf(department)),
-                                leaderQuest.cycle.eq(cycle),
-                                leaderQuest.week.eq(round) // ✅ WEEKLY의 경우 주차 기반 조회
-                        )
-                        .fetchOne()
-        );
-
-        log.info("📌 [DEBUG] LeaderQuest (WEEKLY) 조회 결과: {}주차 - {}", round, result.isPresent() ? "존재함" : "없음");
-        return result;
-    }
-
-    // ✅ 특정 부서, 주기 및 month 기준 조회 (MONTHLY)
-    @Override
-    public Optional<LeaderQuest> findByDepartmentAndCycleAndMonth(String department, Cycle cycle, int month) {
-        Optional<LeaderQuest> result = Optional.ofNullable(
-                queryFactory
-                        .selectFrom(leaderQuest)
-                        .where(
-                                leaderQuest.department.eq(Department.valueOf(department)),
-                                leaderQuest.cycle.eq(cycle),
-                                leaderQuest.month.eq(month) // ✅ MONTHLY의 경우 month 기반 조회
-                        )
-                        .fetchOne()
-        );
-
-        log.info("📌 [DEBUG] LeaderQuest (MONTHLY) 조회 결과: {}월 - {}", month, result.isPresent() ? "존재함" : "없음");
-        return result;
-    }
-
     // ✅ 퀘스트 할당 저장
     @Override
     public LeaderQuest save(LeaderQuest leaderQuest) {
@@ -93,5 +57,55 @@ public class LeaderQuestRepositoryImpl implements LeaderQuestRepository {
             em.merge(leaderQuest);
         }
         return leaderQuest;
+    }
+
+    @Override
+    public Optional<LeaderQuest> findById(Long id) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(leaderQuest)
+                        .where(leaderQuest.id.eq(id))
+                        .fetchOne()
+        );
+    }
+
+    // ✅ 특정 유저 ID 및 연도별 퀘스트 조회 (MONTHLY + WEEKLY 포함)
+    @Override
+    public List<LeaderQuest> findByUserIdAndYear(Long userId, int year) {
+        return queryFactory
+                .selectFrom(leaderQuest)
+                .where(
+                        leaderQuest.user.id.eq(userId),
+                        leaderQuest.assignedDate.year().eq(year)
+                )
+                .orderBy(leaderQuest.month.asc(), leaderQuest.week.asc().nullsLast()) // ✅ 월, 주차 정렬
+                .fetch();
+    }
+
+    // ✅ 특정 유저의 특정 퀘스트 수행 기록 조회 (User ID + Quest ID)
+    @Override
+    public Optional<LeaderQuest> findByUserIdAndQuestId(Long userId, Long questId) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(leaderQuest)
+                        .where(
+                                leaderQuest.user.id.eq(userId),
+                                leaderQuest.id.eq(questId)
+                        )
+                        .fetchOne()
+        );
+    }
+
+    // ✅ 특정 유저가 특정 퀘스트 조건 ID에 해당하는 모든 리더 퀘스트 조회
+    @Override
+    public List<LeaderQuest> findByUserIdAndConditionId(Long userId, Long conditionId) {
+        return queryFactory
+                .selectFrom(leaderQuest)
+                .where(
+                        leaderQuest.user.id.eq(userId),
+                        leaderQuest.condition.id.eq(conditionId) // ✅ 동일한 퀘스트 조건 ID 필터링
+                )
+                .orderBy(leaderQuest.assignedDate.asc()) // ✅ 달성 날짜 기준 정렬
+                .fetch();
     }
 }

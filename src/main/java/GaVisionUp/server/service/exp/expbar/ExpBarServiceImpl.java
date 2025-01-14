@@ -15,6 +15,21 @@ public class ExpBarServiceImpl implements ExpBarService {
     private final ExpBarRepository expBarRepository;
     private final UserRepository userRepository;
 
+    // ✅ 특정 유저의 ExpBar 조회 (없으면 생성)
+    @Override
+    public ExpBar getOrCreateExpBarByUserId(Long userId) {
+        return expBarRepository.findByUserId(userId)
+                .orElseGet(() -> createExpBarForUser(userId));
+    }
+
+    // ✅ 특정 유저의 ExpBar 생성
+    private ExpBar createExpBarForUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        return expBarRepository.createExpBarForUser(user);
+    }
+
     // ✅ 경험치 바 생성 (User와 연결)
     @Override
     public ExpBar createExpBar(ExpBar expBar) {

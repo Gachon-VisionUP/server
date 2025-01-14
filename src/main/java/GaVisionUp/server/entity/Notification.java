@@ -32,6 +32,9 @@ public class Notification {
     @Column(name = "read_status", nullable = false)
     private boolean read = false; // ✅ 읽음 여부 (기본값: false)
 
+    @Column(name = "exp_type", nullable = true)
+    private String expType;
+
     @Column(nullable = false)
     private LocalDateTime createdAt; // ✅ 알림 생성 시간
 
