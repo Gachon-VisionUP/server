@@ -37,14 +37,15 @@ public class UserRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class Update {
-
-        @Schema(description = "변경할 캐릭터")
-        private String profileImageUrl;
+    public static class ChangePassword {
 
         @Schema(description = "변경할 비밀번호")
         @Size(max = 30, message = "비밀번호는 10자 이내로 입력해주세요.")
         private String changedPW;
+
+        @Schema(description = "검증용 비밀번호")
+        @Size(max = 30, message = "비밀번호는 10자 이내로 입력해주세요.")
+        private String checkPW;
     }
 
     @Schema(description = "계정 생성 DTO")

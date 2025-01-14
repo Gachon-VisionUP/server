@@ -23,17 +23,35 @@ public class UserCommandServiceImpl implements UserCommandService{
     private final LevelRepository levelRepository;
 
     @Override
-    public UserResponse.UpdateInformation updateInformation(Long userId, UserRequest.Update request) {
+    public UserResponse.UpdateInformation changePassword(Long userId, UserRequest.ChangePassword request) {
+        User user = userRepository.findById(userId).
+                orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
+
+        if (request.getChangedPW().equals(request.getCheckPW())) {
+            throw new RestApiException(GlobalErrorStatus._NOT_EQUAL_PASSWORD);
+        }
+
+        user.updatePassword(request.getChangedPW());
+
+        userRepository.save(user);
+
+        return UserResponse.UpdateInformation.builder()
+                .userId(user.getId())
+                .build();
+    }
+
+    @Override
+    public UserResponse.UpdateInformation changeImage(Long userId, String url) {
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
 
         String changedImageUrl = user.getProfileImageUrl();
 
-        if (request.getProfileImageUrl() != null) {
-            changedImageUrl = request.getProfileImageUrl();
+        if (url != null) {
+            changedImageUrl = url;
         }
 
-        user.update(request.getChangedPW(), changedImageUrl);
+        user.updateImageUrl(changedImageUrl);
 
         userRepository.save(user);
 

@@ -5,7 +5,9 @@ import GaVisionUp.server.web.dto.user.UserResponse;
 
 public interface UserCommandService {
 
-    UserResponse.UpdateInformation updateInformation(Long userId, UserRequest.Update request);
+    UserResponse.UpdateInformation changePassword(Long userId, UserRequest.ChangePassword request);
+
+    UserResponse.UpdateInformation changeImage(Long userId, String url);
 
     void updatePushToken(Long userId, String pushToken);
 

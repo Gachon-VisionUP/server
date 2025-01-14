@@ -70,15 +70,26 @@ public class UserController {
         return ApiResponse.onSuccess(userQueryService.getUserInformation(userId));
     }
 
-    @PutMapping("/info")
-    public ApiResponse<UserResponse.UpdateInformation> updateInformation(
+    @PutMapping("/password")
+    public ApiResponse<UserResponse.UpdateInformation> changePassword(
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(name = "userId", required = false) Long userId,
-            @RequestBody UserRequest.Update request){
+            @RequestBody UserRequest.ChangePassword request){
 
         validateUserIds(sessionUserId, userId);
 
-        return ApiResponse.onSuccess(userCommandService.updateInformation(userId, request));
+        return ApiResponse.onSuccess(userCommandService.changePassword(userId, request));
+    }
+
+    @PutMapping("/image")
+    public ApiResponse<UserResponse.UpdateInformation> changeImage(
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestBody String changeImageUrl){
+
+        validateUserIds(sessionUserId, userId);
+
+        return ApiResponse.onSuccess(userCommandService.changeImage(userId, changeImageUrl));
     }
 
     public static Hashtable sessionList = new Hashtable();

@@ -62,11 +62,6 @@ public class User {
     @Column(nullable = true)
     private String expoPushToken; // ✅ Expo 푸쉬 토큰 추가
 
-    public void update(String changedPW, String profileImageUrl) {
-        this.changedPW = changedPW;
-        this.profileImageUrl = profileImageUrl;
-    }
-
     // ✅ 경험치 추가 메서드
     public void addExperience(int exp) {
         this.totalExp += exp;
@@ -78,17 +73,21 @@ public class User {
     }
 
     public void updatePassword(String password) {
-        changedPW = password;
+        this.changedPW = password;
+    }
+
+    public void updateImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public void updateInfo(UserRequest.UpdateUserInfo request) {
-        department = request.getDepartment();
-        part = request.getPart();
-        employeeId = request.getEmployeeId();
-        name = request.getName();
-        joinDate = request.getJoinDate();
-        loginId = request.getLoginId();
-        changedPW = request.getChangedPW();
+        this.department = request.getDepartment();
+        this.part = request.getPart();
+        this.employeeId = request.getEmployeeId();
+        this.name = request.getName();
+        this.joinDate = request.getJoinDate();
+        this.loginId = request.getLoginId();
+        this.changedPW = request.getChangedPW();
     }
 
     // ✅ 푸쉬 토큰 업데이트 메서드
