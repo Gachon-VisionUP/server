@@ -35,12 +35,11 @@ public class PostCommandServiceImpl implements PostCommandService {
 
 
     @Override
-    public PostResponse.AddPost addPost(PostRequest.AddPost request) {
+    public PostResponse.AddPost addPost(Long userId, PostRequest.AddPost request) {
 
-        /* TODO
-        추후 ADMIN 권한을 가진 유저만 게시글을 생성할 수 있도록 수정
-
-         */
+        if (!checkAdmin(userId)) {
+            throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
+        }
 
         Post post = Post.builder()
                 .title(request.getTitle())
@@ -103,4 +102,11 @@ public class PostCommandServiceImpl implements PostCommandService {
                 .build();
     }
      */
+
+    private boolean checkAdmin(Long userId) {
+        User admin = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
+
+        return admin.getRole() == Role.ADMIN;
+    }
 }

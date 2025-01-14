@@ -2,10 +2,13 @@ package GaVisionUp.server.web.controller.post;
 
 import GaVisionUp.server.entity.enums.Filter;
 import GaVisionUp.server.global.base.ApiResponse;
+import GaVisionUp.server.global.exception.RestApiException;
+import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.service.post.PostCommandService;
 import GaVisionUp.server.service.post.PostQueryService;
 import GaVisionUp.server.web.dto.post.PostRequest;
 import GaVisionUp.server.web.dto.post.PostResponse;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +40,25 @@ public class PostController {
     }
 
     @PostMapping("/add")
-    public ApiResponse<PostResponse.AddPost> addPost(@RequestBody PostRequest.AddPost request) {
-        return ApiResponse.onSuccess(postCommandService.addPost(request));
+    public ApiResponse<PostResponse.AddPost> addPost(
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestBody PostRequest.AddPost request) {
+
+        validateUserIds(sessionUserId, userId);
+
+        return ApiResponse.onSuccess(postCommandService.addPost(userId, request));
+    }
+
+    private void validateUserIds(Long sessionUserId, Long userId) {
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (sessionUserId == null) {
+            throw new RestApiException(GlobalErrorStatus._NOT_LOGIN);
+        }
+
+        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 발생
+        if (userId != null && !sessionUserId.equals(userId)) {
+            throw new RestApiException(GlobalErrorStatus._INVALID_USER);
+        }
     }
 }

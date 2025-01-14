@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class UserResponse {
 
@@ -34,5 +35,30 @@ public class UserResponse {
     @Builder
     public static class UpdateInformation{
         Long userId;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class Create{
+        Long userId;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class UserInfoList{
+        List<UserInfo> userInfoList;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class UserInfo{
+        Long userId;
+        Department department;
+        int part;
+        String employeeId;
+        String userName;
     }
 }

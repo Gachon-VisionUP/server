@@ -14,4 +14,6 @@ public interface UserQueryService {
 
     List<String> getAllExpoPushTokens();
 
+    UserResponse.UserInfoList getUserInfoList(Long userId, int page, int size);
+
 }

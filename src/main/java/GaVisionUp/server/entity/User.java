@@ -2,6 +2,7 @@ package GaVisionUp.server.entity;
 
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.Role;
+import GaVisionUp.server.web.dto.user.UserRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,7 +36,7 @@ public class User {
     @Column(nullable = false)
     private int part; // 직무 그룹
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "level_id", nullable = false)
     private Level level;  // 레벨
 
@@ -74,6 +75,20 @@ public class User {
     // ✅ 레벨 업데이트
     public void setLevel(Level level) {
         this.level = level;
+    }
+
+    public void updatePassword(String password) {
+        changedPW = password;
+    }
+
+    public void updateInfo(UserRequest.UpdateUserInfo request) {
+        department = request.getDepartment();
+        part = request.getPart();
+        employeeId = request.getEmployeeId();
+        name = request.getName();
+        joinDate = request.getJoinDate();
+        loginId = request.getLoginId();
+        changedPW = request.getChangedPW();
     }
 
     // ✅ 푸쉬 토큰 업데이트 메서드
