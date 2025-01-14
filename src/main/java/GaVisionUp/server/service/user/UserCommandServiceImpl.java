@@ -90,6 +90,7 @@ public class UserCommandServiceImpl implements UserCommandService{
                 .password("1111")
                 .changedPW(request.getPassword())
                 .role(Role.USER)
+                .profileImageUrl("man-01")
                 .build();
 
         userRepository.save(newUser);
