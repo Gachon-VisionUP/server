@@ -1,16 +1,17 @@
-package GaVisionUp.server.service.google.user;
+package GaVisionUp.server.service.google;
 
 import GaVisionUp.server.entity.Level;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.Role;
-import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
+import GaVisionUp.server.entity.exp.ExpBar;
+import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.user.UserRepository;
+import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ClearValuesRequest;
-import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,6 +33,7 @@ public class GoogleUserService {
     private final UserRepository userRepository;
     private final LevelRepository levelRepository;
     private final ExperienceService experienceService;
+    private final ExpBarService expBarService;
     private final Sheets sheetsService;
 
     private static final String SPREADSHEET_ID = ""; // ✅ Google 스프레드시트 ID
@@ -40,18 +41,7 @@ public class GoogleUserService {
     private static final Pattern EMPLOYEE_ID_PATTERN = Pattern.compile("^\\d{10}$"); // ✅ 사번이 숫자로만 이루어졌는지 확인
     private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:V16"; // 연도별 경험치 (L10 ~ V16)
     private static final int START_YEAR = 2013; // 연도별 경험치 시작 (L열 = 2023년 ~ V열 = 2013년)
-
-    /**
-     * ✅ Google Sheets와 DB 간 양방향 동기화 수행
-     */
-    public void syncGoogleSheetWithDatabase() {
-        try {
-            syncUsersFromGoogleSheet(); // ✅ Google Sheets → DB 동기화
-            syncDatabaseToGoogleSheet(); // ✅ DB → Google Sheets 동기화
-        } catch (Exception e) {
-            log.error("❌ [ERROR] Google Sheets와 DB 동기화 중 오류 발생", e);
-        }
-    }
+    private final ExpBarRepository expBarRepository;
 
     /**
      * ✅ Google Sheets → DB 동기화 (삭제 반영 포함)
@@ -114,12 +104,21 @@ public class GoogleUserService {
                     }
                     Level level = optionalLevel.get();
 
+                    // ✅ 기존 유저가 있으면 업데이트, 없으면 새로 생성
                     User user = existingUser
                             .map(existing -> {
                                 existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
                                 return existing;
                             })
-                            .orElse(User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role));
+                            .orElseGet(() -> {
+                                User newUser = User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
+                                userRepository.save(newUser);
+
+                                // ✅ 새로운 유저의 경우 ExpBar 생성
+                                ExpBar expBar = expBarService.getOrCreateExpBarByUserId(newUser.getId());
+                                log.info("✅ [INFO] 신규 유저 '{}'의 ExpBar 생성 완료", name);
+                                return newUser;
+                            });
 
                     userRepository.save(user);
                     log.info("✅ [INFO] 유저 '{}' 동기화 완료", name);
