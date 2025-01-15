@@ -47,3 +47,4 @@ src/test/resources/schema.sql
 
 # Q클래스 생성 디렉토리
 /src/main/generated/**
+/src/main/resources/googlesheets/gavisionup-b568b96cf4a5.json

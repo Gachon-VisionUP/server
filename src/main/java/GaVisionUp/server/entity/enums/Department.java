@@ -36,4 +36,11 @@ public enum Department {
         throw new RestApiException(GlobalErrorStatus._INVALID_DEPARTMENT);
     }
 
+    /**
+     * ✅ 스프레드시트에서 가져온 문자열을 Department Enum으로 변환하는 메서드
+     * - `from()`과 같은 동작을 하지만, 명확한 API 제공을 위해 추가 정의
+     */
+    public static Department fromString(String departmentName) {
+        return from(departmentName); // 기존 `from()` 메서드 활용
+    }
 }
