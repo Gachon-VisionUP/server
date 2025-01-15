@@ -2,7 +2,6 @@ package GaVisionUp.server.service.user;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Role;
-import GaVisionUp.server.global.base.ApiResponse;
 import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.repository.user.UserRepository;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -95,7 +93,7 @@ public class UserQueryServiceImpl implements UserQueryService{
     @Override
     public UserResponse.UserInfoList getUserInfoList(Long userId, int page, int size) {
 
-        if (!checkAdmin(userId)) {
+        if (checkAdmin(userId)) {
             throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
         }
 
@@ -116,10 +114,37 @@ public class UserQueryServiceImpl implements UserQueryService{
         return UserResponse.UserInfoList.builder().userInfoList(userInfoList).build();
     }
 
+    @Override
+    public UserResponse.UserInfoDetail getUserInfoDetail(Long userId, Long targetId) {
+
+        if (checkAdmin(userId)) {
+            throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
+        }
+
+        User target = userRepository.findById(userId).
+                orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
+
+        String password = target.getPassword();
+        if (target.getChangedPW() != null || !target.getChangedPW().isEmpty()) {
+            password = target.getChangedPW();
+        }
+
+        return UserResponse.UserInfoDetail.builder()
+                .department(target.getDepartment())
+                .part(target.getPart())
+                .employeeId(target.getEmployeeId())
+                .userName(target.getName())
+                .joinDate(target.getJoinDate())
+                .jobGroup(target.getLevel().getJobGroup())
+                .loginId(target.getLoginId())
+                .changedPW(password)
+                .build();
+    }
+
     private boolean checkAdmin(Long userId) {
         User admin = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
 
-        return admin.getRole() == Role.ADMIN;
+        return admin.getRole() != Role.ADMIN;
     }
 }

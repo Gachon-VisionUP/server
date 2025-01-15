@@ -2,6 +2,11 @@ package GaVisionUp.server.web.dto.user;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
+import GaVisionUp.server.entity.enums.JobGroup;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,5 +65,19 @@ public class UserResponse {
         int part;
         String employeeId;
         String userName;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class UserInfoDetail{
+        private Department department;
+        private int part;
+        private String employeeId;
+        private String userName;
+        private LocalDate joinDate;
+        private JobGroup jobGroup;
+        private String loginId;
+        private String changedPW;
     }
 }

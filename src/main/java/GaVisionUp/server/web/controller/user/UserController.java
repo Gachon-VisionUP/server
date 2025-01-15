@@ -108,9 +108,9 @@ public class UserController {
 
     // ✅ Expo 푸쉬 토큰 저장 API
     @PostMapping("/{userId}/push-token")
-    public ResponseEntity<Void> updatePushToken(@PathVariable Long userId, @RequestBody String pushToken) {
+    public ApiResponse<Void> updatePushToken(@PathVariable Long userId, @RequestBody String pushToken) {
         userCommandService.updatePushToken(userId, pushToken);
-        return ResponseEntity.ok().build();
+        return ApiResponse.onSuccess(null);
     }
 
     private void validateUserIds(Long sessionUserId, Long userId) {

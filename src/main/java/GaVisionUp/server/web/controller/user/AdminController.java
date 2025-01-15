@@ -53,11 +53,22 @@ public class AdminController {
         return ApiResponse.onSuccess(userQueryService.getUserInfoList(userId, page, size));
     }
 
-    @PutMapping("/user-info")
+    @GetMapping("/user-info/{targetId}")
+    public ApiResponse<UserResponse.UserInfoDetail> getUserInfoDetail(
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @RequestParam(name = "userId", required = false) Long userId,
+            @PathVariable(name = "targetId") Long targetId){
+
+        validateUserIds(sessionUserId, userId);
+
+        return ApiResponse.onSuccess(userQueryService.getUserInfoDetail(userId, targetId));
+    }
+
+    @PutMapping("/user-info/{targetId}")
     public ApiResponse<UserResponse.UpdateInformation> updateUserInfo(
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(name = "userId", required = false) Long userId,
-            @RequestParam(name = "targetId") Long targetId,
+            @PathVariable(name = "targetId") Long targetId,
             @RequestBody UserRequest.UpdateUserInfo request){
 
         validateUserIds(sessionUserId, userId);
