@@ -15,9 +15,18 @@ public class GoogleController {
     /**
      * ✅ Google Sheets에서 유저 데이터 동기화 API
      */
-    @PostMapping("/sync-users")
-    public ResponseEntity<String> syncUsers() {
+    @PostMapping("/sync-sheet-to-db")
+    public ResponseEntity<String> syncSheetToDb() {
         googleUserService.syncUsersFromGoogleSheet();
-        return ResponseEntity.ok("✅ Google Sheets에서 유저 데이터를 동기화했습니다.");
+        return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
+    }
+
+    /**
+     * ✅ DB → Google Sheets 동기화 (DB → Google Sheets)
+     */
+    @PostMapping("/sync-db-to-sheets")
+    public ResponseEntity<String> syncDbToGoogleSheets() {
+        googleUserService.syncDatabaseToGoogleSheet();
+        return ResponseEntity.ok("✅ DB 데이터를 Google Sheets에 동기화했습니다.");
     }
 }
