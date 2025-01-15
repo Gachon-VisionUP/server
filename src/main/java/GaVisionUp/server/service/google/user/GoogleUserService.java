@@ -4,11 +4,9 @@ import GaVisionUp.server.entity.Level;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.Role;
-import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.user.UserRepository;
-import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ClearValuesRequest;
@@ -35,10 +33,9 @@ public class GoogleUserService {
     private final UserRepository userRepository;
     private final LevelRepository levelRepository;
     private final ExperienceService experienceService;
-    private final ExpBarService expBarService;
     private final Sheets sheetsService;
 
-    private static final String SPREADSHEET_ID = "1jZJTdF5CQrnNioVE_20_IX3X7rB5Zq2psXpmjkcEsLQ"; // ✅ Google 스프레드시트 ID
+    private static final String SPREADSHEET_ID = ""; // ✅ Google 스프레드시트 ID
     private static final String RANGE = "참고. 구성원 정보!B10:K16"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
     private static final Pattern EMPLOYEE_ID_PATTERN = Pattern.compile("^\\d{10}$"); // ✅ 사번이 숫자로만 이루어졌는지 확인
     private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:V16"; // 연도별 경험치 (L10 ~ V16)
@@ -56,9 +53,6 @@ public class GoogleUserService {
         }
     }
 
-    /**
-     * ✅ Google Sheets → DB 동기화 (삭제 반영 포함)
-     */
     /**
      * ✅ Google Sheets → DB 동기화 (삭제 반영 포함)
      */
@@ -120,21 +114,12 @@ public class GoogleUserService {
                     }
                     Level level = optionalLevel.get();
 
-                    // ✅ 기존 유저가 있으면 업데이트, 없으면 새로 생성
                     User user = existingUser
                             .map(existing -> {
                                 existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
                                 return existing;
                             })
-                            .orElseGet(() -> {
-                                User newUser = User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
-                                userRepository.save(newUser);
-
-                                // ✅ 새로운 유저의 경우 ExpBar 생성
-                                ExpBar expBar = expBarService.getOrCreateExpBarByUserId(newUser.getId());
-                                log.info("✅ [INFO] 신규 유저 '{}'의 ExpBar 생성 완료", name);
-                                return newUser;
-                            });
+                            .orElse(User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role));
 
                     userRepository.save(user);
                     log.info("✅ [INFO] 유저 '{}' 동기화 완료", name);
