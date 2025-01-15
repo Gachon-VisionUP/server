@@ -54,7 +54,7 @@ public class GoogleUserService {
     }
 
     /**
-     * ✅ Google Sheets → DB 동기화
+     * ✅ Google Sheets → DB 동기화 (삭제 반영 포함)
      */
     public void syncUsersFromGoogleSheet() {
         try {
@@ -64,8 +64,8 @@ public class GoogleUserService {
 
             List<List<Object>> values = response.getValues();
             if (values == null || values.isEmpty()) {
-                log.warn("⚠️ [WARN] Google Sheets에서 유저 데이터를 찾을 수 없습니다.");
-                return;
+                log.warn("⚠️ [WARN] Google Sheets에서 유저 데이터를 찾을 수 없습니다. (전체 삭제 가능성 있음)");
+                values = new ArrayList<>(); // ✅ 빈 리스트로 설정하여 usersToDelete가 기존 유저 목록을 유지하도록 함
             }
 
             // ✅ 현재 DB에 저장된 모든 유저의 사번 목록 조회
@@ -129,7 +129,7 @@ public class GoogleUserService {
                 }
             }
 
-            // ✅ 삭제된 유저 처리
+            // ✅ 삭제된 유저 처리 (Google Sheets에서 사라진 유저를 DB에서 삭제)
             Set<String> usersToDelete = new HashSet<>(existingUserIds);
             usersToDelete.removeAll(sheetUserIds);
 
@@ -137,6 +137,8 @@ public class GoogleUserService {
                 List<User> usersToBeDeleted = userRepository.findByEmployeeIdIn(usersToDelete);
                 userRepository.deleteAll(usersToBeDeleted);
                 log.info("🗑 [INFO] {}명의 유저가 삭제됨: {}", usersToDelete.size(), usersToDelete);
+            } else {
+                log.info("✅ [INFO] 삭제할 유저가 없습니다.");
             }
 
         } catch (IOException e) {
@@ -177,7 +179,7 @@ public class GoogleUserService {
                     .update(SPREADSHEET_ID, RANGE, new ValueRange().setValues((List<List<Object>>) (List<?>) userData)) // ✅ 강제 타입 변환
                     .setValueInputOption("RAW")
                     .execute();
-            
+
             // ✅ 연도별 경험치 데이터 생성
             List<List<Object>> yearlyExpData = new ArrayList<>();
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
