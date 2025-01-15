@@ -29,7 +29,7 @@ public class UserCommandServiceImpl implements UserCommandService{
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
 
-        if (request.getChangedPW().equals(request.getCheckPW())) {
+        if (!request.getChangedPW().equals(request.getCheckPW())) {
             throw new RestApiException(GlobalErrorStatus._NOT_EQUAL_PASSWORD);
         }
 
@@ -75,7 +75,7 @@ public class UserCommandServiceImpl implements UserCommandService{
     @Override
     public UserResponse.Create userCreate(Long userId, UserRequest.Create request) {
 
-        if (!checkAdmin(userId)) {
+        if (checkAdmin(userId)) {
             throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
         }
 
@@ -97,6 +97,8 @@ public class UserCommandServiceImpl implements UserCommandService{
 
         userRepository.save(newUser);
 
+        newUser.updatePushToken("ExponentPushToken"+newUser.getId());
+
         return UserResponse.Create.builder()
                 .userId(newUser.getId())
                 .build();
@@ -105,7 +107,7 @@ public class UserCommandServiceImpl implements UserCommandService{
     @Override
     public UserResponse.UpdateInformation updateUserInfo(Long userId, Long targetId, UserRequest.UpdateUserInfo request) {
 
-        if (!checkAdmin(userId)) {
+        if (checkAdmin(userId)) {
             throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
         }
 
@@ -135,6 +137,6 @@ public class UserCommandServiceImpl implements UserCommandService{
         User admin = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
 
-        return admin.getRole() == Role.ADMIN;
+        return admin.getRole() != Role.ADMIN;
     }
 }
