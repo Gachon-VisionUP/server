@@ -11,6 +11,7 @@ import GaVisionUp.server.web.dto.user.UserResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -30,7 +31,7 @@ public class UserController {
     private final UserQueryService userQueryService;
 
     @PostMapping("/login")
-    public ApiResponse<UserResponse.Login> login(@RequestBody UserRequest.Login request, HttpServletRequest httpServletRequest) {
+    public ApiResponse<UserResponse.Login> login(@Valid @RequestBody UserRequest.Login request, HttpServletRequest httpServletRequest) {
         // 사용자 인증 로직
         User user = userQueryService.login(request);
 
@@ -77,7 +78,7 @@ public class UserController {
     @PutMapping("/password")
     public ApiResponse<UserResponse.UpdateInformation> changePassword(
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
-            @RequestBody UserRequest.ChangePassword request){
+            @Valid @RequestBody UserRequest.ChangePassword request){
 
         // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
         if (userId == null) {

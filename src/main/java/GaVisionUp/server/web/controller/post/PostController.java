@@ -9,6 +9,7 @@ import GaVisionUp.server.service.post.PostQueryService;
 import GaVisionUp.server.web.dto.post.PostRequest;
 import GaVisionUp.server.web.dto.post.PostResponse;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,7 @@ public class PostController {
     @PostMapping("/add")
     public ApiResponse<PostResponse.AddPost> addPost(
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
-            @RequestBody PostRequest.AddPost request) {
+            @Valid @RequestBody PostRequest.AddPost request) {
 
         // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
         if (userId == null) {

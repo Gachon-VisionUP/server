@@ -11,6 +11,7 @@ import GaVisionUp.server.web.dto.user.UserResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -31,7 +32,7 @@ public class AdminController {
 
     @PostMapping("/create")
     public ApiResponse<UserResponse.Create> userCreate(
-            @RequestBody UserRequest.Create request,
+            @Valid @RequestBody UserRequest.Create request,
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
 
         // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
@@ -74,7 +75,7 @@ public class AdminController {
     public ApiResponse<UserResponse.UpdateInformation> updateUserInfo(
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @PathVariable(name = "targetId") Long targetId,
-            @RequestBody UserRequest.UpdateUserInfo request){
+            @Valid @RequestBody UserRequest.UpdateUserInfo request){
 
         // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
         if (userId == null) {
