@@ -47,13 +47,14 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public ApiResponse<?> logout(HttpServletRequest request, Model model) {
+    public ApiResponse<?> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false); // 세션이 없으면 null 반환
         if (session != null) {
             sessionList.remove(session.getId());
             session.invalidate(); // 세션 무효화
+        } else {
+            return ApiResponse.onFailure(GlobalErrorStatus._ALREADY_LOGOUT);
         }
-
 
         // 성공 응답 반환
         return ApiResponse.onSuccess("로그아웃 성공!");
@@ -61,10 +62,13 @@ public class UserController {
 
     @GetMapping("/info")
     public ApiResponse<UserResponse.Information> getUserInformation(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
+
 
         // 성공적으로 사용자 정보를 반환
         return ApiResponse.onSuccess(userQueryService.getUserInformation(userId));
@@ -72,22 +76,26 @@ public class UserController {
 
     @PutMapping("/password")
     public ApiResponse<UserResponse.UpdateInformation> changePassword(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @RequestBody UserRequest.ChangePassword request){
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(userCommandService.changePassword(userId, request));
     }
 
     @PutMapping("/image")
     public ApiResponse<UserResponse.UpdateInformation> changeImage(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @RequestBody String changeImageUrl){
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(userCommandService.changeImage(userId, changeImageUrl));
     }
@@ -111,17 +119,5 @@ public class UserController {
     public ApiResponse<Void> updatePushToken(@PathVariable Long userId, @RequestBody String pushToken) {
         userCommandService.updatePushToken(userId, pushToken);
         return ApiResponse.onSuccess(null);
-    }
-
-    private void validateUserIds(Long sessionUserId, Long userId) {
-        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
-            throw new RestApiException(GlobalErrorStatus._NOT_LOGIN);
-        }
-
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 발생
-        if (userId != null && !sessionUserId.equals(userId)) {
-            throw new RestApiException(GlobalErrorStatus._INVALID_USER);
-        }
     }
 }

@@ -41,24 +41,14 @@ public class PostController {
 
     @PostMapping("/add")
     public ApiResponse<PostResponse.AddPost> addPost(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @RequestBody PostRequest.AddPost request) {
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(postCommandService.addPost(userId, request));
-    }
-
-    private void validateUserIds(Long sessionUserId, Long userId) {
-        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
-            throw new RestApiException(GlobalErrorStatus._NOT_LOGIN);
-        }
-
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 발생
-        if (userId != null && !sessionUserId.equals(userId)) {
-            throw new RestApiException(GlobalErrorStatus._INVALID_USER);
-        }
     }
 }

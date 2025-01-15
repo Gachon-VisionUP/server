@@ -32,22 +32,26 @@ public class AdminController {
     @PostMapping("/create")
     public ApiResponse<UserResponse.Create> userCreate(
             @RequestBody UserRequest.Create request,
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(userCommandService.userCreate(userId, request));
     }
 
     @GetMapping("/user-list")
     public ApiResponse<UserResponse.UserInfoList> getUserInfoList(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size) {
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         // 성공적으로 사용자 정보를 반환
         return ApiResponse.onSuccess(userQueryService.getUserInfoList(userId, page, size));
@@ -55,36 +59,28 @@ public class AdminController {
 
     @GetMapping("/user-info/{targetId}")
     public ApiResponse<UserResponse.UserInfoDetail> getUserInfoDetail(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @PathVariable(name = "targetId") Long targetId){
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(userQueryService.getUserInfoDetail(userId, targetId));
     }
 
     @PutMapping("/user-info/{targetId}")
     public ApiResponse<UserResponse.UpdateInformation> updateUserInfo(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @PathVariable(name = "targetId") Long targetId,
             @RequestBody UserRequest.UpdateUserInfo request){
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(userCommandService.updateUserInfo(userId, targetId, request));
-    }
-
-    private void validateUserIds(Long sessionUserId, Long userId) {
-        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
-            throw new RestApiException(GlobalErrorStatus._NOT_LOGIN);
-        }
-
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 발생
-        if (userId != null && !sessionUserId.equals(userId)) {
-            throw new RestApiException(GlobalErrorStatus._INVALID_USER);
-        }
     }
 }

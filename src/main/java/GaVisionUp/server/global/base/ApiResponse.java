@@ -31,7 +31,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(false, code, message, data);
     }
 
-    public static <T> ApiResponse<T> onFailure(GlobalErrorStatus errorStatus, T data) {
-        return new ApiResponse<>(false, errorStatus.getCode(), errorStatus.getMessage(), data);
+    public static <T> ApiResponse<T> onFailure(GlobalErrorStatus errorStatus) {
+        return new ApiResponse<>(false, errorStatus.getCode(), errorStatus.getMessage(), null);
     }
 }

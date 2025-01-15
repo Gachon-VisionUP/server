@@ -27,19 +27,14 @@ public class NotificationController {
     // ✅ 현재 로그인한 유저의 모든 알림 조회 (세션 userId 검증 추가)
     @GetMapping("/all")
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
         // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
+        if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
-        if (userId != null && !sessionUserId.equals(userId)) {
-            return ResponseEntity.badRequest().build();
-        }
 
-        List<NotificationResponse> notifications = notificationService.getAllNotifications(sessionUserId)
+        List<NotificationResponse> notifications = notificationService.getAllNotifications(userId)
                 .stream()
                 .map(NotificationResponse::new)
                 .collect(Collectors.toList());
@@ -50,20 +45,14 @@ public class NotificationController {
     // ✅ 현재 로그인한 유저의 읽지 않은 알림 조회 (세션 userId 검증 추가)
     @GetMapping("/unread")
     public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
 
         // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
+        if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
-        if (userId != null && !sessionUserId.equals(userId)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        List<NotificationResponse> notifications = notificationService.getUnreadNotifications(sessionUserId)
+        List<NotificationResponse> notifications = notificationService.getUnreadNotifications(userId)
                 .stream()
                 .map(NotificationResponse::new)
                 .collect(Collectors.toList());
@@ -75,21 +64,16 @@ public class NotificationController {
     @PostMapping("/{notificationId}/read")
     public ResponseEntity<Void> markNotificationAsRead(
             @PathVariable Long notificationId,
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
 
         // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
+        if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
-        if (userId != null && !sessionUserId.equals(userId)) {
-            return ResponseEntity.badRequest().build();
-        }
         // ✅ 해당 알림이 로그인한 유저의 것인지 검증
         Notification notification = notificationService.getNotificationById(notificationId);
-        if (!notification.getUser().getId().equals(sessionUserId)) {
+        if (!notification.getUser().getId().equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // ✅ 접근 권한 없음
         }
 
@@ -100,20 +84,14 @@ public class NotificationController {
     // ✅ 현재 로그인한 유저의 모든 알림을 읽음 처리 (세션 userId 검증 추가)
     @PostMapping("/mark-all-read")
     public ResponseEntity<Void> markAllNotificationsAsRead(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
 
         // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
+        if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 반환
-        if (userId != null && !sessionUserId.equals(userId)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        notificationService.markAllAsRead(sessionUserId);
+        notificationService.markAllAsRead(userId);
         return ResponseEntity.ok().build();
     }
 
