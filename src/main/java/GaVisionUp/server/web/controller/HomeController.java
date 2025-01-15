@@ -14,6 +14,7 @@ import GaVisionUp.server.web.dto.HomeQuestInfoResponse;
 import GaVisionUp.server.web.dto.HomeResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,9 @@ public class HomeController {
     private final LeaderQuestRepository leaderQuestRepository;
     private final ExperienceService experienceService;
     private final ExpBarService expBarService;
+
+    @Value("${server.url}") // 서버 URL (예: http://localhost:8080)
+    private String serverUrl;
 
     // ✅ 홈 데이터 조회 (유저 이름, 현재 레벨, 리더 부여 퀘스트 목록 및 평가 등급)
     // ✅ 홈 데이터 조회 (최신 경험치, 총 경험치, 퀘스트 목록)
@@ -50,7 +54,7 @@ public class HomeController {
 
         // ✅ 총 경험치 조회
         int totalExp = user.getTotalExp();
-        String imageURL = user.getProfileImageUrl();
+        String imageURL = serverUrl + "/images/" + user.getProfileImageUrl() + ".png";
 
         // ✅ 해당 유저의 ExpBar 확인 및 자동 생성
         ExpBar expBar = expBarService.getOrCreateExpBarByUserId(sessionUserId);
