@@ -60,7 +60,7 @@ public class PostCommandServiceImpl implements PostCommandService {
             String title = "📢 게시글 등록!";
             String message = String.format("%s님, %s 게시글이 등록되었습니다!", user.getName(), post.getTitle());
             String postType;
-            postType = null;
+            postType = "게시글";
             notificationService.createNotification(user, title, message, postType);
 
             // ✅ Expo 푸쉬 알림 전송
