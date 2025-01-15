@@ -15,5 +15,8 @@ public interface LeaderQuestRepository {
     Optional<LeaderQuest> findByUserIdAndQuestId(Long userId, Long questId);
     List<LeaderQuest> findByUserIdAndConditionId(Long userId, Long conditionId); // ✅ 추가됨
     List<LeaderQuest> findByUserIdAndYear(Long userId, int year);
+
+    // ✅ 특정 유저의 리더 부여 퀘스트 중 최신 평가 등급을 가져옴
+    Optional<LeaderQuest> findTopByUserIdAndQuestName(Long userId, String questName);
 }
 

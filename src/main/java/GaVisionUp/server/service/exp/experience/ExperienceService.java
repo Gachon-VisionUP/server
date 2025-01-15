@@ -1,6 +1,5 @@
 package GaVisionUp.server.service.exp.experience;
 
-import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.Experience;
 
@@ -16,5 +15,4 @@ public interface ExperienceService {
 
     Optional<Experience> getLatestExperienceByUserId(Long userId);
     List<Experience> getTop3ExperiencesByYear(Long userId, int year);
-
 }
