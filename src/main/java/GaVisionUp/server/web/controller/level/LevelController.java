@@ -21,18 +21,6 @@ public class LevelController {
     private final LevelService levelService;
     private final UserQueryService userQueryService;
 
-    // ✅ 특정 직군(JobGroup)의 레벨 리스트 조회
-    @GetMapping("/{jobGroup}")
-    public ResponseEntity<List<Level>> getLevelsByJobGroup(@PathVariable JobGroup jobGroup) {
-        return ResponseEntity.ok(levelService.getLevelsByJobGroup(jobGroup));
-    }
-
-    // ✅ 특정 유저의 총 경험치에 따른 현재 레벨 조회
-    @GetMapping("/user-level")
-    public ResponseEntity<Level> getUserLevel(@RequestParam JobGroup jobGroup, @RequestParam int totalExp) {
-        return ResponseEntity.ok(levelService.getLevelByExp(jobGroup, totalExp));
-    }
-
     // ✅ 전체 레벨 정보 조회 API (유저 직군 기반 필터링)
     @GetMapping("/group/all")
     public ResponseEntity<Map<String, List<LevelResponse>>> getAllLevels(
