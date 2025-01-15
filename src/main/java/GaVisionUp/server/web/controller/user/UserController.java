@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -38,13 +41,25 @@ public class UserController {
         // 사용자 인증 로직
         User user = userQueryService.login(request);
 
-        // 로그인 성공 시 세션 생성
-        httpServletRequest.getSession().invalidate();
-        HttpSession session = httpServletRequest.getSession(true);
-        session.setAttribute("userId", user.getId());
-        session.setMaxInactiveInterval(1800); // 30분 유지
+        // 현재 세션 확인
+        HttpSession currentSession = httpServletRequest.getSession(false);
+        if (currentSession != null) {
+            Object existingUserId = currentSession.getAttribute("userId");
+            if (existingUserId != null) {
+                // 이미 로그인된 사용자라면 에러 반환
+                if (!existingUserId.equals(user.getId())) {
+                    return ApiResponse.onFailure(GlobalErrorStatus._ALREADY_LOGIN);
+                }
+            }
+            currentSession.invalidate(); // 기존 세션 무효화
+        }
 
-        sessionList.put(session.getId(), session);
+        // 새 세션 생성 및 사용자 정보 저장
+        HttpSession newSession = httpServletRequest.getSession(true);
+        newSession.setAttribute("userId", user.getId());
+        newSession.setMaxInactiveInterval(1800); // 30분 유지
+
+        sessionList.put(newSession.getId(), newSession);
 
         // 성공 응답 반환
         return ApiResponse.onSuccess(UserResponse.Login.builder().user(user).build());
@@ -113,14 +128,30 @@ public class UserController {
     @GetMapping("/session-list")
     @Operation(summary = "세션 리스트 조회 API", description = "현재 로그인 중인 모든 세션 id를 조회합니다.")
     @ResponseBody
-    public Map<String, String> sessionList() {
-        Enumeration elements = sessionList.elements();
+    public ApiResponse<Map<String, String>> sessionList() {
+        Enumeration<HttpSession> elements = sessionList.elements();
         Map<String, String> lists = new HashMap<>();
-        while(elements.hasMoreElements()) {
-            HttpSession session = (HttpSession)elements.nextElement();
-            lists.put(session.getId(), String.valueOf(session.getAttribute("userId")));
+        while (elements.hasMoreElements()) {
+            HttpSession session = elements.nextElement();
+            try {
+                // 무효화된 세션 접근 시 예외 처리
+                lists.put(session.getId(), String.valueOf(session.getAttribute("userId")));
+            } catch (IllegalStateException e) {
+                // 무효화된 세션은 건너뜀
+                log.warn("Invalidated session detected: {}", session.getId(), e);
+            }
         }
-        return lists;
+        return ApiResponse.onSuccess(lists);
+    }
+
+    @GetMapping("/session/check")
+    @Operation(summary = "세션 체크 API", description = "세션이 활성화 되어있는지 확인합니다.")
+    public ApiResponse<String> checkSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // 기존 세션이 없으면 null 반환
+        if (session == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._UNAUTHORIZED);
+        }
+        return ApiResponse.onSuccess("Session is active: " + session.getId());
     }
 
     // ✅ Expo 푸쉬 토큰 저장 API
