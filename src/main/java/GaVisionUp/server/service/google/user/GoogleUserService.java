@@ -4,8 +4,10 @@ import GaVisionUp.server.entity.Level;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.Role;
+import GaVisionUp.server.repository.exp.experience.ExperienceRepository;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.user.UserRepository;
+import GaVisionUp.server.service.exp.experience.ExperienceService;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
@@ -17,9 +19,11 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -28,11 +32,14 @@ public class GoogleUserService {
 
     private final UserRepository userRepository;
     private final LevelRepository levelRepository;
+    private final ExperienceService experienceService;
     private final Sheets sheetsService;
 
     private static final String SPREADSHEET_ID = ""; // ✅ Google 스프레드시트 ID
     private static final String RANGE = "참고. 구성원 정보!B10:K16"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
     private static final Pattern EMPLOYEE_ID_PATTERN = Pattern.compile("^\\d{10}$"); // ✅ 사번이 숫자로만 이루어졌는지 확인
+    private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:V16"; // 연도별 경험치 (L10 ~ V16)
+    private static final int START_YEAR = 2013; // 연도별 경험치 시작 (L열 = 2023년 ~ V열 = 2013년)
 
     /**
      * ✅ Google Sheets와 DB 간 양방향 동기화 수행
@@ -171,6 +178,24 @@ public class GoogleUserService {
                     .setValueInputOption("RAW")
                     .execute();
 
+            // ✅ 연도별 경험치 데이터 생성
+            List<List<Object>> yearlyExpData = new ArrayList<>();
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+            for (User user : users) {
+                Map<Integer, Integer> experienceMap = experienceService.getYearlyTotalExperience(user.getId(), START_YEAR, currentYear);
+                List<Object> yearlyExp = IntStream.rangeClosed(START_YEAR, currentYear-2)
+                        .mapToObj(year -> experienceMap.getOrDefault(year, 0)) // 연도별 경험치 값이 없으면 0
+                        .collect(Collectors.toList());
+
+                yearlyExpData.add(yearlyExp);
+            }
+
+            // ✅ Google Sheets 연도별 경험치 업데이트 (L10:V)
+            sheetsService.spreadsheets().values()
+                    .update(SPREADSHEET_ID, RANGE_YEARLY_EXP, new ValueRange().setValues(yearlyExpData))
+                    .setValueInputOption("RAW")
+                    .execute();
             log.info("✅ [INFO] DB 데이터를 Google Sheets에 성공적으로 동기화했습니다.");
 
         } catch (IOException e) {

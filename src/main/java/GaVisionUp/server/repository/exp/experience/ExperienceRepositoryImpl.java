@@ -198,4 +198,18 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
                 .limit(3) // ✅ 최신 3개 제한
                 .fetch();
     }
+
+    @Override
+    public int getTotalExperienceByYear(Long userId, int year) {
+        QExperience qExperience = QExperience.experience;
+
+        Integer totalExp = queryFactory
+                .select(qExperience.exp.sum())
+                .from(qExperience)
+                .where(qExperience.user.id.eq(userId)
+                        .and(qExperience.obtainedDate.year().eq(year)))
+                .fetchOne();
+
+        return totalExp != null ? totalExp : 0;  // ✅ null 값 방지
+    }
 }

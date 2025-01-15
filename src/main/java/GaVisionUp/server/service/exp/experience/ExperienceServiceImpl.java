@@ -12,8 +12,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -79,5 +83,18 @@ public class ExperienceServiceImpl implements ExperienceService {
     @Override
     public List<Experience> getTop3ExperiencesByYear(Long userId, int year) {
         return experienceRepository.findTop3ByUserIdAndYearOrderByObtainedDateDesc(userId, year);
+    }
+
+
+    // ✅ 특정 유저의 연도별 총 경험치 조회 (START_YEAR ~ 현재 연도까지)
+    @Override
+    public Map<Integer, Integer> getYearlyTotalExperience(Long userId, int startYear, int endYear) {
+        Map<Integer, Integer> experienceMap = new HashMap<>();
+
+        IntStream.rangeClosed(startYear, endYear).forEach(year ->
+                experienceMap.put(year, experienceRepository.getTotalExperienceByYear(userId, year))
+        );
+
+        return experienceMap;
     }
 }
