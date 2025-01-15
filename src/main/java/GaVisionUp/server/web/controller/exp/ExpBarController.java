@@ -12,6 +12,9 @@ import GaVisionUp.server.web.dto.exp.bar.ExpBarRequest;
 import GaVisionUp.server.web.dto.exp.bar.ExpBarResponse;
 import GaVisionUp.server.web.dto.exp.ring.ExpBarRingResponse;
 import GaVisionUp.server.web.dto.exp.ring.ExpBarRingYearlyResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +36,10 @@ public class ExpBarController {
 
     // ✅ 경험치 링 데이터 조회 API
     @GetMapping("/ring")
+    @Operation(summary = "경험치 링 데이터 조회 API", description = "경험치 바 (전체 경험치)를 조회합니다.")
+    @Parameters({
+            @Parameter(name = "", description = "")
+    })
     public ResponseEntity<ExpBarRingResponse> getExpBarRing(
             @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
 
@@ -70,6 +77,10 @@ public class ExpBarController {
 
     // ✅ 경험치 링 연도별 조회 API
     @GetMapping("/ring/year")
+    @Operation(summary = "경험치 링 연도별 조회 API", description = "경험치 바를 연도별로 조회합니다.")
+    @Parameters({
+            @Parameter(name = "year", description = "조회하고 싶은 연도")
+    })
     public ResponseEntity<ExpBarRingYearlyResponse> getExpBarYearly(
             @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(value = "year", required = false) Integer year) {

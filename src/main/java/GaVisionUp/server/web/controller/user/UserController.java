@@ -8,9 +8,12 @@ import GaVisionUp.server.service.user.UserCommandService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.user.UserRequest;
 import GaVisionUp.server.web.dto.user.UserResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -30,7 +33,8 @@ public class UserController {
     private final UserQueryService userQueryService;
 
     @PostMapping("/login")
-    public ApiResponse<UserResponse.Login> login(@RequestBody UserRequest.Login request, HttpServletRequest httpServletRequest) {
+    @Operation(summary = "로그인 API", description = "로그인 시 세션을 생성하여 저장합니다.")
+    public ApiResponse<UserResponse.Login> login(@Valid @RequestBody UserRequest.Login request, HttpServletRequest httpServletRequest) {
         // 사용자 인증 로직
         User user = userQueryService.login(request);
 
@@ -47,47 +51,59 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public ApiResponse<?> logout(HttpServletRequest request, Model model) {
+    @Operation(summary = "로그아웃 API", description = "저장하고있던 세션을 무효화 시킵니다.")
+    public ApiResponse<?> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false); // 세션이 없으면 null 반환
         if (session != null) {
             sessionList.remove(session.getId());
             session.invalidate(); // 세션 무효화
+        } else {
+            return ApiResponse.onFailure(GlobalErrorStatus._ALREADY_LOGOUT);
         }
-
 
         // 성공 응답 반환
         return ApiResponse.onSuccess("로그아웃 성공!");
     }
 
     @GetMapping("/info")
+    @Operation(summary = "정보 조회 API", description = "사용자의 정보를 조회합니다.")
     public ApiResponse<UserResponse.Information> getUserInformation(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
+
 
         // 성공적으로 사용자 정보를 반환
         return ApiResponse.onSuccess(userQueryService.getUserInformation(userId));
     }
 
     @PutMapping("/password")
+    @Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경합니다.(단, 1111 입력 시 changePW에 저장안됨.)")
     public ApiResponse<UserResponse.UpdateInformation> changePassword(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
-            @RequestBody UserRequest.ChangePassword request){
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
+            @Valid @RequestBody UserRequest.ChangePassword request){
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(userCommandService.changePassword(userId, request));
     }
 
     @PutMapping("/image")
+    @Operation(summary = "캐릭터 변경 API", description = "8가지 캐릭터 중에 선택하여 변경, 작성 시 \"\" 없이 man-01이라고 바로 쓰면 됨.")
     public ApiResponse<UserResponse.UpdateInformation> changeImage(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @RequestBody String changeImageUrl){
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(userCommandService.changeImage(userId, changeImageUrl));
     }
@@ -95,6 +111,7 @@ public class UserController {
     public static Hashtable sessionList = new Hashtable();
 
     @GetMapping("/session-list")
+    @Operation(summary = "세션 리스트 조회 API", description = "현재 로그인 중인 모든 세션 id를 조회합니다.")
     @ResponseBody
     public Map<String, String> sessionList() {
         Enumeration elements = sessionList.elements();
@@ -108,20 +125,12 @@ public class UserController {
 
     // ✅ Expo 푸쉬 토큰 저장 API
     @PostMapping("/{userId}/push-token")
+    @Operation(summary = "푸쉬 토큰 저장 API", description = "입력한 Token으로 푸쉬 토큰을 업데이트 합니다.")
+    @Parameters({
+            @Parameter(name = "userId", description = "사용자 id")
+    })
     public ApiResponse<Void> updatePushToken(@PathVariable Long userId, @RequestBody String pushToken) {
         userCommandService.updatePushToken(userId, pushToken);
         return ApiResponse.onSuccess(null);
-    }
-
-    private void validateUserIds(Long sessionUserId, Long userId) {
-        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
-            throw new RestApiException(GlobalErrorStatus._NOT_LOGIN);
-        }
-
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 발생
-        if (userId != null && !sessionUserId.equals(userId)) {
-            throw new RestApiException(GlobalErrorStatus._INVALID_USER);
-        }
     }
 }

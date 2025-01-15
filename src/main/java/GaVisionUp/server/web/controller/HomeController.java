@@ -12,6 +12,9 @@ import GaVisionUp.server.service.quest.leader.LeaderQuestService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.HomeQuestInfoResponse;
 import GaVisionUp.server.web.dto.HomeResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +42,9 @@ public class HomeController {
     // ✅ 홈 데이터 조회 (유저 이름, 현재 레벨, 리더 부여 퀘스트 목록 및 평가 등급)
     // ✅ 홈 데이터 조회 (최신 경험치, 총 경험치, 퀘스트 목록)
     @GetMapping
-    public ResponseEntity<HomeResponse> getHomeData(@SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+    @Operation(summary = "홈으로 이동 API", description = "홈 데이터를 조회합니다.(이름, 레벨, 퀘스트 목록 및 평가 등급, 최신 경험치, 총 경험치, 퀘스트 목록)")
+    public ResponseEntity<HomeResponse> getHomeData(
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
         if (sessionUserId == null) {
             log.warn("⚠️ [WARN] 세션에 로그인된 사용자가 없습니다.");
             return ResponseEntity.badRequest().build();

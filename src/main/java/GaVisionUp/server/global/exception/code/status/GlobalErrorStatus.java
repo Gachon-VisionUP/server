@@ -33,13 +33,14 @@ public enum GlobalErrorStatus implements ApiErrorCodeInterface {
     _NOT_LOGIN(HttpStatus.UNAUTHORIZED, "USER4007", "로그인 되지 않은 사용자입니다."),
     _NOT_FOUND_INFORMATION(HttpStatus.NOT_FOUND, "USER4008", "사용자 정보를 찾을 수 없습니다."),
     _ONLY_ADMIN(HttpStatus.BAD_REQUEST, "USER4009", "관리자만 가능한 권한입니다."),
-    _NOT_EQUAL_PASSWORD(HttpStatus.BAD_REQUEST, "USER4010", "비밀번호가 일치하지 않습니다"),
+    _NOT_EQUAL_PASSWORD(HttpStatus.BAD_REQUEST, "USER4010", "비밀번호가 일치하지 않습니다."),
+    _ALREADY_LOGOUT(HttpStatus.BAD_REQUEST, "USER4011", "이미 로그가웃된 사용자입니다."),
 
     // EXP Error Status
     _INVALID_EXP_TYPE(HttpStatus.BAD_REQUEST, "EXP4001", "잘못된 경험치 유형입니다"),
     _INVALID_JOB_GROUP(HttpStatus.BAD_REQUEST, "EXP4002", "잘못된 직군입니다"),
     _INVALID_CYCLE(HttpStatus.BAD_REQUEST, "EXP4003", "잘못된 주기입니다"),
-    _INVALID_PART(HttpStatus.BAD_REQUEST, "EXP40011", "잘못된 직무 그룹입니다"),
+    _INVALID_PART(HttpStatus.BAD_REQUEST, "EXP4012", "잘못된 직무 그룹입니다"),
 
 
     // Post Error Status
