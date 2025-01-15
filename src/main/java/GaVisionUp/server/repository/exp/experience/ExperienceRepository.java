@@ -1,5 +1,6 @@
 package GaVisionUp.server.repository.exp.experience;
 
+import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.Experience;
 
@@ -16,4 +17,6 @@ public interface ExperienceRepository {
     Optional<Experience> findTopByUserIdOrderByObtainedDateDesc(Long userId);
     List<Experience> findTop3ByUserIdAndYearOrderByObtainedDateDesc(Long userId, int year);
     int getTotalExperienceByYear(Long userId, int year);
+    Optional<Long> findExperienceIdByUserAndYear(Long userId, ExpType expType, int year);
+    void updateExperienceById(Long expId, int newExp);
 }

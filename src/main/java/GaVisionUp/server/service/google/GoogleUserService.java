@@ -15,6 +15,7 @@ import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -36,7 +37,8 @@ public class GoogleUserService {
     private final ExpBarService expBarService;
     private final Sheets sheetsService;
 
-    private static final String SPREADSHEET_ID = ""; // ✅ Google 스프레드시트 ID
+    @Value("${google.sheets.spreadsheet-id}") // ✅ YML에서 스프레드시트 ID 주입
+    private String spreadsheetId;
     private static final String RANGE = "참고. 구성원 정보!B10:K16"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
     private static final Pattern EMPLOYEE_ID_PATTERN = Pattern.compile("^\\d{10}$"); // ✅ 사번이 숫자로만 이루어졌는지 확인
     private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:V16"; // 연도별 경험치 (L10 ~ V16)
@@ -49,7 +51,7 @@ public class GoogleUserService {
     public void syncUsersFromGoogleSheet() {
         try {
             ValueRange response = sheetsService.spreadsheets().values()
-                    .get(SPREADSHEET_ID, RANGE)
+                    .get(spreadsheetId, RANGE)
                     .execute();
 
             List<List<Object>> values = response.getValues();
@@ -170,12 +172,12 @@ public class GoogleUserService {
 
             // ✅ Google Sheets 데이터 초기화 (기존 데이터 삭제)
             sheetsService.spreadsheets().values()
-                    .clear(SPREADSHEET_ID, RANGE, new ClearValuesRequest())
+                    .clear(spreadsheetId, RANGE, new ClearValuesRequest())
                     .execute();
 
             // ✅ Google Sheets에 새로운 데이터 입력
             sheetsService.spreadsheets().values()
-                    .update(SPREADSHEET_ID, RANGE, new ValueRange().setValues((List<List<Object>>) (List<?>) userData)) // ✅ 강제 타입 변환
+                    .update(spreadsheetId, RANGE, new ValueRange().setValues((List<List<Object>>) (List<?>) userData)) // ✅ 강제 타입 변환
                     .setValueInputOption("RAW")
                     .execute();
 
@@ -194,7 +196,7 @@ public class GoogleUserService {
 
             // ✅ Google Sheets 연도별 경험치 업데이트 (L10:V)
             sheetsService.spreadsheets().values()
-                    .update(SPREADSHEET_ID, RANGE_YEARLY_EXP, new ValueRange().setValues(yearlyExpData))
+                    .update(spreadsheetId, RANGE_YEARLY_EXP, new ValueRange().setValues(yearlyExpData))
                     .setValueInputOption("RAW")
                     .execute();
 

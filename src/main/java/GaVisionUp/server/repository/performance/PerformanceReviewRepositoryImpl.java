@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,4 +102,22 @@ public class PerformanceReviewRepositoryImpl implements PerformanceReviewReposit
                 .orderBy(performanceReview.evaluationDate.desc()) // 최신순 정렬
                 .fetch();
     }
+
+    @Override
+    public Optional<PerformanceReview> findByUserIdAndYearAndExpType(Long userId, int year, ExpType expType) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
+
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(performanceReview)
+                        .where(
+                                performanceReview.user.id.eq(userId),
+                                performanceReview.evaluationDate.between(startDate, endDate), // ✅ 연도별 검색을 정확하게 함
+                                performanceReview.expType.eq(expType)
+                        )
+                        .fetchOne()
+        );
+    }
+
 }

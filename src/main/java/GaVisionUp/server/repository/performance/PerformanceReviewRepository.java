@@ -30,4 +30,6 @@ public interface PerformanceReviewRepository {
 
     // ✅ 전체 유저의 하반기(H2_PERFORMANCE) 인사평가 조회
     List<PerformanceReview> findAllByH2Performance();
+
+    Optional<PerformanceReview>findByUserIdAndYearAndExpType(Long userId,int year,ExpType expType);
 }

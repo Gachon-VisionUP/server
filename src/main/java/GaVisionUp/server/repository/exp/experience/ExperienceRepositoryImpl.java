@@ -212,4 +212,28 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
 
         return totalExp != null ? totalExp : 0;  // ✅ null 값 방지
     }
+
+    // ✅ 유저 ID, 경험치 타입, 연도로 기존 경험치 ID 조회
+    public Optional<Long> findExperienceIdByUserAndYear(Long userId, ExpType expType, int year) {
+        return Optional.ofNullable(
+                queryFactory
+                        .select(experience.id)
+                        .from(experience)
+                        .where(
+                                experience.user.id.eq(userId),
+                                experience.expType.eq(expType),
+                                experience.obtainedDate.year().eq(year)
+                        )
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void updateExperienceById(Long expId, int newExp) {
+        queryFactory.update(QExperience.experience)
+                .set(QExperience.experience.exp, newExp) // ✅ 새로운 경험치 값으로 업데이트
+                .where(QExperience.experience.id.eq(expId)) // ✅ 특정 ID의 경험치만 업데이트
+                .execute();
+    }
 }
