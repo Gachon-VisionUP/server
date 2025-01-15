@@ -177,7 +177,7 @@ public class GoogleUserService {
                     .update(SPREADSHEET_ID, RANGE, new ValueRange().setValues((List<List<Object>>) (List<?>) userData)) // ✅ 강제 타입 변환
                     .setValueInputOption("RAW")
                     .execute();
-
+            
             // ✅ 연도별 경험치 데이터 생성
             List<List<Object>> yearlyExpData = new ArrayList<>();
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -196,6 +196,7 @@ public class GoogleUserService {
                     .update(SPREADSHEET_ID, RANGE_YEARLY_EXP, new ValueRange().setValues(yearlyExpData))
                     .setValueInputOption("RAW")
                     .execute();
+
             log.info("✅ [INFO] DB 데이터를 Google Sheets에 성공적으로 동기화했습니다.");
 
         } catch (IOException e) {
