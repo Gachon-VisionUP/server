@@ -1,6 +1,5 @@
 package GaVisionUp.server.repository.exp.experience;
 
-import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.Experience;
 

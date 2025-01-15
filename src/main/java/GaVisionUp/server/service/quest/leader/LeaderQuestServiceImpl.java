@@ -118,6 +118,4 @@ public class LeaderQuestServiceImpl implements LeaderQuestService {
         // ✅ 특정 유저의 해당 연도 모든 리더 부여 퀘스트 조회 (MONTHLY + WEEKLY)
         return leaderQuestRepository.findByUserIdAndYear(userId, year);
     }
-
-
 }

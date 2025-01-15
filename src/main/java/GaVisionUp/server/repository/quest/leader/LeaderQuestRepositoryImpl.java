@@ -108,4 +108,19 @@ public class LeaderQuestRepositoryImpl implements LeaderQuestRepository {
                 .orderBy(leaderQuest.assignedDate.asc()) // ✅ 달성 날짜 기준 정렬
                 .fetch();
     }
+
+    // ✅ 특정 유저가 특정 퀘스트에서 획득한 가장 최신 리더 퀘스트 조회
+    @Override
+    public Optional<LeaderQuest> findTopByUserIdAndQuestName(Long userId, String questName) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(leaderQuest)
+                        .where(
+                                leaderQuest.user.id.eq(userId),
+                                leaderQuest.questName.eq(questName)
+                        )
+                        .orderBy(leaderQuest.assignedDate.desc()) // ✅ 최신 날짜 기준 정렬
+                        .fetchFirst()
+        );
+    }
 }

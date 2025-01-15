@@ -1,6 +1,5 @@
 package GaVisionUp.server.repository.exp.experience;
 
-import GaVisionUp.server.entity.Level;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
 import GaVisionUp.server.entity.enums.JobGroup;
@@ -21,6 +20,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static GaVisionUp.server.entity.exp.QExperience.experience;
+
 @Slf4j
 @Repository
 @Transactional
@@ -33,7 +34,7 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
     private final NotificationService notificationService;
     private final ExpoNotificationService expoNotificationService;
 
-    private final QExperience qExperience = QExperience.experience;
+    private final QExperience qExperience = experience;
 
     public ExperienceRepositoryImpl(EntityManager em, LevelRepository levelRepository, ExpBarRepository expBarRepository, NotificationService notificationService, ExpoNotificationService expoNotificationService) {
         this.em = em;
