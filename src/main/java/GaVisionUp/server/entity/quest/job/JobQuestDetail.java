@@ -37,15 +37,36 @@ public class JobQuestDetail {
     private int round; // ✅ 주차 대신 round 값 저장
 
     @Column(nullable = false)
-    private double sales;
+    private double sales; // ✅ 매출
 
     @Column(nullable = false)
-    private double laborCost;
+    private double designCost; // ✅ 설계용역비
+
+    @Column(nullable = false)
+    private double employeeSalary; // ✅ 직원급여
+
+    @Column(nullable = false)
+    private double retirementSalary; // ✅ 퇴직급여
+
+    @Column(nullable = false)
+    private double insuranceFee; // ✅ 4대보험료
+
+    @Column(nullable = false)
+    private double laborCost; // ✅ 인건비 (자동 계산)
 
     @Column(nullable = false)
     private LocalDate recordedDate;
 
-    public static JobQuestDetail create(Department department, int part, Cycle cycle, int month, int round, double sales, double laborCost, LocalDate recordedDate) {
+    /**
+     * ✅ JobQuestDetail 생성 (인건비 자동 계산 포함)
+     */
+    public static JobQuestDetail create(
+            Department department, int part, Cycle cycle, int month, int round, double sales,
+            double designCost, double employeeSalary, double retirementSalary, double insuranceFee,
+            LocalDate recordedDate) {
+
+        double laborCost = designCost + employeeSalary + retirementSalary + insuranceFee; // ✅ 인건비 자동 계산
+
         return JobQuestDetail.builder()
                 .department(department)
                 .part(part)
@@ -53,8 +74,24 @@ public class JobQuestDetail {
                 .month(month)
                 .round(round)
                 .sales(sales)
-                .laborCost(laborCost)
+                .designCost(designCost)
+                .employeeSalary(employeeSalary)
+                .retirementSalary(retirementSalary)
+                .insuranceFee(insuranceFee)
+                .laborCost(laborCost) // ✅ 인건비 저장
                 .recordedDate(recordedDate)
                 .build();
+    }
+
+    /**
+     * ✅ 기존 데이터 업데이트 (변동 사항 반영)
+     */
+    public void updateJobQuest(double sales, double designCost, double employeeSalary, double retirementSalary, double insuranceFee) {
+        this.sales = sales;
+        this.designCost = designCost;
+        this.employeeSalary = employeeSalary;
+        this.retirementSalary = retirementSalary;
+        this.insuranceFee = insuranceFee;
+        this.laborCost = designCost + employeeSalary + retirementSalary + insuranceFee; // ✅ 인건비 자동 계산
     }
 }

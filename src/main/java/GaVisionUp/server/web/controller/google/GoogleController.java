@@ -1,5 +1,6 @@
 package GaVisionUp.server.web.controller.google;
 
+import GaVisionUp.server.service.google.GoogleJobQuestService;
 import GaVisionUp.server.service.google.GooglePerformanceService;
 import GaVisionUp.server.service.google.GoogleUserService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ public class GoogleController {
 
     private final GoogleUserService googleUserService;
     private final GooglePerformanceService googlePerformanceService;
+    private final GoogleJobQuestService googleJobQuestService;
 
     /**
      * ✅ Google Sheets에서 유저 데이터 동기화 API
@@ -22,6 +24,7 @@ public class GoogleController {
         googleUserService.syncUsersFromGoogleSheet();
         googlePerformanceService.syncH1PerformanceFromGoogleSheet();
         googlePerformanceService.syncH2PerformanceFromGoogleSheet();
+        googleJobQuestService.syncJobQuestFromGoogleSheet();
         return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
     }
 
@@ -31,6 +34,7 @@ public class GoogleController {
     @PostMapping("/sync-db-to-sheets")
     public ResponseEntity<String> syncDbToGoogleSheets() {
         googleUserService.syncDatabaseToGoogleSheet();
+        googleJobQuestService.syncJobQuestToGoogleSheet();
         return ResponseEntity.ok("✅ DB 데이터를 Google Sheets에 동기화했습니다.");
     }
 }

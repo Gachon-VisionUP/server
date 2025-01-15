@@ -200,7 +200,7 @@ public class GoogleUserService {
                     .setValueInputOption("RAW")
                     .execute();
 
-            log.info("✅ [INFO] DB 데이터를 Google Sheets에 성공적으로 동기화했습니다.");
+            log.info("✅ [INFO] 구성원 정보 데이터를 Google Sheets에 성공적으로 동기화했습니다.");
 
         } catch (IOException e) {
             log.error("❌ [ERROR] DB 데이터를 Google Sheets에 동기화하는 중 오류 발생", e);

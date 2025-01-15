@@ -7,7 +7,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static GaVisionUp.server.entity.quest.job.QJobQuestDetail.jobQuestDetail;
 
@@ -60,5 +62,23 @@ public class JobQuestDetailRepositoryImpl implements JobQuestDetailRepository {
             em.merge(jobQuestDetail);
         }
         return jobQuestDetail;
+    }
+
+    @Override
+    public Optional<JobQuestDetail> findByRecordedDate(LocalDate recordedDate) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(jobQuestDetail)
+                        .where(jobQuestDetail.recordedDate.eq(recordedDate))
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public List<JobQuestDetail> findAllJobQuests() {
+        return queryFactory
+                .selectFrom(jobQuestDetail)
+                .orderBy(jobQuestDetail.recordedDate.asc()) // 날짜 오름차순 정렬
+                .fetch();
     }
 }
