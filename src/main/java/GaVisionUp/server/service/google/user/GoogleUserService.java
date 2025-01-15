@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,12 +27,12 @@ public class GoogleUserService {
     private final LevelRepository levelRepository;
     private final Sheets sheetsService;
 
-    private static final String SPREADSHEET_ID = "PREADSHEET_ID"; // ✅ Google 스프레드시트 ID
-    private static final String RANGE = "B10:K"; // ✅ 유저 정보가 들어있는 범위
+    private static final String SPREADSHEET_ID = ""; // ✅ Google 스프레드시트 ID
+    private static final String RANGE = "참고. 구성원 정보!B10:K16"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
     private static final Pattern EMPLOYEE_ID_PATTERN = Pattern.compile("^\\d{10}$"); // ✅ 사번이 숫자로만 이루어졌는지 확인
 
     /**
-     * ✅ Google Sheets에서 유저 정보를 읽고 DB에 저장
+     * ✅ Google Sheets에서 유저 정보를 읽고 DB에 저장 + 삭제된 유저 처리
      */
     public void syncUsersFromGoogleSheet() {
         try {
@@ -46,23 +46,30 @@ public class GoogleUserService {
                 return;
             }
 
-            for (List<Object> row : values) {
-                if (row.isEmpty()) { // ✅ 빈 행 건너뛰기
-                    continue;
-                }
+            // ✅ 현재 DB에 저장된 모든 유저의 사번 목록 조회
+            Set<String> existingUserIds = userRepository.findAll().stream()
+                    .map(User::getEmployeeId)
+                    .collect(Collectors.toSet());
 
+            // ✅ 스프레드시트에서 가져온 유저의 사번 목록
+            Set<String> sheetUserIds = new HashSet<>();
+
+            for (List<Object> row : values) {
+                if (row.isEmpty()) continue; // ✅ 빈 행 건너뛰기
                 if (row.size() < 10) { // ✅ 최소 10개 컬럼이 있어야 유효한 데이터로 판단
                     log.warn("⚠️ [WARN] 데이터 부족으로 인해 유저 정보를 저장할 수 없습니다. {}", row);
                     continue;
                 }
 
                 try {
-                    // ✅ 사번이 숫자가 아니면(설명 문구일 가능성이 있으면) 무시
+                    // ✅ 사번 검증
                     String employeeId = row.get(0).toString().trim();
                     if (!EMPLOYEE_ID_PATTERN.matcher(employeeId).matches()) {
                         log.warn("⚠️ [WARN] 잘못된 사번 형식으로 인해 유저 정보를 저장할 수 없습니다: {}", employeeId);
                         continue;
                     }
+
+                    sheetUserIds.add(employeeId); // ✅ 현재 동기화할 유저 목록에 추가
 
                     // ✅ 스프레드시트에서 데이터 가져오기
                     String name = row.get(1).toString().trim(); // 이름
@@ -74,8 +81,9 @@ public class GoogleUserService {
                     String password = row.get(7).toString().trim(); // 기본 패스워드
                     String changedPw = row.get(8).toString().trim().isEmpty() ? null : row.get(8).toString().trim(); // 변경된 패스워드
 
-                    // ✅ 쉼표(,)가 포함된 경험치 값을 변환
-                    int totalExp = Integer.parseInt(row.get(9).toString().trim().replace(",", ""));
+                    // ✅ DB의 총 경험치를 유지하고, 스프레드시트의 경험치 값은 반영하지 않음
+                    Optional<User> existingUser = userRepository.findByEmployeeId(employeeId);
+                    int totalExp = existingUser.map(User::getTotalExp).orElse(0);
 
                     Role role = Role.USER; // ✅ 기본값 USER
 
@@ -88,10 +96,10 @@ public class GoogleUserService {
                     Level level = optionalLevel.get();
 
                     // ✅ 기존 유저가 있으면 업데이트, 없으면 새로 생성
-                    User user = userRepository.findByEmployeeId(employeeId)
-                            .map(existingUser -> {
-                                existingUser.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
-                                return existingUser;
+                    User user = existingUser
+                            .map(existing -> {
+                                existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
+                                return existing;
                             })
                             .orElse(User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role));
 
@@ -102,6 +110,17 @@ public class GoogleUserService {
                     log.error("❌ [ERROR] 유저 데이터 변환 중 오류 발생: {}", row, e);
                 }
             }
+
+            // ✅ 스프레드시트에서 삭제된 유저 찾기
+            Set<String> usersToDelete = new HashSet<>(existingUserIds);
+            usersToDelete.removeAll(sheetUserIds); // ✅ 스프레드시트에서 존재하는 유저는 삭제 대상에서 제외
+
+            if (!usersToDelete.isEmpty()) {
+                List<User> usersToBeDeleted = userRepository.findByEmployeeIdIn(usersToDelete);
+                userRepository.deleteAll(usersToBeDeleted);
+                log.info("🗑 [INFO] {}명의 유저가 삭제됨: {}", usersToDelete.size(), usersToDelete);
+            }
+
             log.info("✅ [INFO] Google Sheets에서 유저 데이터를 성공적으로 동기화했습니다.");
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets에서 유저 데이터를 동기화하는 중 오류 발생", e);

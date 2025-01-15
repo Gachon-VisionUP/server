@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Builder
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "users")
