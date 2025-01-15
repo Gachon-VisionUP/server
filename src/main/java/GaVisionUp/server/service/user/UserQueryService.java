@@ -18,4 +18,6 @@ public interface UserQueryService {
 
     UserResponse.UserInfoList getUserInfoList(Long userId, int page, int size);
 
+    UserResponse.UserInfoDetail getUserInfoDetail(Long userId, Long targetId);
+
 }
