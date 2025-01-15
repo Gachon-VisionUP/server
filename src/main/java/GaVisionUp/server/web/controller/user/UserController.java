@@ -96,7 +96,7 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    @Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경합니다.(단, 1111 입력 시 changePW에 저장안됨.)")
+    @Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경합니다.(단, 기존 비밀번호와 같을 시 수정불가.)")
     public ApiResponse<UserResponse.UpdateInformation> changePassword(
             @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @Valid @RequestBody UserRequest.ChangePassword request){

@@ -34,7 +34,7 @@ public enum GlobalErrorStatus implements ApiErrorCodeInterface {
     _NOT_FOUND_INFORMATION(HttpStatus.NOT_FOUND, "USER4008", "사용자 정보를 찾을 수 없습니다."),
     _ONLY_ADMIN(HttpStatus.BAD_REQUEST, "USER4009", "관리자만 가능한 권한입니다."),
     _NOT_EQUAL_PASSWORD(HttpStatus.BAD_REQUEST, "USER4010", "비밀번호가 일치하지 않습니다."),
-    _ALREADY_LOGIN(HttpStatus.BAD_REQUEST, "USER4011", "이미 로그인된 사용자입니다."),
+    _ALREADY_LOGIN(HttpStatus.BAD_REQUEST, "USER4011", "이미 다른 계정에 로그인 중입니다."),
     _ALREADY_LOGOUT(HttpStatus.BAD_REQUEST, "USER4012", "이미 로그아웃된 사용자입니다."),
     _SAME_PASSWORD(HttpStatus.BAD_REQUEST, "USER4013", "기존과 동일한 비밀번호 입니다."),
 
