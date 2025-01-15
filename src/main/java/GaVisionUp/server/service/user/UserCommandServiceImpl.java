@@ -33,9 +33,19 @@ public class UserCommandServiceImpl implements UserCommandService{
             throw new RestApiException(GlobalErrorStatus._NOT_EQUAL_PASSWORD);
         }
 
-        user.updatePassword(request.getChangedPW());
+        String userPassword = user.getChangedPW() == null ? user.getPassword() : user.getChangedPW();
 
+        if (userPassword.equals(request.getChangedPW())) {
+                throw new RestApiException(GlobalErrorStatus._SAME_PASSWORD);
+        }
+
+        if (user.getPassword().equals(request.getChangedPW()) || user.getChangedPW().equals(request.getChangedPW())) {
+            throw new RestApiException(GlobalErrorStatus._SAME_PASSWORD);
+        }
+
+        user.updatePassword(request.getChangedPW());
         userRepository.save(user);
+
 
         return UserResponse.UpdateInformation.builder()
                 .userId(user.getId())
@@ -120,7 +130,12 @@ public class UserCommandServiceImpl implements UserCommandService{
                     .orElseThrow(() -> new IllegalArgumentException("해당 경험치에 맞는 레벨을 찾을 수 없습니다.")));
         }
 
-        if (request.getChangedPW() != null || !request.getChangedPW().isEmpty() || !target.getChangedPW().equals(request.getChangedPW())) {
+        if (request.getChangedPW() != null) {
+            String userPassword = target.getChangedPW() == null ? target.getPassword() : target.getChangedPW();
+
+            if (userPassword.equals(request.getChangedPW())) {
+                throw new RestApiException(GlobalErrorStatus._SAME_PASSWORD);
+            }
             target.updatePassword(request.getChangedPW());
         }
 
