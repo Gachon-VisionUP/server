@@ -9,6 +9,9 @@ import GaVisionUp.server.web.dto.quest.team.leader.LeaderQuestConditionResponse;
 import GaVisionUp.server.web.dto.quest.team.leader.detail.LeaderQuestDetailResponse;
 import GaVisionUp.server.web.dto.quest.team.TeamJobResponse;
 import GaVisionUp.server.web.dto.quest.team.leader.LeaderQuestListResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +31,12 @@ public class TeamQuestController {
 
     // ✅ 직무별 퀘스트 조회 (연도별)
     @GetMapping("/job")
+    @Operation(summary = "직무별 퀘스트 조회 API", description = "직무별 퀘스트를 조회합니다.(연도별 조회)")
+    @Parameters({
+            @Parameter(name = "year", description = "조회할 연도")
+    })
     public ResponseEntity<List<TeamJobResponse>> getJobQuests(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(value = "year", required = false) Integer year) {
 
         if (sessionUserId == null) {
@@ -48,8 +55,12 @@ public class TeamQuestController {
 
     // ✅ 리더 부여 퀘스트 조회 (연도별)
     @GetMapping("/leader")
+    @Operation(summary = "리더 부여 퀘스트 조회 API", description = "리더 부여 퀘스트를 조회합니다.(연도별 조회)")
+    @Parameters({
+            @Parameter(name = "year", description = "조회할 연도")
+    })
     public ResponseEntity<LeaderQuestListResponse> getLeaderQuests(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(value = "year", required = false) Integer year) {
 
         if (sessionUserId == null) {
@@ -82,8 +93,12 @@ public class TeamQuestController {
 
     // ✅ 로그인한 유저의 해당 퀘스트 달성 내용만 조회
     @GetMapping("/leader/{id}")
+    @Operation(summary = "리더 부여 퀘스트 상세 조회 API", description = "로그인한 유저의 해당 퀘스트 달성 내용만 조회합니다.")
+    @Parameters({
+            @Parameter(name = "id", description = "퀘스트 id")
+    })
     public ResponseEntity<LeaderQuestDetailResponse> getLeaderQuestDetail(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @PathVariable Long id) {
 
         if (sessionUserId == null) {

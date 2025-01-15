@@ -1,5 +1,8 @@
 package GaVisionUp.server.web.controller.user;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +19,7 @@ public class ImageController {
     private String serverUrl;
 
     @GetMapping("/list")
+    @Operation(summary = "이미지 조회 API", description = "서버에 저장된 모든 캐릭터 이미지 경로를 반환합니다.")
     public List<String> getCharacterImages() {
         // 서버에 저장된 캐릭터 이미지 경로 반환
         return Arrays.asList(

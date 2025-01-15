@@ -12,6 +12,9 @@ import GaVisionUp.server.web.dto.exp.bar.ExpBarRequest;
 import GaVisionUp.server.web.dto.exp.bar.ExpBarResponse;
 import GaVisionUp.server.web.dto.exp.ring.ExpBarRingResponse;
 import GaVisionUp.server.web.dto.exp.ring.ExpBarRingYearlyResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +36,10 @@ public class ExpBarController {
 
     // ✅ 경험치 링 데이터 조회 API
     @GetMapping("/ring")
+    @Operation(summary = "경험치 링 데이터 조회 API", description = "경험치 바 (전체 경험치)를 조회합니다.")
+    @Parameters({
+            @Parameter(name = "", description = "")
+    })
     public ResponseEntity<ExpBarRingResponse> getExpBarRing(
             @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
 
@@ -70,6 +77,10 @@ public class ExpBarController {
 
     // ✅ 경험치 링 연도별 조회 API
     @GetMapping("/ring/year")
+    @Operation(summary = "경험치 링 연도별 조회 API", description = "경험치 바를 연도별로 조회합니다.")
+    @Parameters({
+            @Parameter(name = "year", description = "조회하고 싶은 연도")
+    })
     public ResponseEntity<ExpBarRingYearlyResponse> getExpBarYearly(
             @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(value = "year", required = false) Integer year) {
@@ -161,6 +172,7 @@ public class ExpBarController {
 
     // 최초 회원 추가 시에 경험치 바 생성
     @PostMapping("/create")
+    @Operation(summary = "경험치 바 생성 API", description = "최초 구성원 생성 시에 경험치 바를 생성합니다.")
     public ResponseEntity<ExpBarResponse> createExpBar(@RequestBody ExpBarRequest request) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사원입니다.")); // ✅ userId 검증
@@ -175,6 +187,10 @@ public class ExpBarController {
 
     // 특정 사원의 경험치 바 조회
     @GetMapping("/{userId}")
+    @Operation(summary = "특정 구성원의 경험치 바 조회 API", description = "특정 구성원 경험치 바를 조회합니다.")
+    @Parameters({
+            @Parameter(name = "userId", description = "조회하고 싶은 구성원의 id")
+    })
     public ResponseEntity<ExpBarResponse> getExpBar(@PathVariable Long userId) {
         ExpBar expBar = expBarService.getExpBarByUserId(userId);
         return ResponseEntity.ok(new ExpBarResponse(expBar));  // ✅ DTO 변환

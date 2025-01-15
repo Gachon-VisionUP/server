@@ -6,6 +6,9 @@ import GaVisionUp.server.entity.enums.JobGroup;
 import GaVisionUp.server.service.level.LevelService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.level.LevelResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +38,7 @@ public class LevelController {
 
     // ✅ 전체 레벨 정보 조회 API (유저 직군 기반 필터링)
     @GetMapping("/group/all")
+    @Operation(summary = "전체 레벨 정보 조회 API", description = "유저 직군을 기반으로 필터링하여 전체 레벨 정보를 조회합니다.")
     public ResponseEntity<Map<String, List<LevelResponse>>> getAllLevels(
             @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
         if (sessionUserId == null) {
