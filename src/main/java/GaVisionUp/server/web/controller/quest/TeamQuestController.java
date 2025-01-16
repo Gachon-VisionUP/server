@@ -98,15 +98,15 @@ public class TeamQuestController {
             @Parameter(name = "id", description = "퀘스트 id")
     })
     public ResponseEntity<LeaderQuestDetailResponse> getLeaderQuestDetail(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
             @PathVariable Long id) {
 
-        if (sessionUserId == null) {
+        if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
 
         // ✅ 로그인한 유저가 해당 퀘스트를 달성한 경우만 조회
-        LeaderQuestDetailResponse detail = leaderQuestService.getQuestDetailByUserId(sessionUserId, id);
+        LeaderQuestDetailResponse detail = leaderQuestService.getQuestDetailByUserId(userId, id);
 
         return ResponseEntity.ok(detail);
     }

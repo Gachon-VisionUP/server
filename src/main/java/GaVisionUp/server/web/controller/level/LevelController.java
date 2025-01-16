@@ -40,13 +40,13 @@ public class LevelController {
     @GetMapping("/group/all")
     @Operation(summary = "전체 레벨 정보 조회 API", description = "유저 직군을 기반으로 필터링하여 전체 레벨 정보를 조회합니다.")
     public ResponseEntity<Map<String, List<LevelResponse>>> getAllLevels(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
-        if (sessionUserId == null) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
             return ResponseEntity.badRequest().body(null);
         }
 
         // ✅ 사용자 정보 가져오기
-        User user = userQueryService.getUserById(sessionUserId)
+        User user = userQueryService.getUserById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // ✅ 사용자의 직군 기반으로 레벨 목록 조회
