@@ -1,6 +1,7 @@
 package GaVisionUp.server.repository.quest.job;
 
 import GaVisionUp.server.entity.enums.Cycle;
+import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.quest.job.JobQuest;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface JobQuestRepository {
     JobQuest save(JobQuest jobQuest);
     List<JobQuest> findByDepartmentAndPartAndYear(String department, int part, int year);
     List<JobQuest> findByDepartmentAndPartAndYear(Long userId, int year);
+
+    Optional<JobQuest> findByDepartmentAndPartAndCycleAndRound(Department department, int part, Cycle cycle, int round);
 }

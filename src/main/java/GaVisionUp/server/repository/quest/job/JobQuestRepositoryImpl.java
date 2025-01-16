@@ -122,4 +122,19 @@ public class JobQuestRepositoryImpl implements JobQuestRepository {
                 .orderBy(jobQuest.round.asc()) // ✅ round 순서대로 정렬
                 .fetch();
     }
+
+    @Override
+    public Optional<JobQuest> findByDepartmentAndPartAndCycleAndRound(Department department, int part, Cycle cycle, int round) {
+
+        JobQuest result = queryFactory.selectFrom(jobQuest)
+                .where(
+                        jobQuest.department.eq(department),
+                        jobQuest.part.eq(part),
+                        jobQuest.cycle.eq(cycle),
+                        jobQuest.round.eq(round)
+                )
+                .fetchFirst(); // ✅ fetchOne -> fetchFirst로 변경
+
+        return Optional.ofNullable(result);
+    }
 }
