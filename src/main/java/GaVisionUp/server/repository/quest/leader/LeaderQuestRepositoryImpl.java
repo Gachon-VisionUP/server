@@ -1,5 +1,6 @@
 package GaVisionUp.server.repository.quest.leader;
 
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.quest.leader.LeaderQuest;
@@ -122,5 +123,18 @@ public class LeaderQuestRepositoryImpl implements LeaderQuestRepository {
                         .orderBy(leaderQuest.assignedDate.desc()) // ✅ 최신 날짜 기준 정렬
                         .fetchFirst()
         );
+    }
+
+    @Override
+    public Optional<LeaderQuest> findByUserAndQuestNameAndMonthAndWeek(User user, String questName, int month, Integer week) {
+        return Optional.ofNullable(queryFactory
+                .selectFrom(leaderQuest)
+                .where(
+                        leaderQuest.user.eq(user),
+                        leaderQuest.questName.eq(questName),
+                        leaderQuest.month.eq(month),
+                        week != null ? leaderQuest.week.eq(week) : leaderQuest.week.isNull() // 주차 값이 null인 경우 처리
+                )
+                .fetchOne());
     }
 }

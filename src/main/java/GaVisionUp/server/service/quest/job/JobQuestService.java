@@ -15,6 +15,6 @@ public interface JobQuestService {
     List<JobQuest> getAllJobQuests(String department, int jobGroup, String cycle);
     // ✅ 새로운 JobQuest 저장
     JobQuest createJobQuest(JobQuest jobQuest);
-    void evaluateJobQuest(String department, int part, Cycle cycle, int round);
+    //void evaluateJobQuest(String department, int part, Cycle cycle, int round);
     List<JobQuest> getJobQuestsByYear(Long userId, int year);
 }

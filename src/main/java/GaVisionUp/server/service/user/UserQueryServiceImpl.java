@@ -147,4 +147,11 @@ public class UserQueryServiceImpl implements UserQueryService{
 
         return admin.getRole() != Role.ADMIN;
     }
+
+    // 스프레드 시트 연동 테스트
+    // ✅ 모든 유저 조회 (Google Sheets 동기화용)
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 }

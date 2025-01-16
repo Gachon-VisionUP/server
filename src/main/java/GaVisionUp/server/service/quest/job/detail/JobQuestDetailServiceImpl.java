@@ -30,7 +30,13 @@ public class JobQuestDetailServiceImpl implements JobQuestDetailService {
         return jobQuestDetailRepository.findAllByDepartmentAndCycle(Department.valueOf(department), part, Cycle.valueOf(cycle));
     }
 
+    @Override
+    public JobQuestDetail saveJobQuestDetail(String department, int part, Cycle cycle, int month, int round, double sales, double laborCost, LocalDate recordedDate) {
+        return null;
+    }
+
     // ✅ JobQuestDetail 데이터 저장
+    /*
     @Override
     public JobQuestDetail saveJobQuestDetail(String department, int part, Cycle cycle, int month, int round, double sales, double laborCost, LocalDate recordedDate) {
         Department deptEnum;
@@ -41,7 +47,9 @@ public class JobQuestDetailServiceImpl implements JobQuestDetailService {
         }
 
         JobQuestDetail jobQuestDetail = JobQuestDetail.create(
-                deptEnum, part, cycle, month, round, sales, laborCost, recordedDate);
+                 department,  part,  cycle,  month,  round,  sales, double designCost,  employeeSalary,  retirementSalary,  insuranceFee, recordedDate);
         return jobQuestDetailRepository.save(jobQuestDetail);
     }
+
+     */
 }

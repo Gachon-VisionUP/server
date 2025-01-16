@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -26,4 +27,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllByOrderByIdDesc(Pageable pageable);
 
     boolean existsByRole(Role role);
+    Optional<User> findByEmployeeId(String employeeId);
+    /**
+     * ✅ 특정 사번 목록(Set)으로 유저 조회 (삭제할 유저 찾을 때 사용)
+     */
+    List<User> findByEmployeeIdIn(Set<String> employeeIds);
 }

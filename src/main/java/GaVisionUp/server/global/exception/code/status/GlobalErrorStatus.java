@@ -42,6 +42,9 @@ public enum GlobalErrorStatus implements ApiErrorCodeInterface {
     _INVALID_EXP_TYPE(HttpStatus.BAD_REQUEST, "EXP4001", "잘못된 경험치 유형입니다"),
     _INVALID_JOB_GROUP(HttpStatus.BAD_REQUEST, "EXP4002", "잘못된 직군입니다"),
     _INVALID_CYCLE(HttpStatus.BAD_REQUEST, "EXP4003", "잘못된 주기입니다"),
+    _INVALID_PART(HttpStatus.BAD_REQUEST, "EXP4012", "잘못된 직무 그룹입니다"),
+    _INVALID_CONDITION(HttpStatus.BAD_REQUEST, "EXP4013", "잘못된 직무 조건입니다"),
+
 
     // Post Error Status
     _POST_NOT_EXIST(HttpStatus.BAD_REQUEST, "POST4001", "존재하지 않는 게시글입니다."),

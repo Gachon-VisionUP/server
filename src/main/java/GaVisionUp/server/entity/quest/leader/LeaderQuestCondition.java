@@ -48,4 +48,14 @@ public class LeaderQuestCondition {
 
     @Column(nullable = false)
     private String description; // ✅ 비고 (설명)
+
+    public void updateCondition(double weight, int totalExp, int maxExp, int medianExp, String maxCondition, String medianCondition, String description) {
+        this.weight = weight;
+        this.totalExp = totalExp;
+        this.maxExp = maxExp;
+        this.medianExp = medianExp;
+        this.maxCondition = maxCondition;
+        this.medianCondition = medianCondition;
+        this.description = description;
+    }
 }

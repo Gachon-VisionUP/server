@@ -81,4 +81,16 @@ public class LevelRepositoryImpl implements LevelRepository {
         return Optional.empty();
     }
 
+    @Override
+    public Optional<Level> findByLevelName(String levelName) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(level)
+                        .where(
+                                level.levelName.eq(levelName)
+                        )
+                        .fetchOne()
+        );
+    }
+
 }

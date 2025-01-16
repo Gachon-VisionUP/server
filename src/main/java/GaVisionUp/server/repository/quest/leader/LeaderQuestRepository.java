@@ -1,5 +1,6 @@
 package GaVisionUp.server.repository.quest.leader;
 
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.quest.leader.LeaderQuest;
@@ -18,5 +19,7 @@ public interface LeaderQuestRepository {
 
     // ✅ 특정 유저의 리더 부여 퀘스트 중 최신 평가 등급을 가져옴
     Optional<LeaderQuest> findTopByUserIdAndQuestName(Long userId, String questName);
+    Optional<LeaderQuest> findByUserAndQuestNameAndMonthAndWeek(User user, String questName, int month, Integer week);
+
 }
 
