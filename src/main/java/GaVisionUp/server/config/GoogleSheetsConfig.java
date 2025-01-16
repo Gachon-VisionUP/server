@@ -21,7 +21,7 @@ public class GoogleSheetsConfig {
 
     private static final String APPLICATION_NAME = "Google Sheets Application"; // Google API 애플리케이션 이름
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_FILE_PATH = "/googlesheets/gavisionup-b568b96cf4a5.json"; // 서비스 계정 키 경로
+    private static final String CREDENTIALS_FILE_PATH = "/googlesheets/gavisionup-be6498ef4d7d.json"; // 서비스 계정 키 경로
 
     /**
      * ✅ Google Sheets API의 `Sheets` 객체를 빈으로 등록
