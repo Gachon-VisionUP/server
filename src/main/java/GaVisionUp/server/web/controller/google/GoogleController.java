@@ -4,10 +4,8 @@ import GaVisionUp.server.service.google.job.GoogleJobQuestDetailService;
 import GaVisionUp.server.service.google.GooglePerformanceService;
 import GaVisionUp.server.service.google.GoogleUserService;
 import GaVisionUp.server.service.google.job.GoogleJobQuestService;
-<<<<<<< HEAD
 import GaVisionUp.server.service.google.leader.GoogleLeaderQuestConditionService;
-=======
->>>>>>> 131ea8d992a449e32311a6b260a8027e2b7446e7
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
