@@ -44,7 +44,7 @@ public class GoogleController {
     @PostMapping("/sync-db-to-sheets")
     public ResponseEntity<String> syncDbToGoogleSheets() {
         googleUserService.syncDatabaseToGoogleSheet();
-        googleJobQuestDetailService.syncJobQuestDetailToGoogleSheet();
+        // googleJobQuestDetailService.syncJobQuestDetailToGoogleSheet();
         return ResponseEntity.ok("✅ DB 데이터를 Google Sheets에 동기화했습니다.");
     }
 }
