@@ -28,6 +28,8 @@ public class ExpoNotificationService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        System.out.println(pushToken+title+message+expType);
+
         Map<String, Object> body = Map.of(
                 "to", pushToken,
                 "title", title,

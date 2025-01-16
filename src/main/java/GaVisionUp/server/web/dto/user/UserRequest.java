@@ -42,10 +42,12 @@ public class UserRequest {
     public static class ChangePassword {
 
         @Schema(description = "변경할 비밀번호")
+        @NotNull(message = "공백은 저장할 수 없습니다.")
         @Size(max = 30, message = "비밀번호는 10자 이내로 입력해주세요.")
         private String changedPW;
 
         @Schema(description = "검증용 비밀번호")
+        @NotNull(message = "공백은 저장할 수 없습니다.")
         @Size(max = 30, message = "비밀번호는 10자 이내로 입력해주세요.")
         private String checkPW;
     }
