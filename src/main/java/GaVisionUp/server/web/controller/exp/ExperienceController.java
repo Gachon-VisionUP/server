@@ -196,7 +196,7 @@ public class ExperienceController {
         int previousYearTotalExp = previousYearExperiences.stream().mapToInt(Experience::getExp).sum();
 
         // ✅ 올해 획득한 경험치 조회
-        List<Experience> currentYearExperiences = experienceService.getExperiencesByCurrentYear(v, currentYear);
+        List<Experience> currentYearExperiences = experienceService.getExperiencesByCurrentYear(userId, currentYear);
         int currentYearTotalExp = currentYearExperiences.stream().mapToInt(Experience::getExp).sum();
 
         // ✅ 성장 비율 계산 (소수점 절삭)
