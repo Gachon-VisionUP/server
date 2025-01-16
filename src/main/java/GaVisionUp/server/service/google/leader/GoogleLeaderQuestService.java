@@ -41,7 +41,7 @@ public class GoogleLeaderQuestService {
     @Value("${google.sheets.spreadsheet-id}") // ✅ YML에서 스프레드시트 ID 가져오기
     private String spreadsheetId;
 
-    private static final String RANGE_DETAILS = "참고. 리더부여 퀘스트!B10:L50"; // ✅ 데이터 입력 범위
+    private static final String RANGE_DETAILS = "참고. 리더부여 퀘스트!B10:I50"; // ✅ 데이터 입력 범위
 
     /**
      * ✅ Google Sheets 데이터를 활용한 리더 부여 퀘스트 처리
@@ -62,8 +62,8 @@ public class GoogleLeaderQuestService {
 
             for (List<Object> row : detailValues) {
                 // ✅ 필수 값 체크 (월, 사번, 리더 부여 퀘스트명, 달성 내용, 부여 경험치)
-                if (row.size() < 6 || row.get(0) == null || row.get(2) == null ||
-                        row.get(4) == null || row.get(5) == null || row.get(6) == null) {
+                if (row.size() < 6 || row.get(0) == null || row.get(1) == null ||
+                        row.get(3) == null || row.get(4) == null || row.get(5) == null) {
                     log.warn("⚠️ [WARN] 데이터가 부족하여 퀘스트를 처리할 수 없습니다. {}", row);
                     continue;
                 }
@@ -71,12 +71,12 @@ public class GoogleLeaderQuestService {
                 try {
                     // ✅ 데이터 매핑
                     int month = Integer.parseInt(row.get(0).toString().trim());
-                    Integer week = (row.get(1) != null && !row.get(1).toString().trim().isEmpty())
-                            ? Integer.parseInt(row.get(1).toString().trim()) : null;
-                    String userIdStr = row.get(2).toString().trim();
-                    String questName = row.get(4).toString().trim();
-                    String achievementType = row.get(5).toString().trim();
-                    int newGrantedExp = Integer.parseInt(row.get(6).toString().trim());
+                    Integer week = (row.size() > 6 && row.get(6) != null && !row.get(6).toString().trim().isEmpty())
+                            ? Integer.parseInt(row.get(6).toString().trim()) : null; // ✅ 주차는 선택 사항
+                    String userIdStr = row.get(1).toString().trim();
+                    String questName = row.get(3).toString().trim();
+                    String achievementType = row.get(4).toString().trim();
+                    int newGrantedExp = Integer.parseInt(row.get(5).toString().trim());
                     String note = (row.size() > 7 && row.get(7) != null) ? row.get(7).toString().trim() : "";
 
                     // ✅ 유저 조회

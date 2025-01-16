@@ -30,8 +30,8 @@ public class GoogleLeaderQuestConditionService {
     @Value("${google.sheets.spreadsheet-id}") // ✅ YML에서 스프레드시트 ID 가져오기
     private String spreadsheetId;
 
-    private static final String RANGE_CONDITIONS = "참고. 리더부여 퀘스트!K11:S13"; // ✅ 리더 퀘스트 조건 범위
-    private static final String RANGE_DEPARTMENT = "참고. 리더부여 퀘스트!K8"; // ✅ 소속 범위
+    private static final String RANGE_CONDITIONS = "참고. 리더부여 퀘스트!J11:R13"; // ✅ 리더 퀘스트 조건 범위
+    private static final String RANGE_DEPARTMENT = "참고. 리더부여 퀘스트!J8"; // ✅ 소속 범위
 
     /**
      * ✅ Google Sheets에서 리더 퀘스트 조건 데이터를 읽어와 DB에 저장
