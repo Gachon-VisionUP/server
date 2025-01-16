@@ -75,4 +75,17 @@ public class LeaderQuestConditionRepositoryImpl implements LeaderQuestConditionR
                         .fetchOne()
         );
     }
+
+    @Override
+    public Optional<LeaderQuestCondition> findByDepartmentAndCycleAndQuestName(Department department, Cycle cycle, String questName) {
+        LeaderQuestCondition result = queryFactory.selectFrom(leaderQuestCondition)
+                .where(
+                        leaderQuestCondition.department.eq(department),
+                        leaderQuestCondition.cycle.eq(cycle),
+                        leaderQuestCondition.questName.eq(questName)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
 }
