@@ -20,7 +20,6 @@ public enum Filter {
 
     @JsonCreator // Json -> Object, 역직렬화 수행하는 메서드
     public static Filter from(String param) {
-        System.out.println("이거 되나???");
         for (Filter filter : Filter.values()) {
             if (filter.getValue().equals(param) || filter.name().equals(param)) { // ✅ 한글 값과 Enum name 둘 다 허용
                 return filter;
