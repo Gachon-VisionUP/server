@@ -1,6 +1,7 @@
 package GaVisionUp.server.web.controller.google;
 
 import GaVisionUp.server.service.google.GoogleEntireProjectService;
+import GaVisionUp.server.service.google.GooglePostService;
 import GaVisionUp.server.service.google.job.GoogleJobQuestDetailService;
 import GaVisionUp.server.service.google.GooglePerformanceService;
 import GaVisionUp.server.service.google.GoogleUserService;
@@ -24,6 +25,7 @@ public class GoogleController {
     private final GoogleLeaderQuestConditionService googleLeaderQuestConditionService;
     private final GoogleLeaderQuestService googleLeaderQuestService;
     private final GoogleEntireProjectService googleEntireProjectService;
+    private final GooglePostService googlePostService;
 
     /**
      * ✅ Google Sheets에서 유저 데이터 동기화 API
@@ -47,6 +49,7 @@ public class GoogleController {
     @PostMapping("/sync-db-to-sheets")
     public ResponseEntity<String> syncDbToGoogleSheets() {
         googleUserService.syncDatabaseToGoogleSheet();
+        googlePostService.syncBoardToGoogleSheet();
         return ResponseEntity.ok("✅ DB 데이터를 Google Sheets에 동기화했습니다.");
     }
 }

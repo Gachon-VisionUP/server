@@ -79,9 +79,6 @@ public class GoogleLeaderQuestService {
                     int newGrantedExp = Integer.parseInt(row.get(6).toString().trim());
                     String note = (row.size() > 7 && row.get(7) != null) ? row.get(7).toString().trim() : "";
 
-                    log.info("📌 [DEBUG] 파싱된 데이터 - 월: {}, 주: {}, 사번: {}, 퀘스트명: {}, 달성 내용: {}, 부여 경험치: {}, 비고: {}",
-                            month, week, userIdStr, questName, achievementType, newGrantedExp, note);
-
                     // ✅ 유저 조회
                     Optional<User> userOpt = userRepository.findByEmployeeId(userIdStr);
                     if (userOpt.isEmpty()) {
@@ -95,7 +92,6 @@ public class GoogleLeaderQuestService {
                             user.getDepartment(), Cycle.MONTHLY, questName);
 
                     if (conditionOpt.isEmpty()) {
-                        log.warn("⚠️ [WARN] 조건을 찾을 수 없어 퀘스트를 건너뜁니다. 퀘스트명: {}", questName);
                         continue;
                     }
                     LeaderQuestCondition condition = conditionOpt.get();
@@ -109,9 +105,7 @@ public class GoogleLeaderQuestService {
                         LeaderQuest existingQuest = existingQuestOpt.get();
                         previousGrantedExp = existingQuest.getGrantedExp(); // 기존 부여 경험치
                         log.info("🔄 [UPDATE] 기존 퀘스트 기록 확인됨 - 기존 경험치: {}", previousGrantedExp);
-                        user.minusExperience(previousGrantedExp);
-                        Experience newExperience = new Experience(user, ExpType.JOB_QUEST, newGrantedExp - previousGrantedExp);
-                        experienceRepository.edit(newExperience);
+
                         // ✅ 퀘스트 업데이트
                         existingQuest.updateQuest(achievementType, newGrantedExp, note, LocalDate.now());
                         leaderQuestRepository.save(existingQuest);
@@ -127,9 +121,14 @@ public class GoogleLeaderQuestService {
                     // ✅ 유저 경험치 부여
                     int experienceDifference = newGrantedExp - previousGrantedExp;
                     if (experienceDifference != 0) {
+                        if (newGrantedExp == 0) {
+                            Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
+                            experienceRepository.edit(newExperience);
+                        }
+                    }
+                    if (newGrantedExp != 0) {
                         Experience experience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
-                        experienceRepository.save(experience);
-                        log.info("✅ [INFO] 경험치 저장 완료 - 변화량: {}, 사번: {}", experienceDifference, userIdStr);
+                        experienceRepository.edit(experience);
                     }
 
                     // ✅ 유저 총 경험치 업데이트

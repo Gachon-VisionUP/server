@@ -71,7 +71,6 @@ public class GoogleEntireProjectService {
                     // ✅ 유저 조회
                     Optional<User> userOpt = userRepository.findByEmployeeId(employeeId);
                     if (userOpt.isEmpty()) {
-                        log.warn("⚠️ [WARN] 유저를 찾을 수 없어 프로젝트를 건너뜁니다. 사번: {}", employeeId);
                         continue;
                     }
                     User user = userOpt.get();
@@ -85,13 +84,11 @@ public class GoogleEntireProjectService {
                         log.warn("⚠️ [WARN] 중복된 전사 프로젝트가 존재합니다. 기존 데이터를 업데이트합니다.");
                         EntireProject existingProject = existingProjectOpt.get();
                         previousGrantedExp = existingProject.getGrantedExp(); // 기존 경험치 값 가져오기
-                        log.info("🔄 [DEBUG] 기존 경험치 확인 - 기존: {}, 새로운: {}", previousGrantedExp, newGrantedExp);
-
                         // ✅ 프로젝트 업데이트
                         existingProject.updateProject(projectName, newGrantedExp, note, assignedDate);
                         entireProjectRepository.save(existingProject);
                     } else {
-                        log.info("➕ [INSERT] 새로운 프로젝트 저장 - 퀘스트명: {}", projectName);
+
                         EntireProject entireProject = EntireProject.create(
                                 user, projectName, newGrantedExp, note, assignedDate);
                         entireProjectRepository.save(entireProject);
@@ -99,13 +96,15 @@ public class GoogleEntireProjectService {
 
                     // ✅ 경험치 변화량 계산 및 저장
                     int experienceDiff = newGrantedExp - previousGrantedExp;
-                    log.info("📌 [DEBUG] 경험치 변화량 계산 - 변화량: {}", experienceDiff);
-
                     if (experienceDiff != 0) {
-
+                        if (newGrantedExp == 0) {
+                            Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDiff);
+                            experienceRepository.edit(newExperience);
+                        }
+                    }
+                    if (newGrantedExp != 0) {
                         Experience experience = new Experience(user, ExpType.ENTIRE_PROJECT, experienceDiff);
                         experienceRepository.save(experience);
-                        log.info("✅ [INFO] 경험치 저장 완료 - 변화량: {}, 사번: {}", experienceDiff, user.getEmployeeId());
                     }
 
                     // ✅ 유저 총 경험치 업데이트

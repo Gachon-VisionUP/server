@@ -197,8 +197,6 @@ public class GoogleJobQuestService {
                         grantedExp = 0;
                     }
 
-                    log.info("📌 [DEBUG] 주기: {}, 주차: {}, 생산성: {}, 평가 등급: {}, 부여 경험치: {}, maxCondition: {}, medCondition: {}",
-                            cycle, round, productivity, grade, grantedExp, maxCondition, medCondition);
 
                     // ✅ JobQuest 저장 또는 업데이트
                     Optional<JobQuest> existingQuestOpt = jobQuestRepository.findByDepartmentAndPartAndCycleAndRound(
@@ -220,14 +218,17 @@ public class GoogleJobQuestService {
                     // ✅ 유저 경험치 부여
                     List<User> users = userRepository.findByDepartmentAndPart(department, part);
                     for (User user : users) {
-                        // ✅ 기존 경험치를 마이너스로 저장
-                        if (previousGrantedExp != 0) {
-                            user.minusExperience(previousGrantedExp); // 기존 경험치 제거
-                        }
 
+                        int experienceDifference = grantedExp - previousGrantedExp;
+                        if (experienceDifference != 0) {
+                            if (grantedExp == 0) {
+                                Experience newExperience = new Experience(user, ExpType.JOB_QUEST, experienceDifference);
+                                experienceRepository.edit(newExperience);
+                            }
+                        }
                         // ✅ 새로운 경험치를 저장
                         if (grantedExp != 0) {
-                            Experience newExperience = new Experience(user, ExpType.JOB_QUEST, grantedExp - previousGrantedExp);
+                            Experience newExperience = new Experience(user, ExpType.JOB_QUEST, experienceDifference);
                             experienceRepository.edit(newExperience);
                         }
 
