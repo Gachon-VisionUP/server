@@ -23,34 +23,34 @@ public class JobQuest {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Department department;
+    private Department department; // ✅ 부서 정보
 
     @Column(nullable = false)
-    private int part;
+    private int part; // ✅ 직무 그룹
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Cycle cycle;
+    private Cycle cycle; // ✅ 주기
 
     @Column(name = "round_value", nullable = false)
-    private int round;
+    private int round; // ✅ 주차
 
     @Column(nullable = false)
-    private double productivity;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ExpType expType;
+    private double productivity; // ✅ 생산성
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TeamQuestGrade questGrade;
+    private ExpType expType; // ✅ 경험치 유형
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TeamQuestGrade questGrade; // ✅ 평가 등급
 
     @Column(nullable = false)
-    private int grantedExp;
+    private int grantedExp; // ✅ 부여된 경험치
 
     @Column(nullable = false)
-    private LocalDate grantedDate;
+    private LocalDate grantedDate; // ✅ 경험치 부여 날짜
 
     @Column(nullable = false)
     private double maxCondition; // ✅ MAX 등급 기준 생산성
@@ -64,9 +64,15 @@ public class JobQuest {
     @Column(nullable = false)
     private int medExp; // ✅ MEDIAN 등급 경험치
 
+    @Column(nullable = true)
+    private String note; // ✅ 비고 (추가 설명)
+
+    /**
+     * ✅ JobQuest 생성 메서드
+     */
     public static JobQuest create(Department department, int part, Cycle cycle, int round, double productivity,
                                   double maxCondition, double medCondition, int maxExp, int medExp,
-                                  TeamQuestGrade questGrade, int grantedExp) {
+                                  TeamQuestGrade questGrade, int grantedExp, String note) {
         return JobQuest.builder()
                 .department(department)
                 .part(part)
@@ -81,6 +87,18 @@ public class JobQuest {
                 .questGrade(questGrade)
                 .grantedExp(grantedExp)
                 .grantedDate(LocalDate.now())
+                .note(note)
                 .build();
+    }
+
+    public void updateJobQuest(double productivity, double maxCondition, double medCondition,
+                               TeamQuestGrade grade, int grantedExp, String note) {
+        this.productivity = productivity;
+        this.maxCondition = maxCondition;
+        this.medCondition = medCondition;
+        this.questGrade = grade;
+        this.grantedExp = grantedExp;
+        this.note = note;
+        this.grantedDate = LocalDate.now(); // 업데이트된 날짜로 변경
     }
 }

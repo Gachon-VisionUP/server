@@ -51,6 +51,7 @@ public class JobQuestServiceImpl implements JobQuestService {
     }
 
     // ✅ 직무별 퀘스트 점수 평가 및 경험치 부여 (round 직접 입력)
+    /*
     @Override
     public void evaluateJobQuest(String department, int part, Cycle cycle, int round) {
         List<JobQuestDetail> details = jobQuestDetailRepository.findAllByDepartmentAndCycleAndRound(
@@ -101,10 +102,12 @@ public class JobQuestServiceImpl implements JobQuestService {
             }
         }
     }
+    */
 
     // ✅ 특정 유저의 소속 & 직무 그룹을 기반으로 연도별 직무 퀘스트 조회
     @Override
     public List<JobQuest> getJobQuestsByYear(Long userId, int year) {
         return jobQuestRepository.findByDepartmentAndPartAndYear(userId, year);
     }
+
 }

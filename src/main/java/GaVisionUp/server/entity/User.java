@@ -136,4 +136,9 @@ public class User {
                 .expoPushToken(null)
                 .build();
     }
+
+    public void minusExperience(int exp) {
+        this.totalExp -= exp;
+    }
+
 }

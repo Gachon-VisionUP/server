@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google;
+package GaVisionUp.server.service.google.job;
 
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class GoogleJobQuestService {
+public class GoogleJobQuestDetailService {
 
     private final JobQuestDetailRepository jobQuestDetailRepository;
     private final Sheets sheetsService;
@@ -125,7 +125,7 @@ public class GoogleJobQuestService {
     /**
      * ✅ Google Sheets → DB 동기화 (직무 퀘스트 저장)
      */
-    public void syncJobQuestFromGoogleSheet() {
+    public void syncJobQuestDetailFromGoogleSheet() {
         try {
             ValueRange response = sheetsService.spreadsheets().values()
                     .get(spreadsheetId, RANGE_JOB_QUEST)
@@ -196,7 +196,7 @@ public class GoogleJobQuestService {
     /**
      * ✅ DB → Google Sheets 동기화 (직무 퀘스트 저장)
      */
-    public void syncJobQuestToGoogleSheet() {
+    public void syncJobQuestDetailToGoogleSheet() {
         try {
             List<JobQuestDetail> jobQuestList = jobQuestDetailRepository.findAllJobQuests();
             if (jobQuestList.isEmpty()) {
