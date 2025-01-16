@@ -1,5 +1,6 @@
 package GaVisionUp.server.repository.quest.entire;
 
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.quest.EntireProject;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -73,5 +74,19 @@ public class EntireProjectRepositoryImpl implements EntireProjectRepository {
         return queryFactory
                 .selectFrom(entireProject)
                 .fetch();
+    }
+
+    @Override
+    public Optional<EntireProject> findByUserAndProjectNameAndAssignedDate(User user, String projectName, LocalDate assignedDate) {
+
+        EntireProject result = queryFactory.selectFrom(entireProject)
+                .where(
+                        entireProject.user.eq(user),
+                        entireProject.projectName.eq(projectName),
+                        entireProject.assignedDate.eq(assignedDate)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 }
