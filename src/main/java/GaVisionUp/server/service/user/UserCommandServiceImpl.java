@@ -7,6 +7,7 @@ import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.user.UserRepository;
+import GaVisionUp.server.service.google.GoogleUserService;
 import GaVisionUp.server.web.dto.user.UserRequest;
 import GaVisionUp.server.web.dto.user.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class UserCommandServiceImpl implements UserCommandService{
 
     private final UserRepository userRepository;
     private final LevelRepository levelRepository;
+    private final GoogleUserService googleUserService;
 
     @Override
     public UserResponse.UpdateInformation changePassword(Long userId, UserRequest.ChangePassword request) {
@@ -46,6 +48,7 @@ public class UserCommandServiceImpl implements UserCommandService{
         user.updatePassword(request.getChangedPW());
         userRepository.save(user);
 
+        googleUserService.syncDatabaseToGoogleSheet();
 
         return UserResponse.UpdateInformation.builder()
                 .userId(user.getId())
@@ -66,6 +69,8 @@ public class UserCommandServiceImpl implements UserCommandService{
         user.updateImageUrl(changedImageUrl);
 
         userRepository.save(user);
+
+        googleUserService.syncDatabaseToGoogleSheet();
 
         return UserResponse.UpdateInformation.builder()
                 .userId(user.getId())
@@ -142,6 +147,8 @@ public class UserCommandServiceImpl implements UserCommandService{
         target.updateInfo(request);
 
         userRepository.save(target);
+
+        googleUserService.syncDatabaseToGoogleSheet();
 
         return UserResponse.UpdateInformation.builder()
                 .userId(target.getId())

@@ -8,6 +8,7 @@ import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.repository.post.PostRepository;
 import GaVisionUp.server.repository.user.UserRepository;
+import GaVisionUp.server.service.google.GooglePostService;
 import GaVisionUp.server.service.notification.ExpoNotificationService;
 import GaVisionUp.server.service.notification.NotificationService;
 import GaVisionUp.server.web.dto.post.PostRequest;
@@ -32,6 +33,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final ExpoNotificationService expoNotificationService;
+    private final GooglePostService googlePostService;
 
 
     @Override
@@ -68,6 +70,8 @@ public class PostCommandServiceImpl implements PostCommandService {
 
             log.info("✅ 게시글 등록 및 알림 전송 완료 - 유저: {}, 제목: {}", user.getName(), post.getTitle());
         }
+
+        googlePostService.syncBoardToGoogleSheet();
 
         return PostResponse.AddPost.builder()
                 .postId(post.getId())

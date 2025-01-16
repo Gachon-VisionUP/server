@@ -32,17 +32,32 @@ public class GoogleController {
     /**
      * ✅ Google Sheets에서 유저 데이터 동기화 API
      */
-    @PostMapping("/sync-sheet-to-db")
-    public ResponseEntity<String> syncSheetToDb() {
+    @PostMapping("/sync-sheet-to-db/user")
+    public ResponseEntity<String> userSyncSheetToDb() {
         googleUserService.syncUsersFromGoogleSheet();
-        googlePerformanceService.syncH1PerformanceFromGoogleSheet();
-        googlePerformanceService.syncH2PerformanceFromGoogleSheet();
-        googleJobQuestDetailService.syncJobQuestDetailFromGoogleSheet();
-        googleJobQuestService.syncJobQuestFromGoogleSheet();
-        googleLeaderQuestConditionService.syncLeaderQuestConditions();
-        googleLeaderQuestService.syncLeaderQuestsFromGoogleSheet();
         googleEntireProjectService.syncEntireProjects();
         googleLevelService.syncLevelsFromGoogleSheet();
+        return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
+    }
+
+    @PostMapping("/sync-sheet-to-db/performance")
+    public ResponseEntity<String> performanceSyncSheetToDb() {
+        googlePerformanceService.syncH1PerformanceFromGoogleSheet();
+        googlePerformanceService.syncH2PerformanceFromGoogleSheet();
+        return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
+    }
+
+    @PostMapping("/sync-sheet-to-db/job-quest")
+    public ResponseEntity<String> jobQuestSyncSheetToDb() {
+        googleJobQuestDetailService.syncJobQuestDetailFromGoogleSheet();
+        googleJobQuestService.syncJobQuestFromGoogleSheet();
+        return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
+    }
+
+    @PostMapping("/sync-sheet-to-db/leader-quest")
+    public ResponseEntity<String> leaderQuestSyncSheetToDb() {
+        googleLeaderQuestConditionService.syncLeaderQuestConditions();
+        googleLeaderQuestService.syncLeaderQuestsFromGoogleSheet();
         return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
     }
 

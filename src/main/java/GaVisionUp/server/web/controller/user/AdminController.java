@@ -4,6 +4,7 @@ import GaVisionUp.server.entity.User;
 import GaVisionUp.server.global.base.ApiResponse;
 import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
+import GaVisionUp.server.service.google.GoogleUserService;
 import GaVisionUp.server.service.user.UserCommandService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.user.UserRequest;
@@ -31,6 +32,7 @@ public class AdminController {
 
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
+    private final GoogleUserService googleUserService;
 
     @PostMapping("/create")
     @Operation(summary = "계정 생성 API", description = "사용자 계정을 생성합니다.")
@@ -42,6 +44,8 @@ public class AdminController {
         if (userId == null) {
             return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
         }
+
+        googleUserService.syncDatabaseToGoogleSheet();
 
         return ApiResponse.onSuccess(userCommandService.userCreate(userId, request));
     }
@@ -111,6 +115,8 @@ public class AdminController {
         if (userId == null) {
             return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
         }
+
+        googleUserService.syncDatabaseToGoogleSheet();
 
         return ApiResponse.onSuccess(userCommandService.updateUserInfo(userId, targetId, request));
     }

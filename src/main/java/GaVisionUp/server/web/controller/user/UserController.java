@@ -4,6 +4,7 @@ import GaVisionUp.server.entity.User;
 import GaVisionUp.server.global.base.ApiResponse;
 import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
+import GaVisionUp.server.service.google.GoogleUserService;
 import GaVisionUp.server.service.user.UserCommandService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.user.UserRequest;
@@ -34,6 +35,7 @@ public class UserController {
 
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
+    private final GoogleUserService googleUserService;
 
     @PostMapping("/login")
     @Operation(summary = "로그인 API", description = "로그인 시 세션을 생성하여 저장합니다.")
@@ -106,6 +108,8 @@ public class UserController {
             return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
         }
 
+        googleUserService.syncDatabaseToGoogleSheet();
+
         return ApiResponse.onSuccess(userCommandService.changePassword(userId, request));
     }
 
@@ -119,6 +123,8 @@ public class UserController {
         if (userId == null) {
             return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
         }
+
+        googleUserService.syncDatabaseToGoogleSheet();
 
         return ApiResponse.onSuccess(userCommandService.changeImage(userId, changeImageUrl));
     }

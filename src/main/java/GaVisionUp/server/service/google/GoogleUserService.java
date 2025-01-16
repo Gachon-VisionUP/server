@@ -37,9 +37,9 @@ public class GoogleUserService {
 
     @Value("${google.sheets.spreadsheet-id}") // ✅ YML에서 스프레드시트 ID 주입
     private String spreadsheetId;
-    private static final String RANGE = "참고. 구성원 정보!B10:K16"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
+    private static final String RANGE = "참고. 구성원 정보!B10:K"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
     private static final Pattern EMPLOYEE_ID_PATTERN = Pattern.compile("^\\d{10}$"); // ✅ 사번이 숫자로만 이루어졌는지 확인
-    private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:X16"; // 연도별 경험치 (L10 ~ V16)
+    private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:X"; // 연도별 경험치 (L10 ~ V16)
     private static final int START_YEAR = 2025; // 연도별 경험치 시작 (L열 = 2023년 ~ V열 = 2013년)
     private final ExpBarRepository expBarRepository;
 
