@@ -261,4 +261,16 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
 
         return experience;
     }
+
+    @Override
+    public List<Experience> findAllByUserIdAndYear(Long userId, int year) {
+        return queryFactory
+                .selectFrom(experience)
+                .where(
+                        experience.user.id.eq(userId),
+                        experience.obtainedDate.year().eq(year) // 연도 필터링
+                )
+                .orderBy(experience.obtainedDate.desc()) // 최신 순 정렬
+                .fetch();
+    }
 }

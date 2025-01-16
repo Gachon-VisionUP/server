@@ -20,5 +20,5 @@ public interface ExperienceRepository {
     Optional<Long> findExperienceIdByUserAndYear(Long userId, ExpType expType, int year);
     void updateExperienceById(Long expId, int newExp);
     Experience edit(Experience experience);  // 개인 경험치 저장
-
+    List<Experience> findAllByUserIdAndYear(Long userId, int year);
 }

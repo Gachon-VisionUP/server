@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +39,7 @@ public class ExperienceController {
     private final UserQueryService userQueryService;
 
     // ✅ 경험치 목록 조회 (최신 1개 + 연도별 최신 3개)
-    @GetMapping("/list")
+    @GetMapping(value = "/list")
     @Operation(summary = "경험치 목록 조회 API", description = "경험치 목록 조회 (최신 1개, 연도별 최신 3개)")
     @Parameters({
             @Parameter(name = "year", description = "조회할 연도")
@@ -53,15 +55,22 @@ public class ExperienceController {
         // ✅ 기본 연도는 현재 연도
         int targetYear = (selectedYear != null) ? selectedYear : Year.now().getValue();
 
-        // ✅ 선택한 연도의 최신 경험치 3개 조회
-        List<Experience> latestThreeExperiences = experienceService.getTop3ExperiencesByYear(sessionUserId, targetYear);
+        // ✅ 선택한 연도의 전체 경험치 조회
+        List<Experience> allExperiences = experienceService.getExperiencesByYear(sessionUserId, targetYear);
+        if (allExperiences == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터를 조회하지 못했습니다.");
+        }
 
         // ✅ Response 변환
-        List<ExperienceResponse> top3ExperiencesResponse = latestThreeExperiences.stream()
+        List<ExperienceResponse> experienceResponseList = allExperiences.stream()
                 .map(ExperienceResponse::new)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new ExperienceListResponse(targetYear, top3ExperiencesResponse));
+        // ✅ 전체 경험치 갯수 계산
+        int totalCount = allExperiences.size();
+
+        return ResponseEntity.ok(new ExperienceListResponse(targetYear, totalCount, experienceResponseList));
+
     }
 
     // ✅ 경험치 현황 API ("/experience/state")

@@ -98,8 +98,10 @@ public class GoogleEntireProjectService {
                             Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDiff);
                             experienceRepository.edit(newExperience);
                         }
+                    } else if(experienceDiff == 0){
+                        continue;
                     }
-                    if (newGrantedExp != 0) {
+                   else {
                         Experience experience = new Experience(user, ExpType.ENTIRE_PROJECT, experienceDiff);
                         experienceRepository.save(experience);
                     }
