@@ -43,4 +43,11 @@ public class EntireProject {
                 .assignedDate(assignedDate)
                 .build();
     }
+
+    public void updateProject(String projectName, int grantedExp, String note, LocalDate assignedDate) {
+        this.projectName = projectName;
+        this.grantedExp = grantedExp;
+        this.note = note;
+        this.assignedDate = assignedDate;
+    }
 }

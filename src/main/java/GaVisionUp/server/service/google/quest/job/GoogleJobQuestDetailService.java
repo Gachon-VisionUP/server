@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google.job;
+package GaVisionUp.server.service.google.quest.job;
 
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
@@ -86,7 +86,6 @@ public class GoogleJobQuestDetailService {
 
             List<List<Object>> values = response.getValues();
             if (values == null || values.isEmpty() || values.get(0).size() < 2) {
-                log.warn("⚠️ [WARN] Google Sheets에서 직무 그룹 정보를 찾을 수 없습니다.");
                 throw new RestApiException(GlobalErrorStatus._INVALID_PART);
             }
 
@@ -110,7 +109,6 @@ public class GoogleJobQuestDetailService {
 
             List<List<Object>> values = response.getValues();
             if (values == null || values.isEmpty() || values.get(0).size() < 3) {
-                log.warn("⚠️ [WARN] Google Sheets에서 주기 정보를 찾을 수 없습니다.");
                 throw new RestApiException(GlobalErrorStatus._INVALID_CYCLE);
             }
 
@@ -133,7 +131,6 @@ public class GoogleJobQuestDetailService {
 
             List<List<Object>> values = response.getValues();
             if (values == null || values.isEmpty()) {
-                log.warn("⚠️ [WARN] Google Sheets에서 직무 퀘스트 데이터를 찾을 수 없습니다.");
                 return;
             }
 
@@ -171,9 +168,7 @@ public class GoogleJobQuestDetailService {
                         JobQuestDetail jobQuest = JobQuestDetail.create(
                                 department, part, cycle, month, round, sales, designCost, employeeSalary, retirementSalary, insuranceFee, recordedDate
                         );
-                        jobQuestDetailRepository.save(jobQuest);
-                        log.info("✅ [INSERT] 새로운 직무 퀘스트 저장 완료 (날짜: {})", recordedDate);
-                    }
+                        jobQuestDetailRepository.save(jobQuest);}
 
                 } catch (Exception e) {
                     log.error("❌ [ERROR] 직무 퀘스트 데이터 변환 중 오류 발생: {}", row, e);
@@ -222,9 +217,6 @@ public class GoogleJobQuestDetailService {
                     .update(spreadsheetId, RANGE_JOB_QUEST, new ValueRange().setValues((List<List<Object>>) (List<?>) sheetData))
                     .setValueInputOption("RAW")
                     .execute();
-
-            log.info("✅ [INFO] 직무별 상세 데이터를 Google Sheets에 성공적으로 동기화했습니다.");
-
         } catch (IOException e) {
             log.error("❌ [ERROR] DB 데이터를 Google Sheets에 동기화하는 중 오류 발생", e);
         }

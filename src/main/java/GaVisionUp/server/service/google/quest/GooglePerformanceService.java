@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google;
+package GaVisionUp.server.service.google.quest;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
@@ -69,7 +69,6 @@ public class GooglePerformanceService {
 
             for (List<Object> row : values) {
                 if (row.isEmpty() || row.size() < 4) {
-                    log.warn("⚠️ [WARN] 데이터 부족으로 인해 인사평가 정보를 저장할 수 없습니다. {}", row);
                     continue;
                 }
 
@@ -77,13 +76,11 @@ public class GooglePerformanceService {
                     // ✅ 사번 검증
                     String employeeId = row.get(0).toString().trim();
                     if (!EMPLOYEE_ID_PATTERN.matcher(employeeId).matches()) {
-                        log.warn("⚠️ [WARN] 잘못된 사번 형식으로 인해 인사평가 정보를 저장할 수 없습니다: {}", employeeId);
                         continue;
                     }
 
                     Optional<User> optionalUser = userRepository.findByEmployeeId(employeeId);
                     if (optionalUser.isEmpty()) {
-                        log.warn("⚠️ [WARN] 사번 '{}'에 해당하는 사용자를 찾을 수 없습니다.", employeeId);
                         continue;
                     }
                     User user = optionalUser.get();
@@ -114,7 +111,6 @@ public class GooglePerformanceService {
                             experienceRepository.updateExperienceById(expIdOpt.get(), newExp);
                         } else {
                             // ✅ 기존 경험치가 없으면 새로 저장
-                            log.info("➕ [INSERT] 새로운 경험치 저장 (사번: {}, 경험치: {})", employeeId, newExp);
                             Experience newExperience = new Experience(user, expType, newExp);
                             experienceRepository.save(newExperience);
                         }
@@ -139,15 +135,12 @@ public class GooglePerformanceService {
                         // ✅ 유저의 총 경험치 반영
                         userRepository.save(user);
 
-                        log.info("✅ [INFO] 인사평가 '{}' 저장 완료 (사번: {}, 경험치: {})", gradeStr, employeeId, newExp);
                     }
 
                 } catch (Exception e) {
                     log.error("❌ [ERROR] 인사평가 데이터 변환 중 오류 발생: {}", row, e);
                 }
             }
-
-            log.info("✅ [INFO] Google Sheets에서 인사평가 데이터를 성공적으로 동기화했습니다.");
 
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets에서 인사평가 데이터를 동기화하는 중 오류 발생", e);

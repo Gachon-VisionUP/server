@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google.job;
+package GaVisionUp.server.service.google.quest.job;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Cycle;
@@ -81,7 +81,6 @@ public class GoogleJobQuestService {
 
             List<List<Object>> values = response.getValues();
             if (values == null || values.isEmpty() || values.get(0).size() < 2) {
-                log.warn("⚠️ [WARN] Google Sheets에서 직무 그룹 정보를 찾을 수 없습니다.");
                 throw new RestApiException(GlobalErrorStatus._INVALID_PART);
             }
 
@@ -197,15 +196,12 @@ public class GoogleJobQuestService {
                         grantedExp = 0;
                     }
 
-                    log.info("📌 [DEBUG] 주기: {}, 주차: {}, 생산성: {}, 평가 등급: {}, 부여 경험치: {}, maxCondition: {}, medCondition: {}",
-                            cycle, round, productivity, grade, grantedExp, maxCondition, medCondition);
 
                     // ✅ JobQuest 저장 또는 업데이트
                     Optional<JobQuest> existingQuestOpt = jobQuestRepository.findByDepartmentAndPartAndCycleAndRound(
                             department, part, cycle, round);
 
                     if (existingQuestOpt.isPresent()) {
-                        log.warn("⚠️ [WARN] 중복된 JobQuest가 존재합니다. 기존 데이터를 업데이트합니다.");
                         JobQuest existingQuest = existingQuestOpt.get();
                         previousGrantedExp = existingQuest.getGrantedExp(); // 기존 부여된 경험치 가져오기
                         existingQuest.updateJobQuest(productivity, maxCondition, medCondition, grade, grantedExp, note);
@@ -220,14 +216,17 @@ public class GoogleJobQuestService {
                     // ✅ 유저 경험치 부여
                     List<User> users = userRepository.findByDepartmentAndPart(department, part);
                     for (User user : users) {
-                        // ✅ 기존 경험치를 마이너스로 저장
-                        if (previousGrantedExp != 0) {
-                            user.minusExperience(previousGrantedExp); // 기존 경험치 제거
-                        }
 
+                        int experienceDifference = grantedExp - previousGrantedExp;
+                        if (experienceDifference != 0) {
+                            if (grantedExp == 0) {
+                                Experience newExperience = new Experience(user, ExpType.JOB_QUEST, experienceDifference);
+                                experienceRepository.edit(newExperience);
+                            }
+                        }
                         // ✅ 새로운 경험치를 저장
                         if (grantedExp != 0) {
-                            Experience newExperience = new Experience(user, ExpType.JOB_QUEST, grantedExp - previousGrantedExp);
+                            Experience newExperience = new Experience(user, ExpType.JOB_QUEST, experienceDifference);
                             experienceRepository.edit(newExperience);
                         }
 
@@ -239,8 +238,6 @@ public class GoogleJobQuestService {
                     log.error("❌ [ERROR] 주차 데이터를 처리하는 중 오류 발생: {}", row, e);
                 }
             }
-
-            log.info("✅ [INFO] Google Sheets 데이터를 기반으로 JobQuest 평가 및 경험치 부여 완료");
 
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets 데이터를 읽는 중 오류 발생", e);

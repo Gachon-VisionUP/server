@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google.leader;
+package GaVisionUp.server.service.google.quest.leader;
 
 import GaVisionUp.server.entity.enums.Cycle;
 import GaVisionUp.server.entity.enums.Department;
@@ -30,8 +30,8 @@ public class GoogleLeaderQuestConditionService {
     @Value("${google.sheets.spreadsheet-id}") // ✅ YML에서 스프레드시트 ID 가져오기
     private String spreadsheetId;
 
-    private static final String RANGE_CONDITIONS = "참고. 리더부여 퀘스트!K11:S13"; // ✅ 리더 퀘스트 조건 범위
-    private static final String RANGE_DEPARTMENT = "참고. 리더부여 퀘스트!K8"; // ✅ 소속 범위
+    private static final String RANGE_CONDITIONS = "참고. 리더부여 퀘스트!J11:R13"; // ✅ 리더 퀘스트 조건 범위
+    private static final String RANGE_DEPARTMENT = "참고. 리더부여 퀘스트!J8"; // ✅ 소속 범위
 
     /**
      * ✅ Google Sheets에서 리더 퀘스트 조건 데이터를 읽어와 DB에 저장
@@ -59,7 +59,6 @@ public class GoogleLeaderQuestConditionService {
 
             List<List<Object>> conditionsValues = conditionsResponse.getValues();
             if (conditionsValues == null || conditionsValues.isEmpty()) {
-                log.warn("⚠️ [WARN] Google Sheets에서 리더 퀘스트 조건 데이터를 찾을 수 없습니다.");
                 return;
             }
 
@@ -78,12 +77,8 @@ public class GoogleLeaderQuestConditionService {
                     String medianCondition = row.size() > 7 ? row.get(7).toString().trim() : "";
                     String description = row.size() > 8 ? row.get(8).toString().trim() : "";
 
-                    log.debug("📌 [DEBUG] 매핑된 데이터 - 퀘스트명: {}, 주기: {}, 비중: {}, 총 경험치: {}, Max 경험치: {}, Median 경험치: {}, Max 조건: {}, Median 조건: {}, 비고: {}",
-                            questName, cycle, weightRaw, totalExpRaw, maxExpRaw, medianExpRaw, maxCondition, medianCondition, description);
-
                     if (questName.isEmpty() || cycle == null || weightRaw.isEmpty() || totalExpRaw.isEmpty()
                             || maxExpRaw.isEmpty() || medianExpRaw.isEmpty() || maxCondition.isEmpty() || medianCondition.isEmpty()) {
-                        log.warn("⚠️ [WARN] 데이터가 부족하여 조건을 처리할 수 없습니다. [퀘스트명: {}] {}", questName, row);
                         continue;
                     }
 
@@ -97,12 +92,10 @@ public class GoogleLeaderQuestConditionService {
                             .findByDepartmentAndCycleAndQuestName(department, cycle, questName);
 
                     if (existingConditionOpt.isPresent()) {
-                        log.info("🔄 [UPDATE] 기존 리더 퀘스트 조건 업데이트: {}", questName);
                         LeaderQuestCondition existingCondition = existingConditionOpt.get();
                         existingCondition.updateCondition(weight, totalExp, maxExp, medianExp, maxCondition, medianCondition, description);
                         leaderQuestConditionRepository.save(existingCondition);
                     } else {
-                        log.info("➕ [INSERT] 새로운 리더 퀘스트 조건 저장: {}", questName);
                         LeaderQuestCondition newCondition = LeaderQuestCondition.builder()
                                 .department(department)
                                 .cycle(cycle)
@@ -122,9 +115,6 @@ public class GoogleLeaderQuestConditionService {
                     log.error("❌ [ERROR] 리더 퀘스트 조건 처리 중 오류 발생: {}", row, e);
                 }
             }
-
-            log.info("✅ [INFO] Google Sheets 데이터를 기반으로 리더 퀘스트 조건 동기화 완료");
-
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets 데이터를 읽는 중 오류 발생", e);
         } catch (Exception e) {

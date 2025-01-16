@@ -1,5 +1,6 @@
 package GaVisionUp.server.repository.quest.entire;
 
+import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.quest.EntireProject;
 import java.time.LocalDate;
 import java.util.List;
@@ -17,4 +18,6 @@ public interface EntireProjectRepository {
     List<EntireProject> findByDate(LocalDate date);
 
     List<EntireProject> findAll();
+    Optional<EntireProject> findByUserAndProjectNameAndAssignedDate(User user, String projectName, LocalDate assignedDate);
+
 }

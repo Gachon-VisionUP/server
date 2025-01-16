@@ -93,4 +93,24 @@ public class LevelRepositoryImpl implements LevelRepository {
         );
     }
 
+    @Override
+    public Optional<Level> findByJobGroupAndLevelName(JobGroup jobGroup, String levelName) {
+
+        Level result = queryFactory.selectFrom(level)
+                .where(level.jobGroup.eq(jobGroup)
+                        .and(level.levelName.eq(levelName)))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Level save(Level level) {
+        if (level.getId() == null) {
+            em.persist(level); // 새로운 엔티티 저장
+            return level;
+        } else {
+            return em.merge(level); // 기존 엔티티 업데이트
+        }
+    }
 }
