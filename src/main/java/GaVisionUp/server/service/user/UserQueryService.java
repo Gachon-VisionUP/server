@@ -16,7 +16,8 @@ public interface UserQueryService {
 
     List<String> getAllExpoPushTokens();
 
-    UserResponse.UserInfoList getUserInfoList(Long userId, int page, int size);
+    //UserResponse.UserInfoList getUserInfoList(Long userId, int page, int size);
+    UserResponse.UserInfoList getUserInfoList(Long userId);
 
     UserResponse.UserInfoDetail getUserInfoDetail(Long userId, Long targetId);
     List<User> getAllUsers();

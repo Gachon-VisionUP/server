@@ -24,7 +24,7 @@ public class PostController {
     private final PostQueryService postQueryService;
     private final PostCommandService postCommandService;
 
-    @GetMapping()
+    /*@GetMapping()
     @Operation(summary = "게시글 목록 조회 API", description = "게시글 목록을 조회합니다.(무한스크롤)")
     @Parameters({
             @Parameter(name = "query", description = "검색어"),
@@ -40,6 +40,12 @@ public class PostController {
     ){
         System.out.println("컨트롤러임");
         return ApiResponse.onSuccess(postQueryService.getPostsPreviewList(query, filter, lastValue, pageSize));
+    }*/
+
+    @GetMapping()
+    @Operation(summary = "게시글 목록 조회 API", description = "게시글 목록 전체를 조회합니다.")
+    public ApiResponse<PostResponse.PreviewList> getPostsPreviewList(){
+        return ApiResponse.onSuccess(postQueryService.getPostsPreviewList());
     }
 
     @GetMapping("/{postId}")

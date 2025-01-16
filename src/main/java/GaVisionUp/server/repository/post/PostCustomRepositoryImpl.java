@@ -1,3 +1,4 @@
+/*
 package GaVisionUp.server.repository.post;
 
 import GaVisionUp.server.entity.Post;
@@ -97,3 +98,4 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 }
 
+*/

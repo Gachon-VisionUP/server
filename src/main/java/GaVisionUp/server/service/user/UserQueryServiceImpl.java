@@ -90,7 +90,7 @@ public class UserQueryServiceImpl implements UserQueryService{
                 .toList();
     }
 
-    @Override
+    /*@Override
     public UserResponse.UserInfoList getUserInfoList(Long userId, int page, int size) {
 
         if (checkAdmin(userId)) {
@@ -100,6 +100,28 @@ public class UserQueryServiceImpl implements UserQueryService{
         Pageable pageable = PageRequest.of(page, size);
 
         Page<User> userList = userRepository.findAllByOrderByIdDesc(pageable);
+
+        List<UserResponse.UserInfo> userInfoList =
+                userList.stream().map(user ->
+                        UserResponse.UserInfo.builder()
+                                .userId(user.getId())
+                                .department(user.getDepartment())
+                                .part(user.getPart())
+                                .employeeId(user.getEmployeeId())
+                                .userName(user.getName())
+                                .build()).toList();
+
+        return UserResponse.UserInfoList.builder().userInfoList(userInfoList).build();
+    }*/
+
+    @Override
+    public UserResponse.UserInfoList getUserInfoList(Long userId) {
+
+        if (checkAdmin(userId)) {
+            throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
+        }
+
+        List<User> userList = userRepository.findAllByRoleEquals(Role.USER);
 
         List<UserResponse.UserInfo> userInfoList =
                 userList.stream().map(user ->

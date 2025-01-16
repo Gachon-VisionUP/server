@@ -1,3 +1,4 @@
+/*
 package GaVisionUp.server.repository.post;
 
 import GaVisionUp.server.entity.enums.Filter;
@@ -10,3 +11,4 @@ public interface PostCustomRepository {
             String query, Filter filter, Long lastValue, Pageable pageable);
 
 }
+*/

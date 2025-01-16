@@ -46,7 +46,7 @@ public class AdminController {
         return ApiResponse.onSuccess(userCommandService.userCreate(userId, request));
     }
 
-    @GetMapping("/user-list")
+    /*@GetMapping("/user-list")
     @Operation(summary = "구성원 전체 조회 API", description = "모든 구성원 목록을 조회합니다.(페이징)")
     @Parameters({
             @Parameter(name = "page", description = "구성원 목록 페이지(0부터 시작)"),
@@ -64,6 +64,20 @@ public class AdminController {
 
         // 성공적으로 사용자 정보를 반환
         return ApiResponse.onSuccess(userQueryService.getUserInfoList(userId, page, size));
+    }*/
+
+    @GetMapping("/user-list")
+    @Operation(summary = "구성원 전체 조회 API", description = "모든 구성원 목록을 조회합니다.")
+    public ApiResponse<UserResponse.UserInfoList> getUserInfoList(
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
+
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
+
+        // 성공적으로 사용자 정보를 반환
+        return ApiResponse.onSuccess(userQueryService.getUserInfoList(userId));
     }
 
     @GetMapping("/user-info/{targetId}")

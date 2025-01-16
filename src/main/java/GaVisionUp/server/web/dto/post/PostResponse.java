@@ -20,13 +20,20 @@ public class PostResponse {
         LocalDate date;
     }
 
-    @Getter
+    /*@Getter
     @Setter
     @Builder
     public static class PreviewList{
         List<Preview> previewList;
         boolean hasNext;
         Long lastValue;
+    }*/
+
+    @Getter
+    @Setter
+    @Builder
+    public static class PreviewList{
+        List<Preview> previewList;
     }
 
     @Getter
