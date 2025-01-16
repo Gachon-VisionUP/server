@@ -13,4 +13,5 @@ public interface LevelRepository {
     Optional<Level> findNextLevel(JobGroup jobGroup, int totalExp, String currentLevelName);
 
     Optional<Level> findById(Long levelId);
+    Optional<Level> findByLevelName(String levelName);
 }

@@ -46,4 +46,10 @@ public class PerformanceReview {
                 .evaluationDate(LocalDate.now())
                 .build();
     }
+
+    public void updateReview(PerformanceGrade grade,int newExp,ExpType expType){
+        this.grade = grade;
+        this.grantedExp = newExp;
+        this.expType = expType;
+    }
 }

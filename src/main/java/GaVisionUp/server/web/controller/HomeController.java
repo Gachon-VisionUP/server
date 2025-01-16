@@ -1,5 +1,6 @@
 package GaVisionUp.server.web.controller;
 
+import GaVisionUp.server.entity.Level;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.entity.exp.Experience;
@@ -8,6 +9,7 @@ import GaVisionUp.server.entity.quest.leader.LeaderQuestCondition;
 import GaVisionUp.server.repository.quest.leader.LeaderQuestRepository;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
+import GaVisionUp.server.service.level.LevelService;
 import GaVisionUp.server.service.quest.leader.LeaderQuestService;
 import GaVisionUp.server.service.user.UserQueryService;
 import GaVisionUp.server.web.dto.HomeQuestInfoResponse;
@@ -21,9 +23,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.mysql.cj.util.TimeUtil.DATE_FORMATTER;
 
 @Slf4j
 @RestController
@@ -35,6 +41,9 @@ public class HomeController {
     private final LeaderQuestRepository leaderQuestRepository;
     private final ExperienceService experienceService;
     private final ExpBarService expBarService;
+    private final LevelService levelService;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yy-MM-dd");
 
     @Value("${server.url}") // 서버 URL (예: http://localhost:8080)
     private String serverUrl;
@@ -54,11 +63,22 @@ public class HomeController {
         User user = userQueryService.getUserById(sessionUserId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // ✅ 현재 레벨 조회
-        String currentLevel = user.getLevel().getLevelName();
-
+        // ✅ 현재 레벨 정보 가져오기 (객체 전체 조회)
+        Level currentLv = levelService.getLevelByNameAndJobGroup(user.getLevel().getLevelName(), user.getLevel().getJobGroup());
+        String currentLevel = currentLv.getLevelName();
         // ✅ 총 경험치 조회
         int totalExp = user.getTotalExp();
+
+        // ✅ 다음 레벨 정보 가져오기
+        Optional<Level> nextLevelOpt = levelService.findNextLevel(currentLv.getJobGroup(), totalExp, currentLv.getLevelName());
+        if (nextLevelOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);  // 다음 레벨이 존재하지 않을 경우
+        }
+        Level nextLevel = nextLevelOpt.get();
+        int nextLevelTotalExpRequirement = nextLevel.getRequiredExp();  // 다음 레벨의 총 필요 경험치
+
+
+
         String imageURL = serverUrl + "/images/" + user.getProfileImageUrl() + ".png";
 
         // ✅ 해당 유저의 ExpBar 확인 및 자동 생성
@@ -67,7 +87,9 @@ public class HomeController {
         // ✅ 최신 경험치 조회
         Optional<Experience> latestExperienceOpt = experienceService.getLatestExperienceByUserId(sessionUserId);
         int latestExp = latestExperienceOpt.map(Experience::getExp).orElse(0); // 기본값 0
-
+        String latestExpDate = latestExperienceOpt
+                .map(exp -> exp.getObtainedDate().format(DATE_FORMATTER))
+                .orElse(""); // ✅ 포맷 적용
         // ✅ 퀘스트 조건 목록 조회 (유저의 소속 기반)
         List<LeaderQuestCondition> questConditions = leaderQuestService.getConditionsByUserId(sessionUserId);
 
@@ -85,6 +107,6 @@ public class HomeController {
 
         log.info("✅ [INFO] 홈 데이터 조회 - 사용자: {}, 레벨: {}, 총 경험치: {}", user.getName(), currentLevel, totalExp);
 
-        return ResponseEntity.ok(new HomeResponse(user.getName(), currentLevel, totalExp, latestExp,imageURL,questInfos));
+        return ResponseEntity.ok(new HomeResponse(user.getName(), currentLevel, totalExp, nextLevelTotalExpRequirement,latestExp,latestExpDate,imageURL,questInfos));
     }
 }

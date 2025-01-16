@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Builder
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "users")
@@ -93,4 +94,50 @@ public class User {
     public void updatePushToken(String pushToken) {
         this.expoPushToken = pushToken;
     }
+
+    // 스프레드 시트용
+    /**
+     * ✅ 기존 유저 업데이트
+     */
+    public void updateUser(String name, LocalDate joinDate, Department department, int part, Level level,
+                           String loginId, String password, String changedPw, int totalExp, Role role) {
+        this.name = name;
+        this.joinDate = joinDate;
+        this.department = department;
+        this.part = part;
+        this.level = level;
+        this.loginId = loginId;
+        this.password = password;
+        this.changedPW = changedPw;
+        this.totalExp = totalExp;
+        this.role = role;
+    }
+
+    /**
+     * ✅ 새 유저 생성
+     */
+    public static User create(String employeeId, String name, LocalDate joinDate, Department department, int part,
+                              Level level, String loginId, String password, String changedPw, int totalExp, Role role) {
+        return User.builder()
+                .employeeId(employeeId)
+                .name(name)
+                .joinDate(joinDate)
+                .department(department)
+                .part(part)
+                .level(level)
+                .loginId(loginId)
+                .password(password)
+                .changedPW(null)
+                .totalExp(totalExp)
+                .information(null)
+                .role(role)
+                .profileImageUrl("https://example.com/profile.jpg\t")
+                .expoPushToken(null)
+                .build();
+    }
+
+    public void minusExperience(int exp) {
+        this.totalExp -= exp;
+    }
+
 }
