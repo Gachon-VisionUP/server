@@ -35,7 +35,7 @@ public class GoogleSheetsConfig {
         log.info("📌 [INFO] Google Sheets API 인증 정보를 로드 중...");
 
         GoogleCredentials credentials = GoogleCredentials
-                .fromStream(new ClassPathResource(CREDENTIALS_FILE_PATH).getInputStream())
+                .fromStream(new ClassPathResource(credentialsFilePath).getInputStream())
                 .createScoped(Collections.singletonList("https://www.googleapis.com/auth/spreadsheets"));
 
         return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, new HttpCredentialsAdapter(credentials))

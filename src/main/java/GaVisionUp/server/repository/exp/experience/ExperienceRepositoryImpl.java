@@ -258,17 +258,6 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
         } else {
             em.merge(experience);
         }
-        ExpType expType = experience.getExpType();
-        int exp = experience.getExp();
-        // ✅ 내부 알림 저장
-        String title = "최신 경험치";
-        String message = String.format("%d", exp);
-        notificationService.createNotification(user, title, message, expType.getValue());
-
-        // ✅ Expo 푸쉬 알림 전송
-        expoNotificationService.sendPushNotification(user.getExpoPushToken(), title, message, expType.getValue());
-
-        log.info("✅ 경험치 수정 및 알림 전송 완료 - 유저: {}, ExpType: {}, 획득 경험치: {}", user.getName(), expType, exp);
 
         return experience;
     }
