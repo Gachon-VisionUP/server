@@ -223,9 +223,10 @@ public class GoogleJobQuestService {
                                 Experience newExperience = new Experience(user, ExpType.JOB_QUEST, experienceDifference);
                                 experienceRepository.edit(newExperience);
                             }
+                        }else if(experienceDifference == 0){
+                            continue;
                         }
-                        // ✅ 새로운 경험치를 저장
-                        if (grantedExp != 0) {
+                        else  {
                             Experience newExperience = new Experience(user, ExpType.JOB_QUEST, experienceDifference);
                             experienceRepository.edit(newExperience);
                         }

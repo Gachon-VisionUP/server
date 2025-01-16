@@ -121,8 +121,10 @@ public class GoogleLeaderQuestService {
                             Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
                             experienceRepository.edit(newExperience);
                         }
+                    }else if(experienceDifference == 0){
+                        continue;
                     }
-                    if (newGrantedExp != 0) {
+                    else {
                         Experience experience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
                         experienceRepository.edit(experience);
                     }
