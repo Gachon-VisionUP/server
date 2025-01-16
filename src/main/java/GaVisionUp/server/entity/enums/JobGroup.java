@@ -20,10 +20,11 @@ public enum JobGroup {
     @JsonValue
     private final String value;
 
-    @JsonCreator // Json -> Object, 역직렬화 수행하는 메서드
+    @JsonCreator
     public static JobGroup from(String param) {
         for (JobGroup jobGroup : JobGroup.values()) {
-            if (jobGroup.getValue().equals(param)) {
+            // 열거형 이름 또는 value 둘 다 매칭 가능하도록 추가
+            if (jobGroup.name().equalsIgnoreCase(param.trim()) || jobGroup.getValue().equals(param.trim())) {
                 return jobGroup;
             }
         }

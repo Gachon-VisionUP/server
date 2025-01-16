@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google;
+package GaVisionUp.server.service.google.quest;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.ExpType;
@@ -49,14 +49,12 @@ public class GoogleEntireProjectService {
 
             List<List<Object>> values = response.getValues();
             if (values == null || values.isEmpty()) {
-                log.warn("⚠️ [WARN] Google Sheets에서 전사 프로젝트 데이터를 찾을 수 없습니다.");
                 return;
             }
 
             for (List<Object> row : values) {
                 // ✅ 필수 값 체크 (사번, 대상자, 전사 프로젝트명, 부여 경험치)
                 if (row.size() < 5 || row.get(2) == null || row.get(3) == null || row.get(4) == null || row.get(5) == null) {
-                    log.warn("⚠️ [WARN] 데이터가 부족하여 프로젝트를 처리할 수 없습니다. {}", row);
                     continue;
                 }
 
@@ -81,7 +79,6 @@ public class GoogleEntireProjectService {
 
                     int previousGrantedExp = 0; // 기존 경험치
                     if (existingProjectOpt.isPresent()) {
-                        log.warn("⚠️ [WARN] 중복된 전사 프로젝트가 존재합니다. 기존 데이터를 업데이트합니다.");
                         EntireProject existingProject = existingProjectOpt.get();
                         previousGrantedExp = existingProject.getGrantedExp(); // 기존 경험치 값 가져오기
                         // ✅ 프로젝트 업데이트
@@ -114,7 +111,6 @@ public class GoogleEntireProjectService {
                     log.error("❌ [ERROR] 전사 프로젝트 처리 중 오류 발생: {}", row, e);
                 }
             }
-            log.info("✅ [INFO] Google Sheets 데이터를 기반으로 전사 프로젝트 동기화 완료");
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets 데이터를 읽는 중 오류 발생", e);
         } catch (Exception e) {

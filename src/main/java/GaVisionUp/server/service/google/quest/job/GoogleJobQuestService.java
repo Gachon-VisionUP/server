@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google.job;
+package GaVisionUp.server.service.google.quest.job;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Cycle;
@@ -81,7 +81,6 @@ public class GoogleJobQuestService {
 
             List<List<Object>> values = response.getValues();
             if (values == null || values.isEmpty() || values.get(0).size() < 2) {
-                log.warn("⚠️ [WARN] Google Sheets에서 직무 그룹 정보를 찾을 수 없습니다.");
                 throw new RestApiException(GlobalErrorStatus._INVALID_PART);
             }
 
@@ -203,7 +202,6 @@ public class GoogleJobQuestService {
                             department, part, cycle, round);
 
                     if (existingQuestOpt.isPresent()) {
-                        log.warn("⚠️ [WARN] 중복된 JobQuest가 존재합니다. 기존 데이터를 업데이트합니다.");
                         JobQuest existingQuest = existingQuestOpt.get();
                         previousGrantedExp = existingQuest.getGrantedExp(); // 기존 부여된 경험치 가져오기
                         existingQuest.updateJobQuest(productivity, maxCondition, medCondition, grade, grantedExp, note);
@@ -240,8 +238,6 @@ public class GoogleJobQuestService {
                     log.error("❌ [ERROR] 주차 데이터를 처리하는 중 오류 발생: {}", row, e);
                 }
             }
-
-            log.info("✅ [INFO] Google Sheets 데이터를 기반으로 JobQuest 평가 및 경험치 부여 완료");
 
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets 데이터를 읽는 중 오류 발생", e);

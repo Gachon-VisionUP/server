@@ -1,14 +1,15 @@
 package GaVisionUp.server.web.controller.google;
 
-import GaVisionUp.server.service.google.GoogleEntireProjectService;
+import GaVisionUp.server.service.google.GoogleLevelService;
+import GaVisionUp.server.service.google.quest.GoogleEntireProjectService;
 import GaVisionUp.server.service.google.GooglePostService;
-import GaVisionUp.server.service.google.job.GoogleJobQuestDetailService;
-import GaVisionUp.server.service.google.GooglePerformanceService;
+import GaVisionUp.server.service.google.quest.job.GoogleJobQuestDetailService;
+import GaVisionUp.server.service.google.quest.GooglePerformanceService;
 import GaVisionUp.server.service.google.GoogleUserService;
-import GaVisionUp.server.service.google.job.GoogleJobQuestService;
-import GaVisionUp.server.service.google.leader.GoogleLeaderQuestConditionService;
+import GaVisionUp.server.service.google.quest.job.GoogleJobQuestService;
+import GaVisionUp.server.service.google.quest.leader.GoogleLeaderQuestConditionService;
 
-import GaVisionUp.server.service.google.leader.GoogleLeaderQuestService;
+import GaVisionUp.server.service.google.quest.leader.GoogleLeaderQuestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ public class GoogleController {
     private final GoogleLeaderQuestService googleLeaderQuestService;
     private final GoogleEntireProjectService googleEntireProjectService;
     private final GooglePostService googlePostService;
+    private final GoogleLevelService googleLevelService;
 
     /**
      * ✅ Google Sheets에서 유저 데이터 동기화 API
@@ -40,6 +42,7 @@ public class GoogleController {
         googleLeaderQuestConditionService.syncLeaderQuestConditions();
         googleLeaderQuestService.syncLeaderQuestsFromGoogleSheet();
         googleEntireProjectService.syncEntireProjects();
+        googleLevelService.syncLevelsFromGoogleSheet();
         return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
     }
 

@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google.leader;
+package GaVisionUp.server.service.google.quest.leader;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Cycle;
@@ -82,7 +82,6 @@ public class GoogleLeaderQuestService {
                     // ✅ 유저 조회
                     Optional<User> userOpt = userRepository.findByEmployeeId(userIdStr);
                     if (userOpt.isEmpty()) {
-                        log.warn("⚠️ [WARN] 유저를 찾을 수 없어 퀘스트를 건너뜁니다. 사번: {}", userIdStr);
                         continue;
                     }
                     User user = userOpt.get();
@@ -104,13 +103,10 @@ public class GoogleLeaderQuestService {
                     if (existingQuestOpt.isPresent()) {
                         LeaderQuest existingQuest = existingQuestOpt.get();
                         previousGrantedExp = existingQuest.getGrantedExp(); // 기존 부여 경험치
-                        log.info("🔄 [UPDATE] 기존 퀘스트 기록 확인됨 - 기존 경험치: {}", previousGrantedExp);
-
                         // ✅ 퀘스트 업데이트
                         existingQuest.updateQuest(achievementType, newGrantedExp, note, LocalDate.now());
                         leaderQuestRepository.save(existingQuest);
                     } else {
-                        log.info("➕ [INSERT] 새로운 리더 퀘스트 저장 - 퀘스트명: {}", questName);
                         LeaderQuest leaderQuest = LeaderQuest.create(
                                 user, Cycle.MONTHLY, questName, month, week,
                                 achievementType, newGrantedExp, note,
@@ -138,9 +134,6 @@ public class GoogleLeaderQuestService {
                     log.error("❌ [ERROR] 리더 부여 퀘스트 처리 중 오류 발생: {}", row, e);
                 }
             }
-
-            log.info("✅ [INFO] Google Sheets 데이터를 기반으로 리더 부여 퀘스트 동기화 완료");
-
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets 데이터를 읽는 중 오류 발생", e);
         } catch (Exception e) {

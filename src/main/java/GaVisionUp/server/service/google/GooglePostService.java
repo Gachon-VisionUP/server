@@ -53,8 +53,6 @@ public class GooglePostService {
                     .setValueInputOption("RAW")
                     .execute();
 
-            log.info("✅ [INFO] 게시판 데이터를 Google Sheets로 성공적으로 동기화했습니다.");
-
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets 데이터를 동기화하는 중 오류 발생", e);
         } catch (Exception e) {

@@ -11,7 +11,6 @@ import GaVisionUp.server.repository.user.UserRepository;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.exp.experience.ExperienceService;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -87,7 +85,11 @@ public class GoogleUserService {
                     String loginId = row.get(6).toString().trim();
                     String password = row.get(7).toString().trim();
                     String changedPw = row.get(8).toString().trim().isEmpty() ? null : row.get(8).toString().trim();
-                    int totalExp = Integer.parseInt(row.get(9).toString().trim()); // 총 경험치 읽기
+
+                    // ✅ 총 경험치 값 처리 (쉼표 제거 후 int로 변환)
+                    final int totalExp = !row.get(9).toString().trim().isEmpty()
+                            ? Integer.parseInt(row.get(9).toString().trim().replace(",", ""))
+                            : 0;
 
                     Optional<User> existingUser = userRepository.findByEmployeeId(employeeId);
                     Role role = Role.USER;
@@ -98,21 +100,24 @@ public class GoogleUserService {
                     }
                     Level level = optionalLevel.get();
 
-                    User user = existingUser
-                            .map(existing -> {
-                                existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
-                                return existing;
-                            })
-                            .orElseGet(() -> {
-                                User newUser = User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
-                                userRepository.save(newUser);
-                                ExpBar expBar = expBarService.getOrCreateExpBarByUserId(newUser.getId());
-                                log.info("✅ [INFO] 신규 유저 '{}'의 ExpBar 생성 완료", name);
-                                return newUser;
-                            });
+                    User user;
 
+                    // ✅ Optional 처리 수정
+                    if (existingUser.isPresent()) {
+                        User existing = existingUser.get();
+                        existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
+                        user = existing;
+                    } else {
+                        User newUser = User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
+                        userRepository.save(newUser);
+
+                        // ExpBar 생성
+                        ExpBar expBar = expBarService.getOrCreateExpBarByUserId(newUser.getId());
+                        log.info("✅ [INFO] 신규 유저 '{}'의 ExpBar 생성 완료", name);
+
+                        user = newUser;
+                    }
                     userRepository.save(user);
-                    log.info("✅ [INFO] 유저 '{}' 동기화 완료", name);
 
                 } catch (Exception e) {
                     log.error("❌ [ERROR] 유저 데이터 변환 중 오류 발생: {}", row, e);
@@ -125,7 +130,6 @@ public class GoogleUserService {
             if (!usersToDelete.isEmpty()) {
                 List<User> usersToBeDeleted = userRepository.findByEmployeeIdIn(usersToDelete);
                 userRepository.deleteAll(usersToBeDeleted);
-                log.info("🗑 [INFO] {}명의 유저가 삭제됨: {}", usersToDelete.size(), usersToDelete);
             } else {
                 log.info("✅ [INFO] 삭제할 유저가 없습니다.");
             }
@@ -195,8 +199,6 @@ public class GoogleUserService {
                     .update(spreadsheetId, RANGE_YEARLY_EXP, new ValueRange().setValues(yearlyExpData))
                     .setValueInputOption("RAW")
                     .execute();
-
-            log.info("✅ [INFO] 구성원 정보 데이터를 Google Sheets에 성공적으로 동기화했습니다.");
 
         } catch (IOException e) {
             log.error("❌ [ERROR] DB 데이터를 Google Sheets에 동기화하는 중 오류 발생", e);
