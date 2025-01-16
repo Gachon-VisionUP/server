@@ -14,4 +14,7 @@ public interface LevelRepository {
 
     Optional<Level> findById(Long levelId);
     Optional<Level> findByLevelName(String levelName);
+    Optional<Level> findByJobGroupAndLevelName(JobGroup jobGroup, String levelName);
+
+    Level save(Level level);
 }

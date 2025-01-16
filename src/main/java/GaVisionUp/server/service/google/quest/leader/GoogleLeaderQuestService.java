@@ -1,4 +1,4 @@
-package GaVisionUp.server.service.google.leader;
+package GaVisionUp.server.service.google.quest.leader;
 
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Cycle;
@@ -41,7 +41,7 @@ public class GoogleLeaderQuestService {
     @Value("${google.sheets.spreadsheet-id}") // ✅ YML에서 스프레드시트 ID 가져오기
     private String spreadsheetId;
 
-    private static final String RANGE_DETAILS = "참고. 리더부여 퀘스트!B10:L50"; // ✅ 데이터 입력 범위
+    private static final String RANGE_DETAILS = "참고. 리더부여 퀘스트!B10:I50"; // ✅ 데이터 입력 범위
 
     /**
      * ✅ Google Sheets 데이터를 활용한 리더 부여 퀘스트 처리
@@ -62,8 +62,8 @@ public class GoogleLeaderQuestService {
 
             for (List<Object> row : detailValues) {
                 // ✅ 필수 값 체크 (월, 사번, 리더 부여 퀘스트명, 달성 내용, 부여 경험치)
-                if (row.size() < 6 || row.get(0) == null || row.get(2) == null ||
-                        row.get(4) == null || row.get(5) == null || row.get(6) == null) {
+                if (row.size() < 6 || row.get(0) == null || row.get(1) == null ||
+                        row.get(3) == null || row.get(4) == null || row.get(5) == null) {
                     log.warn("⚠️ [WARN] 데이터가 부족하여 퀘스트를 처리할 수 없습니다. {}", row);
                     continue;
                 }
@@ -71,21 +71,17 @@ public class GoogleLeaderQuestService {
                 try {
                     // ✅ 데이터 매핑
                     int month = Integer.parseInt(row.get(0).toString().trim());
-                    Integer week = (row.get(1) != null && !row.get(1).toString().trim().isEmpty())
-                            ? Integer.parseInt(row.get(1).toString().trim()) : null;
-                    String userIdStr = row.get(2).toString().trim();
-                    String questName = row.get(4).toString().trim();
-                    String achievementType = row.get(5).toString().trim();
-                    int newGrantedExp = Integer.parseInt(row.get(6).toString().trim());
+                    Integer week = (row.size() > 6 && row.get(6) != null && !row.get(6).toString().trim().isEmpty())
+                            ? Integer.parseInt(row.get(6).toString().trim()) : null; // ✅ 주차는 선택 사항
+                    String userIdStr = row.get(1).toString().trim();
+                    String questName = row.get(3).toString().trim();
+                    String achievementType = row.get(4).toString().trim();
+                    int newGrantedExp = Integer.parseInt(row.get(5).toString().trim());
                     String note = (row.size() > 7 && row.get(7) != null) ? row.get(7).toString().trim() : "";
-
-                    log.info("📌 [DEBUG] 파싱된 데이터 - 월: {}, 주: {}, 사번: {}, 퀘스트명: {}, 달성 내용: {}, 부여 경험치: {}, 비고: {}",
-                            month, week, userIdStr, questName, achievementType, newGrantedExp, note);
 
                     // ✅ 유저 조회
                     Optional<User> userOpt = userRepository.findByEmployeeId(userIdStr);
                     if (userOpt.isEmpty()) {
-                        log.warn("⚠️ [WARN] 유저를 찾을 수 없어 퀘스트를 건너뜁니다. 사번: {}", userIdStr);
                         continue;
                     }
                     User user = userOpt.get();
@@ -95,7 +91,6 @@ public class GoogleLeaderQuestService {
                             user.getDepartment(), Cycle.MONTHLY, questName);
 
                     if (conditionOpt.isEmpty()) {
-                        log.warn("⚠️ [WARN] 조건을 찾을 수 없어 퀘스트를 건너뜁니다. 퀘스트명: {}", questName);
                         continue;
                     }
                     LeaderQuestCondition condition = conditionOpt.get();
@@ -108,15 +103,10 @@ public class GoogleLeaderQuestService {
                     if (existingQuestOpt.isPresent()) {
                         LeaderQuest existingQuest = existingQuestOpt.get();
                         previousGrantedExp = existingQuest.getGrantedExp(); // 기존 부여 경험치
-                        log.info("🔄 [UPDATE] 기존 퀘스트 기록 확인됨 - 기존 경험치: {}", previousGrantedExp);
-                        user.minusExperience(previousGrantedExp);
-                        Experience newExperience = new Experience(user, ExpType.JOB_QUEST, newGrantedExp - previousGrantedExp);
-                        experienceRepository.edit(newExperience);
                         // ✅ 퀘스트 업데이트
                         existingQuest.updateQuest(achievementType, newGrantedExp, note, LocalDate.now());
                         leaderQuestRepository.save(existingQuest);
                     } else {
-                        log.info("➕ [INSERT] 새로운 리더 퀘스트 저장 - 퀘스트명: {}", questName);
                         LeaderQuest leaderQuest = LeaderQuest.create(
                                 user, Cycle.MONTHLY, questName, month, week,
                                 achievementType, newGrantedExp, note,
@@ -127,9 +117,14 @@ public class GoogleLeaderQuestService {
                     // ✅ 유저 경험치 부여
                     int experienceDifference = newGrantedExp - previousGrantedExp;
                     if (experienceDifference != 0) {
+                        if (newGrantedExp == 0) {
+                            Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
+                            experienceRepository.edit(newExperience);
+                        }
+                    }
+                    if (newGrantedExp != 0) {
                         Experience experience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
-                        experienceRepository.save(experience);
-                        log.info("✅ [INFO] 경험치 저장 완료 - 변화량: {}, 사번: {}", experienceDifference, userIdStr);
+                        experienceRepository.edit(experience);
                     }
 
                     // ✅ 유저 총 경험치 업데이트
@@ -139,9 +134,6 @@ public class GoogleLeaderQuestService {
                     log.error("❌ [ERROR] 리더 부여 퀘스트 처리 중 오류 발생: {}", row, e);
                 }
             }
-
-            log.info("✅ [INFO] Google Sheets 데이터를 기반으로 리더 부여 퀘스트 동기화 완료");
-
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets 데이터를 읽는 중 오류 발생", e);
         } catch (Exception e) {

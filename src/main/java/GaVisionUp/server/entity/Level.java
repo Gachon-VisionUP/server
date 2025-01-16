@@ -2,11 +2,12 @@ package GaVisionUp.server.entity;
 
 import GaVisionUp.server.entity.enums.JobGroup;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "level") // ✅ 테이블명 level로 설정
 public class Level {
@@ -34,5 +35,17 @@ public class Level {
     // ✅ 다음 레벨 경험치 요구량 가져오기
     public int getMinExp() {
         return this.requiredExp;
+    }
+
+    public void updateRequiredExp(Integer requiredExp) {
+        this.requiredExp = requiredExp;
+    }
+
+    public static Level create(JobGroup jobGroup, String levelName, Integer requiredExp) {
+        return Level.builder()
+                .jobGroup(jobGroup)
+                .levelName(levelName)
+                .requiredExp(requiredExp)
+                .build();
     }
 }

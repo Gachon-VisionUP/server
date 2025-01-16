@@ -7,6 +7,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -21,7 +22,8 @@ public class GoogleSheetsConfig {
 
     private static final String APPLICATION_NAME = "Google Sheets Application"; // Google API 애플리케이션 이름
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_FILE_PATH = "/googlesheets/gavisionup-be6498ef4d7d.json"; // 서비스 계정 키 경로
+    @Value("${google.sheets.credentials-file-path}")
+    private String credentialsFilePath;
 
     /**
      * ✅ Google Sheets API의 `Sheets` 객체를 빈으로 등록
@@ -31,7 +33,7 @@ public class GoogleSheetsConfig {
         log.info("📌 [INFO] Google Sheets API 인증 정보를 로드 중...");
 
         GoogleCredentials credentials = GoogleCredentials
-                .fromStream(new ClassPathResource(CREDENTIALS_FILE_PATH).getInputStream())
+                .fromStream(new ClassPathResource(credentialsFilePath).getInputStream())
                 .createScoped(Collections.singletonList("https://www.googleapis.com/auth/spreadsheets"));
 
         return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, new HttpCredentialsAdapter(credentials))
