@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -37,9 +38,9 @@ public class GoogleUserService {
 
     @Value("${google.sheets.spreadsheet-id}") // ✅ YML에서 스프레드시트 ID 주입
     private String spreadsheetId;
-    private static final String RANGE = "참고. 구성원 정보!B10:K16"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
+    private static final String RANGE = "참고. 구성원 정보!B10:K"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
     private static final Pattern EMPLOYEE_ID_PATTERN = Pattern.compile("^\\d{10}$"); // ✅ 사번이 숫자로만 이루어졌는지 확인
-    private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:X16"; // 연도별 경험치 (L10 ~ V16)
+    private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:X"; // 연도별 경험치 (L10 ~ V16)
     private static final int START_YEAR = 2025; // 연도별 경험치 시작 (L열 = 2023년 ~ V열 = 2013년)
     private final ExpBarRepository expBarRepository;
 
@@ -124,16 +125,6 @@ public class GoogleUserService {
                 }
             }
 
-            Set<String> usersToDelete = new HashSet<>(existingUserIds);
-            usersToDelete.removeAll(sheetUserIds);
-
-            if (!usersToDelete.isEmpty()) {
-                List<User> usersToBeDeleted = userRepository.findByEmployeeIdIn(usersToDelete);
-                userRepository.deleteAll(usersToBeDeleted);
-            } else {
-                log.info("✅ [INFO] 삭제할 유저가 없습니다.");
-            }
-
         } catch (IOException e) {
             log.error("❌ [ERROR] Google Sheets에서 유저 데이터를 동기화하는 중 오류 발생", e);
         }
@@ -159,27 +150,26 @@ public class GoogleUserService {
                 }
             }
 
-            // ✅ 새로운 사용자 데이터를 준비
-            List<ArrayList<Object>> userData = users.stream()
-                    .map(user -> {
-                        List<Object> existingRow = existingUserDataMap.get(user.getEmployeeId());
-                        Object totalExp = (existingRow != null && existingRow.size() > 9) ? existingRow.get(9) : 0; // 기존 총 경험치 값 유지
-
-                        return new ArrayList<>(Arrays.asList(
-                                user.getEmployeeId(),
-                                user.getName(),
-                                user.getJoinDate().toString(),
-                                user.getDepartment().getValue(),
-                                user.getPart(),
-                                user.getLevel().getLevelName(),
-                                user.getLoginId(),
-                                user.getPassword(),
-                                user.getChangedPW() != null ? user.getChangedPW() : "",
-                                totalExp // 총 경험치 유지
-                        ));
-                    })
+            // Google Sheets에 입력할 데이터 준비
+            List<List<? extends Serializable>> userData = users.stream()
+                    .map(user -> Arrays.asList(
+                            user.getEmployeeId(),                    // 사번
+                            user.getName(),                         // 이름
+                            user.getJoinDate().toString(),          // 입사일
+                            user.getDepartment().getValue(),        // 부서
+                            user.getPart(),                         // 파트
+                            user.getLevel().getLevelName(),         // 레벨
+                            user.getLoginId(),                      // 로그인 ID
+                            user.getPassword(),                     // 패스워드
+                            user.getChangedPW() != null ? user.getChangedPW() : ""// 변경된 패스워드
+                    ))
                     .collect(Collectors.toList());
 
+            // ✅ Google Sheets에 데이터 업데이트
+            sheetsService.spreadsheets().values()
+                    .update(spreadsheetId, RANGE, new ValueRange().setValues((List<List<Object>>) (List<?>) userData))
+                    .setValueInputOption("RAW")
+                    .execute();
 
             // ✅ 연도별 경험치 데이터 생성
             List<List<Object>> yearlyExpData = new ArrayList<>();
