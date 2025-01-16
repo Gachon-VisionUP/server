@@ -4,7 +4,9 @@ import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.JobGroup;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,10 +42,12 @@ public class UserRequest {
     public static class ChangePassword {
 
         @Schema(description = "변경할 비밀번호")
+        @NotNull(message = "공백은 저장할 수 없습니다.")
         @Size(max = 30, message = "비밀번호는 10자 이내로 입력해주세요.")
         private String changedPW;
 
         @Schema(description = "검증용 비밀번호")
+        @NotNull(message = "공백은 저장할 수 없습니다.")
         @Size(max = 30, message = "비밀번호는 10자 이내로 입력해주세요.")
         private String checkPW;
     }
@@ -61,10 +65,12 @@ public class UserRequest {
 
         @Schema(description = "소속")
         @NotNull
+        @Min(value = 1, message = "part는 1이상 이어야 합니다.")
         private int part;
 
         @Schema(description = "사번")
         @NotNull
+        @Pattern(regexp = "\\d{10}", message = "사번은 반드시 10자리 숫자여야 합니다.")
         private String employeeId;
 
         @Schema(description = "이름")
@@ -103,10 +109,12 @@ public class UserRequest {
 
         @Schema(description = "소속")
         @NotNull
+        @Min(value = 1, message = "part는 1이상 이어야 합니다.")
         private int part;
 
         @Schema(description = "사번")
         @NotNull
+        @Pattern(regexp = "\\d{10}", message = "사번은 반드시 10자리 숫자여야 합니다.")
         private String employeeId;
 
         @Schema(description = "이름")

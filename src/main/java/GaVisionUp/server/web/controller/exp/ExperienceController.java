@@ -14,6 +14,9 @@ import GaVisionUp.server.web.dto.exp.list.ExperienceGrowthResponse;
 import GaVisionUp.server.web.dto.exp.list.ExperienceListResponse;
 import GaVisionUp.server.web.dto.exp.list.ExperienceStateResponse;
 import GaVisionUp.server.web.dto.level.LevelResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,8 +87,12 @@ public class ExperienceController {
 
     // ✅ 경험치 목록 조회 (최신 1개 + 연도별 최신 3개)
     @GetMapping("/list")
+    @Operation(summary = "경험치 목록 조회 API", description = "경험치 목록 조회 (최신 1개, 연도별 최신 3개)")
+    @Parameters({
+            @Parameter(name = "year", description = "조회할 연도")
+    })
     public ResponseEntity<?> getExperienceList(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId,
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
             @RequestParam(value = "year", required = false) Integer selectedYear) {
 
         if (sessionUserId == null) {
@@ -108,8 +115,9 @@ public class ExperienceController {
 
     // ✅ 경험치 현황 API ("/experience/state")
     @GetMapping("/state")
+    @Operation(summary = "경험치 현황 API", description = "경험치 현황을 조회합니다.")
     public ResponseEntity<ExperienceStateResponse> getExperienceState(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
         if (sessionUserId == null) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -158,14 +166,15 @@ public class ExperienceController {
 
     // ✅ 성장 현황 API ("/experience/growth")
     @GetMapping("/growth")
+    @Operation(summary = "성장 현황 API", description = "성장 현황을 조회합니다.")
     public ResponseEntity<ExperienceGrowthResponse> getExperienceGrowth(
-            @SessionAttribute(name = "userId", required = false) Long sessionUserId) {
-        if (sessionUserId == null) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
             return ResponseEntity.badRequest().body(null);
         }
 
         // ✅ 사용자 정보 가져오기
-        User user = userQueryService.getUserById(sessionUserId)
+        User user = userQueryService.getUserById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // ✅ 현재 레벨 정보 가져오기 (레벨명 + 직군 기반 조회)
@@ -183,11 +192,11 @@ public class ExperienceController {
         // ✅ 작년까지 누적된 경험치 조회
         int currentYear = Year.now().getValue();
         int previousYear = currentYear - 1;
-        List<Experience> previousYearExperiences = experienceService.getExperiencesByPreviousYears(sessionUserId, previousYear);
+        List<Experience> previousYearExperiences = experienceService.getExperiencesByPreviousYears(userId, previousYear);
         int previousYearTotalExp = previousYearExperiences.stream().mapToInt(Experience::getExp).sum();
 
         // ✅ 올해 획득한 경험치 조회
-        List<Experience> currentYearExperiences = experienceService.getExperiencesByCurrentYear(sessionUserId, currentYear);
+        List<Experience> currentYearExperiences = experienceService.getExperiencesByCurrentYear(v, currentYear);
         int currentYearTotalExp = currentYearExperiences.stream().mapToInt(Experience::getExp).sum();
 
         // ✅ 성장 비율 계산 (소수점 절삭)

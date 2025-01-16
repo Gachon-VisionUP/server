@@ -87,7 +87,6 @@ public class User {
         this.name = request.getName();
         this.joinDate = request.getJoinDate();
         this.loginId = request.getLoginId();
-        this.changedPW = request.getChangedPW();
     }
 
     // ✅ 푸쉬 토큰 업데이트 메서드

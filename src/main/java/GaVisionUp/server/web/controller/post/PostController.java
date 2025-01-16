@@ -8,7 +8,10 @@ import GaVisionUp.server.service.post.PostCommandService;
 import GaVisionUp.server.service.post.PostQueryService;
 import GaVisionUp.server.web.dto.post.PostRequest;
 import GaVisionUp.server.web.dto.post.PostResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,13 @@ public class PostController {
     private final PostCommandService postCommandService;
 
     @GetMapping()
+    @Operation(summary = "게시글 목록 조회 API", description = "게시글 목록을 조회합니다.(무한스크롤)")
+    @Parameters({
+            @Parameter(name = "query", description = "검색어"),
+            @Parameter(name = "filter", description = "정렬기준"),
+            @Parameter(name = "lastValue", description = "마지막 값, 다음 페이지 조회 시 사용"),
+            @Parameter(name = "page", description = "한 번에 보여줄 게시글 수")
+    })
     public ApiResponse<PostResponse.PreviewList> getPostsPreviewList(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "LATEST") Filter filter,
@@ -33,6 +43,10 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
+    @Operation(summary = "게시글 조회 API", description = "특정 게시글을 조회합니다.")
+    @Parameters({
+            @Parameter(name = "postId", description = "타겟 게시글의 id"),
+    })
     public ApiResponse<PostResponse.Detail> getPost(
             @PathVariable Long postId
     ) {
@@ -40,25 +54,16 @@ public class PostController {
     }
 
     @PostMapping("/add")
+    @Operation(summary = "게시글 생성 API", description = "게시글을 생성합니다.(관리자만 가능)")
     public ApiResponse<PostResponse.AddPost> addPost(
-            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long sessionUserId,
-            @RequestParam(name = "userId", required = false) Long userId,
-            @RequestBody PostRequest.AddPost request) {
+            @Parameter(hidden = true) @SessionAttribute(name = "userId", required = false) Long userId,
+            @Valid @RequestBody PostRequest.AddPost request) {
 
-        validateUserIds(sessionUserId, userId);
+        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
+        if (userId == null) {
+            return ApiResponse.onFailure(GlobalErrorStatus._NOT_LOGIN);
+        }
 
         return ApiResponse.onSuccess(postCommandService.addPost(userId, request));
-    }
-
-    private void validateUserIds(Long sessionUserId, Long userId) {
-        // 세션에서 userId가 없는 경우 (로그인하지 않은 상태)
-        if (sessionUserId == null) {
-            throw new RestApiException(GlobalErrorStatus._NOT_LOGIN);
-        }
-
-        // 요청으로 전달된 userId와 세션의 userId가 다를 경우 에러 발생
-        if (userId != null && !sessionUserId.equals(userId)) {
-            throw new RestApiException(GlobalErrorStatus._INVALID_USER);
-        }
     }
 }
