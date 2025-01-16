@@ -2,6 +2,7 @@ package GaVisionUp.server.entity.exp;
 
 import GaVisionUp.server.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data

@@ -3,10 +3,12 @@ package GaVisionUp.server.service.user;
 import GaVisionUp.server.entity.Level;
 import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Role;
+import GaVisionUp.server.entity.exp.ExpBar;
 import GaVisionUp.server.global.exception.RestApiException;
 import GaVisionUp.server.global.exception.code.status.GlobalErrorStatus;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.user.UserRepository;
+import GaVisionUp.server.service.exp.expbar.ExpBarService;
 import GaVisionUp.server.service.google.GoogleUserService;
 import GaVisionUp.server.web.dto.user.UserRequest;
 import GaVisionUp.server.web.dto.user.UserResponse;
@@ -25,6 +27,7 @@ public class UserCommandServiceImpl implements UserCommandService{
     private final UserRepository userRepository;
     private final LevelRepository levelRepository;
     private final GoogleUserService googleUserService;
+    private final ExpBarService expBarService;
 
     @Override
     public UserResponse.UpdateInformation changePassword(Long userId, UserRequest.ChangePassword request) {
@@ -111,6 +114,10 @@ public class UserCommandServiceImpl implements UserCommandService{
                 .build();
 
         userRepository.save(newUser);
+
+        expBarService.getOrCreateExpBarByUserId(newUser.getId());
+
+        googleUserService.syncDatabaseToGoogleSheet();
 
         newUser.updatePushToken("ExponentPushToken"+newUser.getId());
 

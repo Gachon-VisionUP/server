@@ -37,6 +37,7 @@ public class GoogleController {
         googleUserService.syncUsersFromGoogleSheet();
         googleEntireProjectService.syncEntireProjects();
         googleLevelService.syncLevelsFromGoogleSheet();
+        googleUserService.syncDatabaseToGoogleSheet();
         return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
     }
 
@@ -44,6 +45,7 @@ public class GoogleController {
     public ResponseEntity<String> performanceSyncSheetToDb() {
         googlePerformanceService.syncH1PerformanceFromGoogleSheet();
         googlePerformanceService.syncH2PerformanceFromGoogleSheet();
+        googleUserService.syncDatabaseToGoogleSheet();
         return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
     }
 
@@ -51,6 +53,7 @@ public class GoogleController {
     public ResponseEntity<String> jobQuestSyncSheetToDb() {
         googleJobQuestDetailService.syncJobQuestDetailFromGoogleSheet();
         googleJobQuestService.syncJobQuestFromGoogleSheet();
+        googleUserService.syncDatabaseToGoogleSheet();
         return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
     }
 
@@ -58,6 +61,7 @@ public class GoogleController {
     public ResponseEntity<String> leaderQuestSyncSheetToDb() {
         googleLeaderQuestConditionService.syncLeaderQuestConditions();
         googleLeaderQuestService.syncLeaderQuestsFromGoogleSheet();
+        googleUserService.syncDatabaseToGoogleSheet();
         return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
     }
 

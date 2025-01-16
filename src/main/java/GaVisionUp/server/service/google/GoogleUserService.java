@@ -106,7 +106,9 @@ public class GoogleUserService {
                     // ✅ Optional 처리 수정
                     if (existingUser.isPresent()) {
                         User existing = existingUser.get();
-                        existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
+                        if (existing.getRole() != Role.ADMIN) {
+                            existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
+                        }
                         user = existing;
                     } else {
                         User newUser = User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
@@ -176,8 +178,8 @@ public class GoogleUserService {
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
             for (User user : users) {
-                Map<Integer, Integer> experienceMap = experienceService.getYearlyTotalExperience(user.getId(), START_YEAR, currentYear);
-                List<Object> yearlyExp = IntStream.rangeClosed(START_YEAR, currentYear)
+                Map<Integer, Integer> experienceMap = experienceService.getYearlyTotalExperience(user.getId(), START_YEAR, currentYear-12);
+                List<Object> yearlyExp = IntStream.rangeClosed(START_YEAR, currentYear-12)
                         .mapToObj(year -> experienceMap.getOrDefault(year, 0))
                         .collect(Collectors.toList());
 
