@@ -121,7 +121,7 @@ public class UserQueryServiceImpl implements UserQueryService{
             throw new RestApiException(GlobalErrorStatus._ONLY_ADMIN);
         }
 
-        User target = userRepository.findById(userId).
+        User target = userRepository.findById(targetId).
                 orElseThrow(() -> new RestApiException(GlobalErrorStatus._USER_NOT_EXIST));
 
         String password = target.getPassword();
