@@ -8,10 +8,12 @@ import java.util.List;
 @Getter
 public class ExperienceListResponse {
     private final int year;
-    private final List<ExperienceResponse> top3Experiences;
+    private final int totalCount;
+    private final List<ExperienceResponse> allExperiences;
 
-    public ExperienceListResponse(int year, List<ExperienceResponse> top3Experiences) {
+    public ExperienceListResponse(int year, int totalCount, List<ExperienceResponse> allExperiences) {
         this.year = year;
-        this.top3Experiences = top3Experiences;
+        this.totalCount = totalCount;
+        this.allExperiences = allExperiences;
     }
 }

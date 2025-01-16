@@ -97,4 +97,9 @@ public class ExperienceServiceImpl implements ExperienceService {
 
         return experienceMap;
     }
+
+    @Override
+    public List<Experience> getExperiencesByYear(Long userId, int year) {
+        return experienceRepository.findAllByUserIdAndYear(userId, year);
+    }
 }
