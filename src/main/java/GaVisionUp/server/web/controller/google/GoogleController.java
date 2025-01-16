@@ -6,6 +6,7 @@ import GaVisionUp.server.service.google.GoogleUserService;
 import GaVisionUp.server.service.google.job.GoogleJobQuestService;
 import GaVisionUp.server.service.google.leader.GoogleLeaderQuestConditionService;
 
+import GaVisionUp.server.service.google.leader.GoogleLeaderQuestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class GoogleController {
     private final GoogleJobQuestDetailService googleJobQuestDetailService;
     private final GoogleJobQuestService googleJobQuestService;
     private final GoogleLeaderQuestConditionService googleLeaderQuestConditionService;
+    private final GoogleLeaderQuestService googleLeaderQuestService;
 
     /**
      * ✅ Google Sheets에서 유저 데이터 동기화 API
@@ -32,6 +34,7 @@ public class GoogleController {
         googleJobQuestDetailService.syncJobQuestDetailFromGoogleSheet();
         googleJobQuestService.syncJobQuestFromGoogleSheet();
         googleLeaderQuestConditionService.syncLeaderQuestConditions();
+        googleLeaderQuestService.syncLeaderQuestsFromGoogleSheet();
         return ResponseEntity.ok("✅ Google Sheets에서 DB에 데이터를 동기화했습니다.");
     }
 

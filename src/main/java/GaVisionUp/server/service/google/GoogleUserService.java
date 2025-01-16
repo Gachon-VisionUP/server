@@ -71,14 +71,12 @@ public class GoogleUserService {
             for (List<Object> row : values) {
                 if (row.isEmpty()) continue;
                 if (row.size() < 10) {
-                    log.warn("⚠️ [WARN] 데이터 부족으로 인해 유저 정보를 저장할 수 없습니다. {}", row);
                     continue;
                 }
 
                 try {
                     String employeeId = row.get(0).toString().trim();
                     if (!EMPLOYEE_ID_PATTERN.matcher(employeeId).matches()) {
-                        log.warn("⚠️ [WARN] 잘못된 사번 형식으로 인해 유저 정보를 저장할 수 없습니다: {}", employeeId);
                         continue;
                     }
 
@@ -101,7 +99,6 @@ public class GoogleUserService {
 
                     Optional<Level> optionalLevel = levelRepository.findByLevelName(levelName);
                     if (optionalLevel.isEmpty()) {
-                        log.warn("⚠️ [WARN] 레벨 '{}'에 해당하는 레벨 정보를 찾을 수 없습니다.", levelName);
                         continue;
                     }
                     Level level = optionalLevel.get();

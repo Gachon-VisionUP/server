@@ -76,4 +76,13 @@ public class LeaderQuest {
                 .condition(condition) // ✅ 퀘스트 조건 설정
                 .build();
     }
+
+
+    // ✅ 업데이트 메서드 추가
+    public void updateQuest(String achievementType, int grantedExp, String note, LocalDate assignedDate) {
+        this.achievementType = achievementType;
+        this.grantedExp = grantedExp;
+        this.note = note;
+        this.assignedDate = assignedDate;
+    }
 }

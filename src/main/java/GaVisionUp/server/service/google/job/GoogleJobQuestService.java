@@ -228,7 +228,7 @@ public class GoogleJobQuestService {
                         // ✅ 새로운 경험치를 저장
                         if (grantedExp != 0) {
                             Experience newExperience = new Experience(user, ExpType.JOB_QUEST, grantedExp - previousGrantedExp);
-                            experienceRepository.save(newExperience);
+                            experienceRepository.edit(newExperience);
                         }
 
                         // ✅ 유저 총 경험치 업데이트

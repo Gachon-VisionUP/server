@@ -236,4 +236,40 @@ public class ExperienceRepositoryImpl implements ExperienceRepository {
                 .where(QExperience.experience.id.eq(expId)) // ✅ 특정 ID의 경험치만 업데이트
                 .execute();
     }
+
+    @Override
+    public Experience edit(Experience experience) {
+        // ✅ User 객체 검증
+        User user = experience.getUser();
+        if (user == null) {
+            throw new IllegalArgumentException("Experience 저장 시 User 정보가 필요합니다.");
+        }
+
+        user.addExperience(experience.getExp()); // ✅ 경험치 추가
+        upgradeUserLevel(user); // ✅ 레벨 업그레이드 검증
+
+        em.merge(user); // ✅ User의 totalExp 변경 반영
+
+        // ✅ ExpBar 업데이트 (레벨 변경 반영)
+        updateExpBar(user);
+
+        if (experience.getId() == null) {
+            em.persist(experience);
+        } else {
+            em.merge(experience);
+        }
+        ExpType expType = experience.getExpType();
+        int exp = experience.getExp();
+        // ✅ 내부 알림 저장
+        String title = "최신 경험치";
+        String message = String.format("%d", exp);
+        notificationService.createNotification(user, title, message, expType.getValue());
+
+        // ✅ Expo 푸쉬 알림 전송
+        expoNotificationService.sendPushNotification(user.getExpoPushToken(), title, message, expType.getValue());
+
+        log.info("✅ 경험치 수정 및 알림 전송 완료 - 유저: {}, ExpType: {}, 획득 경험치: {}", user.getName(), expType, exp);
+
+        return experience;
+    }
 }

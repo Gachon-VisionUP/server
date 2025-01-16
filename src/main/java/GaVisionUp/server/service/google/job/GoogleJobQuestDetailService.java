@@ -167,7 +167,6 @@ public class GoogleJobQuestDetailService {
                         JobQuestDetail existingQuest = existingQuestOpt.get();
                         existingQuest.updateJobQuest(sales, designCost, employeeSalary, retirementSalary, insuranceFee);
                         jobQuestDetailRepository.save(existingQuest);
-                        log.info("🔄 [UPDATE] 기존 직무 퀘스트 업데이트 완료 (날짜: {})", recordedDate);
                     } else {
                         JobQuestDetail jobQuest = JobQuestDetail.create(
                                 department, part, cycle, month, round, sales, designCost, employeeSalary, retirementSalary, insuranceFee, recordedDate

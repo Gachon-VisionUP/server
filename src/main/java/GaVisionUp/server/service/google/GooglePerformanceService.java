@@ -95,7 +95,6 @@ public class GooglePerformanceService {
 
                     // ✅ 기존 인사평가 조회
                     Optional<PerformanceReview> existingReviewOpt = performanceReviewRepository.findByUserIdAndYearAndExpType(user.getId(), year, expType);
-                    log.info("🔍 [DEBUG] 기존 인사평가 조회 결과: {}", existingReviewOpt.isPresent() ? "✅ 있음" : "❌ 없음");
 
                     if (existingReviewOpt.isPresent()) {
                         PerformanceReview existingReview = existingReviewOpt.get();
@@ -103,18 +102,15 @@ public class GooglePerformanceService {
 
                         // ✅ 기존 경험치와 동일하면 중복 저장 방지
                         if (previousExp == newExp) {
-                            log.info("✅ [INFO] 기존 경험치({})와 동일하여 평가 업데이트 생략 (사번: {}, 연도: {}, 분기: {})", newExp, employeeId, year, expType);
                             continue;
                         }
 
                         // ✅ 경험치 차이 계산 (양수: 추가, 음수: 차감)
                         int expDiff = newExp - previousExp;
-                        log.info("🔄 [UPDATE] 경험치 변화량 계산 (기존: {}, 변경: {}, 차이: {})", previousExp, newExp, expDiff);
 
                         // ✅ 기존 경험치 ID 조회 후 업데이트
                         Optional<Long> expIdOpt = experienceRepository.findExperienceIdByUserAndYear(user.getId(), expType, year);
                         if (expIdOpt.isPresent()) {
-                            log.info("🔄 [UPDATE] 기존 경험치 수정 (경험치 ID: {}, 사번: {}, 기존: {}, 변경: {})", expIdOpt.get(), employeeId, previousExp, newExp);
                             experienceRepository.updateExperienceById(expIdOpt.get(), newExp);
                         } else {
                             // ✅ 기존 경험치가 없으면 새로 저장
