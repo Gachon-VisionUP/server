@@ -94,15 +94,15 @@ public class GoogleEntireProjectService {
                     // ✅ 경험치 변화량 계산 및 저장
                     int experienceDiff = newGrantedExp - previousGrantedExp;
                     if (experienceDiff != 0) {
-                        if (newGrantedExp == 0) {
+
                             Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDiff);
                             experienceRepository.edit(newExperience);
-                        }
+
                     } else if(experienceDiff == 0){
                         continue;
                     }
                    else {
-                        Experience experience = new Experience(user, ExpType.ENTIRE_PROJECT, experienceDiff);
+                        Experience experience = new Experience(user, ExpType.ENTIRE_PROJECT, newGrantedExp);
                         experienceRepository.save(experience);
                     }
 

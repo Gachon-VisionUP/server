@@ -117,16 +117,15 @@ public class GoogleLeaderQuestService {
                     // ✅ 유저 경험치 부여
                     int experienceDifference = newGrantedExp - previousGrantedExp;
                     if (experienceDifference != 0) {
-                        if (newGrantedExp == 0) {
                             Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
                             experienceRepository.edit(newExperience);
-                        }
+
                     }else if(experienceDifference == 0){
                         continue;
                     }
                     else {
-                        Experience experience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
-                        experienceRepository.edit(experience);
+                        Experience experience = new Experience(user, ExpType.LEADER_QUEST, newGrantedExp);
+                        experienceRepository.save(experience);
                     }
 
                     // ✅ 유저 총 경험치 업데이트
