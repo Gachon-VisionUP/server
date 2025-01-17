@@ -5,7 +5,6 @@ import GaVisionUp.server.entity.User;
 import GaVisionUp.server.entity.enums.Department;
 import GaVisionUp.server.entity.enums.Role;
 import GaVisionUp.server.entity.exp.ExpBar;
-import GaVisionUp.server.repository.exp.expbar.ExpBarRepository;
 import GaVisionUp.server.repository.level.LevelRepository;
 import GaVisionUp.server.repository.user.UserRepository;
 import GaVisionUp.server.service.exp.expbar.ExpBarService;
@@ -41,8 +40,9 @@ public class GoogleUserService {
     private static final String RANGE = "참고. 구성원 정보!B10:K"; // ✅ '참고. 구성원 정보' 탭의 특정 범위 지정
     private static final Pattern EMPLOYEE_ID_PATTERN = Pattern.compile("^\\d{10}$"); // ✅ 사번이 숫자로만 이루어졌는지 확인
     private static final String RANGE_YEARLY_EXP = "참고. 구성원 정보!L10:X"; // 연도별 경험치 (L10 ~ V16)
-    private static final int START_YEAR = 2025; // 연도별 경험치 시작 (L열 = 2023년 ~ V열 = 2013년)
-    private final ExpBarRepository expBarRepository;
+    private static final int START_YEAR = 2013; // 연도별 경험치 시작 (L열 = 2023년 ~ V열 = 2013년)
+    private static final int END_YEAR = 2013; // 연도별 경험치 시작 (L열 = 2023년 ~ V열 = 2013년)
+
 
     /**
      * ✅ Google Sheets → DB 동기화 (삭제 반영 포함)
@@ -106,9 +106,7 @@ public class GoogleUserService {
                     // ✅ Optional 처리 수정
                     if (existingUser.isPresent()) {
                         User existing = existingUser.get();
-                        if (existing.getRole() != Role.ADMIN) {
-                            existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
-                        }
+                        existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
                         user = existing;
                     } else {
                         User newUser = User.create(employeeId, name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
@@ -134,25 +132,10 @@ public class GoogleUserService {
 
     public void syncDatabaseToGoogleSheet() {
         try {
+            // DB에서 모든 사용자 가져오기
             List<User> users = userRepository.findAll();
 
-            // ✅ Google Sheets에서 기존 데이터를 가져와 번호와 총 경험치 유지
-            ValueRange existingDataResponse = sheetsService.spreadsheets().values()
-                    .get(spreadsheetId, RANGE)
-                    .execute();
-
-            List<List<Object>> existingData = existingDataResponse.getValues();
-            Map<String, List<Object>> existingUserDataMap = new HashMap<>();
-
-            if (existingData != null) {
-                for (List<Object> row : existingData) {
-                    if (row.size() > 0) {
-                        existingUserDataMap.put(row.get(0).toString().trim(), row); // 사번을 키로 저장
-                    }
-                }
-            }
-
-            // Google Sheets에 입력할 데이터 준비
+            // ✅ Google Sheets에 사용자 정보 업데이트
             List<List<? extends Serializable>> userData = users.stream()
                     .map(user -> Arrays.asList(
                             user.getEmployeeId(),                    // 사번
@@ -163,11 +146,11 @@ public class GoogleUserService {
                             user.getLevel().getLevelName(),         // 레벨
                             user.getLoginId(),                      // 로그인 ID
                             user.getPassword(),                     // 패스워드
-                            user.getChangedPW() != null ? user.getChangedPW() : ""// 변경된 패스워드
+                            user.getChangedPW() != null ? user.getChangedPW() : "" // 변경된 패스워드
                     ))
                     .collect(Collectors.toList());
 
-            // ✅ Google Sheets에 데이터 업데이트
+            // 사용자 정보를 Google Sheets에 업데이트
             sheetsService.spreadsheets().values()
                     .update(spreadsheetId, RANGE, new ValueRange().setValues((List<List<Object>>) (List<?>) userData))
                     .setValueInputOption("RAW")
@@ -176,21 +159,27 @@ public class GoogleUserService {
             // ✅ 연도별 경험치 데이터 생성
             List<List<Object>> yearlyExpData = new ArrayList<>();
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            int endYear = Math.max(currentYear, 2025); // 2025년과 현재 연도 중 더 큰 값을 사용
 
             for (User user : users) {
-                Map<Integer, Integer> experienceMap = experienceService.getYearlyTotalExperience(user.getId(), START_YEAR, currentYear-12);
-                List<Object> yearlyExp = IntStream.rangeClosed(START_YEAR, currentYear-12)
-                        .mapToObj(year -> experienceMap.getOrDefault(year, 0))
+                Map<Integer, Integer> experienceMap = experienceService.getYearlyTotalExperience(user.getId(), START_YEAR, endYear);
+                List<Object> yearlyExp = IntStream.rangeClosed(START_YEAR, endYear)
+                        .boxed()
+                        .sorted(Comparator.reverseOrder()) // 내림차순 정렬
+                        .map(year -> experienceMap.getOrDefault(year, 0)) // 연도별 경험치 값이 없으면 0
                         .collect(Collectors.toList());
 
                 yearlyExpData.add(yearlyExp);
             }
 
-            // ✅ 연도별 경험치만 업데이트
+            // ✅ Google Sheets 연도별 경험치 업데이트 (L10:V)
             sheetsService.spreadsheets().values()
                     .update(spreadsheetId, RANGE_YEARLY_EXP, new ValueRange().setValues(yearlyExpData))
                     .setValueInputOption("RAW")
                     .execute();
+
+
+            log.info("✅ [INFO] Google Sheets에 연도별 경험치 동기화 완료");
 
         } catch (IOException e) {
             log.error("❌ [ERROR] DB 데이터를 Google Sheets에 동기화하는 중 오류 발생", e);
