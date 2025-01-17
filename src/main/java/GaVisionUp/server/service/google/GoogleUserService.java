@@ -93,6 +93,7 @@ public class GoogleUserService {
                             : 0;
 
                     Optional<User> existingUser = userRepository.findByEmployeeId(employeeId);
+
                     Role role = Role.USER;
 
                     Optional<Level> optionalLevel = levelRepository.findByLevelName(levelName);
@@ -106,6 +107,9 @@ public class GoogleUserService {
                     // ✅ Optional 처리 수정
                     if (existingUser.isPresent()) {
                         User existing = existingUser.get();
+                        if (existing.getRole().equals(Role.ADMIN)) {
+                            continue;
+                        }
                         existing.updateUser(name, joinDate, department, part, level, loginId, password, changedPw, totalExp, role);
                         user = existing;
                     } else {
@@ -133,7 +137,7 @@ public class GoogleUserService {
     public void syncDatabaseToGoogleSheet() {
         try {
             // DB에서 모든 사용자 가져오기
-            List<User> users = userRepository.findAll();
+            List<User> users = userRepository.findAllByRoleEquals(Role.USER);
 
             // ✅ Google Sheets에 사용자 정보 업데이트
             List<List<? extends Serializable>> userData = users.stream()

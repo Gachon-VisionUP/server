@@ -24,9 +24,6 @@ public class GoogleSheetsConfig {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String CREDENTIALS_FILE_PATH = "/googlesheets/sheets.json"; // 서비스 계정 키 경로
 
-    @Value("${google.sheets.credentials-file-path}")
-    private String credentialsFilePath;
-
     /**
      * ✅ Google Sheets API의 `Sheets` 객체를 빈으로 등록
      */
