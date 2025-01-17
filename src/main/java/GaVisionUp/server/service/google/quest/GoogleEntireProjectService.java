@@ -88,6 +88,8 @@ public class GoogleEntireProjectService {
 
                         EntireProject entireProject = EntireProject.create(
                                 user, projectName, newGrantedExp, note, assignedDate);
+                        Experience experience = new Experience(user, ExpType.ENTIRE_PROJECT, newGrantedExp);
+                        experienceRepository.save(experience);
                         entireProjectRepository.save(entireProject);
                     }
 
@@ -98,12 +100,6 @@ public class GoogleEntireProjectService {
                             Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDiff);
                             experienceRepository.edit(newExperience);
 
-                    } else if(experienceDiff == 0){
-                        continue;
-                    }
-                   else {
-                        Experience experience = new Experience(user, ExpType.ENTIRE_PROJECT, newGrantedExp);
-                        experienceRepository.save(experience);
                     }
 
                     // ✅ 유저 총 경험치 업데이트

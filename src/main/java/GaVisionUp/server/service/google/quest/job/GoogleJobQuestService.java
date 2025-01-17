@@ -219,17 +219,12 @@ public class GoogleJobQuestService {
 
                         int experienceDifference = grantedExp - previousGrantedExp;
                         if (experienceDifference != 0) {
-
                                 Experience newExperience = new Experience(user, ExpType.JOB_QUEST, experienceDifference);
                                 experienceRepository.edit(newExperience);
+                        }
 
-                        }else if(experienceDifference == 0){
-                            continue;
-                        }
-                        else  {
-                            Experience newExperience = new Experience(user, ExpType.JOB_QUEST, grantedExp);
-                            experienceRepository.edit(newExperience);
-                        }
+                        Experience newExperience = new Experience(user, ExpType.JOB_QUEST, grantedExp);
+                        experienceRepository.save(newExperience);
 
                         // ✅ 유저 총 경험치 업데이트
                         userRepository.save(user);

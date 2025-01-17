@@ -103,6 +103,13 @@ public class GoogleLeaderQuestService {
                     if (existingQuestOpt.isPresent()) {
                         LeaderQuest existingQuest = existingQuestOpt.get();
                         previousGrantedExp = existingQuest.getGrantedExp(); // 기존 부여 경험치
+                        // ✅ 유저 경험치 부여
+                        int experienceDifference = newGrantedExp - previousGrantedExp;
+                        if (experienceDifference != 0) {
+                            Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
+                            experienceRepository.edit(newExperience);
+                        }
+
                         // ✅ 퀘스트 업데이트
                         existingQuest.updateQuest(achievementType, newGrantedExp, note, LocalDate.now());
                         leaderQuestRepository.save(existingQuest);
@@ -111,21 +118,9 @@ public class GoogleLeaderQuestService {
                                 user, Cycle.MONTHLY, questName, month, week,
                                 achievementType, newGrantedExp, note,
                                 LocalDate.now(), condition);
-                        leaderQuestRepository.save(leaderQuest);
-                    }
-
-                    // ✅ 유저 경험치 부여
-                    int experienceDifference = newGrantedExp - previousGrantedExp;
-                    if (experienceDifference != 0) {
-                            Experience newExperience = new Experience(user, ExpType.LEADER_QUEST, experienceDifference);
-                            experienceRepository.edit(newExperience);
-
-                    }else if(experienceDifference == 0){
-                        continue;
-                    }
-                    else {
                         Experience experience = new Experience(user, ExpType.LEADER_QUEST, newGrantedExp);
                         experienceRepository.save(experience);
+                        leaderQuestRepository.save(leaderQuest);
                     }
 
                     // ✅ 유저 총 경험치 업데이트
